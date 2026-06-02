@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://ckmo5gnlpyahl" path="res://assets/2D/folder/folder.blend" id="8_2mudq"]
 [ext_resource type="PackedScene" uid="uid://cjjjgkx6flmsh" path="res://assets/2D/sticky_note/sticky_note.blend" id="9_cafmx"]
 [ext_resource type="Script" uid="uid://p6pn0x2ycmm4" path="res://scripts/MainMenu/btn_play.gd" id="10_cafmx"]
+[ext_resource type="Texture2D" uid="uid://bu5n7538qpl3d" path="res://assets/Fondos/Opciones_extra.png" id="10_twxu1"]
 [ext_resource type="FontFile" uid="uid://l45ci8imolwd" path="res://fonts/Caveat-Regular.ttf" id="11_qubkb"]
 [ext_resource type="Script" uid="uid://dt4bc8a4me66x" path="res://scripts/MainMenu/btn_options.gd" id="12_06hvf"]
 [ext_resource type="Script" uid="uid://cl32cywrw8lo3" path="res://scripts/MainMenu/btn_exit.gd" id="13_06hvf"]
@@ -28,6 +29,9 @@ background_mode = 2
 sky = SubResource("Sky_tcix6")
 tonemap_mode = 2
 glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_twxu1"]
+size = Vector3(1.0981445, 0.09918213, 0.6166992)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2mudq"]
 size = Vector3(2.1628723, 0.40856934, 2.1943665)
@@ -95,6 +99,26 @@ transform = Transform3D(0.23118322, 0, -0.06088272, 0, 0.23906566, 0, 0.06088272
 [node name="folder" parent="." unique_id=2002258934 instance=ExtResource("8_2mudq")]
 transform = Transform3D(0.24684195, 0.43482077, -8.216816e-09, 2.1855694e-08, -2.1855696e-08, -0.5, -0.43482077, 0.24684195, -2.9796423e-08, -4.8297853, 3.4138334, 0.3988104)
 
+[node name="Contenedor_Opciones" type="Node3D" parent="folder" unique_id=1949709491]
+visible = false
+
+[node name="btn_volver" type="Area3D" parent="folder/Contenedor_Opciones" unique_id=300631274]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="folder/Contenedor_Opciones/btn_volver" unique_id=2053824906]
+transform = Transform3D(1, 0, 3.3040237e-13, 0, 1, -2.842171e-13, -3.5527137e-15, 5.3290705e-15, 1, -0.049069405, 0.056306362, 0.99192953)
+shape = SubResource("BoxShape3D_twxu1")
+
+[node name="Label3D" type="Label3D" parent="folder/Contenedor_Opciones/btn_volver" unique_id=1529866918]
+transform = Transform3D(1.3777792, -0.0019231513, -0.07822394, 0.07823813, 0.05498724, 1.3766823, 0.0011984417, -1.3789027, 0.05500786, -0.12551594, 0.064137936, 1.0055323)
+modulate = Color(0, 0, 0, 1)
+text = "Volver"
+font = ExtResource("11_qubkb")
+font_size = 78
+
+[node name="Sprite3D" type="Sprite3D" parent="folder/Contenedor_Opciones" unique_id=21693052]
+transform = Transform3D(0.070143275, 0.02373347, 0.004846785, -0.002998082, -0.0031566857, 0.10118025, 0.017321194, -0.09665659, -0.002114317, 0.18998957, 0.24082518, -0.32097387)
+texture = ExtResource("10_twxu1")
+
 [node name="btn_play" parent="." unique_id=1810911924 instance=ExtResource("9_cafmx")]
 transform = Transform3D(-0.048843082, 0.1803998, 0.01674219, 0.024229672, 0.023688307, -0.18455842, -0.17954752, -0.045878183, -0.02946036, -4.892998, 3.917031, 1.53213)
 script = ExtResource("10_cafmx")
@@ -158,10 +182,12 @@ texture = ExtResource("14_lgncj")
 transform = Transform3D(1.337, 0, 0, 0, 1.151, 0, 0, 0, 0.983, -8.514328, 4.423544, -7.342331)
 texture = ExtResource("15_twxu1")
 
+[connection signal="input_event" from="folder/Contenedor_Opciones/btn_volver" to="btn_options" method="_on_btn_volver_input_event"]
 [connection signal="input_event" from="btn_play/Area3D" to="btn_play" method="_on_area_3d_input_event"]
 [connection signal="input_event" from="btn_options/Area3D" to="btn_options" method="_on_area_3d_input_event"]
 [connection signal="input_event" from="btn_exit/Area3D" to="btn_exit" method="_on_area_3d_input_event"]
 
+[editable path="folder"]
 [editable path="btn_play"]
 [editable path="btn_options"]
 [editable path="btn_exit"]

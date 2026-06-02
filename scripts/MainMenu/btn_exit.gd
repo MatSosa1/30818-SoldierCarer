@@ -1,19 +1,24 @@
 extends Node3D
 
-
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	pass
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
 
-
 func _on_area_3d_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
-	#Por ahora solo filtro para que interactue con mouse
 	if event is InputEventMouseButton:
-		# Reviso si fue un click izquierdo
+
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			print("Se ha presionado salir")
+			$Area3D.input_ray_pickable = false
+			print("Iniciando secuencia de salida...")
+			
+			var tween = create_tween()
+			
+			tween.tween_property(self, "scale", Vector3.ZERO, 0.25).set_trans(Tween.TRANS_SINE)
+
+			tween.tween_callback(cerrar_aplicacion)
+
+func cerrar_aplicacion():
+	print("¡Cerrando el juego por completo!")
+	get_tree().quit()
