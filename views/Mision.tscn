@@ -56,24 +56,6 @@ visible = false
 mesh = SubResource("ImmediateMesh_trazador")
 material_override = SubResource("StandardMaterial3D_trazador")
 
-[node name="Herido" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
-script = ExtResource("3")
-director_oleadas_path = NodePath("../DirectorDeOleadas")
-
-[node name="Malla" type="MeshInstance3D" parent="Herido"]
-transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0.3, 0)
-mesh = SubResource("CapsuleMesh_herido")
-surface_material_override/0 = SubResource("StandardMaterial3D_herido")
-
-[node name="EtiquetaEstado" type="Label3D" parent="Herido"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
-billboard = 1
-no_depth_test = true
-outline_size = 8
-font_size = 40
-text = "HERIDO (E para curar)"
-
 [node name="Jugador" type="CharacterBody3D" parent="."]
 collision_layer = 1
 collision_mask = 0
@@ -125,6 +107,24 @@ offset_right = 2.0
 offset_bottom = 2.0
 mouse_filter = 2
 color = Color(1, 1, 1, 0.9)
+
+[node name="Herido" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
+script = ExtResource("3")
+director_oleadas_path = NodePath("../DirectorDeOleadas")
+
+[node name="Malla" type="MeshInstance3D" parent="Herido"]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0.3, 0)
+mesh = SubResource("CapsuleMesh_herido")
+surface_material_override/0 = SubResource("StandardMaterial3D_herido")
+
+[node name="EtiquetaEstado" type="Label3D" parent="Herido"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+billboard = 1
+no_depth_test = true
+outline_size = 8
+font_size = 40
+text = "HERIDO (E para curar)"
 
 [node name="DirectorDeOleadas" type="Node3D" parent="."]
 script = ExtResource("2")
