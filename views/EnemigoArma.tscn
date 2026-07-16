@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemigos/enemigo_arma.gd" id="1"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_arma"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_arma"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_arma"]
+albedo_color = Color(1, 0.55, 0, 1)
+
+[node name="EnemigoArma" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_arma")
+
+[node name="Malla" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("CapsuleMesh_arma")
+surface_material_override/0 = SubResource("StandardMaterial3D_arma")
+
+[node name="EtiquetaEstado" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+billboard = 1
+no_depth_test = true
+outline_size = 8
+font_size = 48
+text = "AVANCE"
