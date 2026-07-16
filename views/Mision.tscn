@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/Jugador/jugador.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/DirectorDeOleadas/director_de_oleadas.gd" id="2"]
@@ -22,6 +22,15 @@ height = 1.8
 [sub_resource type="PlaneMesh" id="PlaneMesh_piso"]
 size = Vector2(40, 40)
 
+[sub_resource type="ImmediateMesh" id="ImmediateMesh_trazador"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trazador"]
+shading_mode = 0
+albedo_color = Color(1, 0.9, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.9, 0.2, 1)
+emission_energy_multiplier = 3.0
+
 [node name="Mision" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -34,10 +43,16 @@ shadow_enabled = true
 [node name="Piso" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_piso")
 
+[node name="TrazadorDisparo" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("ImmediateMesh_trazador")
+material_override = SubResource("StandardMaterial3D_trazador")
+
 [node name="Jugador" type="CharacterBody3D" parent="."]
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("1")
+trazador_disparo_path = NodePath("../TrazadorDisparo")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Jugador"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -71,6 +86,19 @@ offset_top = 16.0
 offset_right = 220.0
 offset_bottom = 48.0
 text = "Salud: 100"
+
+[node name="Mira" type="ColorRect" parent="Jugador/UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.9)
 
 [node name="DirectorDeOleadas" type="Node3D" parent="."]
 script = ExtResource("2")
