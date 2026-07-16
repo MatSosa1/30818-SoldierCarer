@@ -12,6 +12,7 @@ const ENEMIGO_CUCHILLO := preload("res://views/EnemigoCuchillo.tscn")
 @export var umbral_escalado: int = 3
 
 var score: int = 0
+var enemigos_activos: int = 0
 var _carriles_activos: Dictionary = {}
 var _orden_carriles_debug: Array[String] = ["Adelante", "Derecha", "Atras", "Izquierda"]
 var _indice_carril_debug: int = 0
@@ -66,15 +67,21 @@ func activar_carril(nombre_carril: String) -> void:
 	cuchillo.global_position = marcador.global_position - lateral * 0.75
 	arma.neutralizado.connect(_al_neutralizar_enemigo)
 	cuchillo.neutralizado.connect(_al_neutralizar_enemigo)
+	enemigos_activos += 2
 
 	_carriles_activos[nombre_carril] = true
 	print("Carril activado: %s" % nombre_carril)
 
 func _al_neutralizar_enemigo(_enemigo: CharacterBody3D) -> void:
 	score += 1
-	print("Score: %s" % score)
+	enemigos_activos = max(enemigos_activos - 1, 0)
+	print("Score: %s | Enemigos activos: %s" % [score, enemigos_activos])
 	if score % umbral_escalado == 0:
 		_activar_carril_extra()
+
+# Usado por el Herido para saber si la zona esta despejada antes de curar.
+func hay_enemigos_activos() -> bool:
+	return enemigos_activos > 0
 
 # Escalado simple: al cruzar el umbral, activa el siguiente carril aun inactivo.
 func _activar_carril_extra() -> void:
