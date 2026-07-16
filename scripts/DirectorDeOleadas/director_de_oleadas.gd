@@ -13,6 +13,8 @@ const ENEMIGO_CUCHILLO := preload("res://views/EnemigoCuchillo.tscn")
 
 var score: int = 0
 var _carriles_activos: Dictionary = {}
+var _orden_carriles_debug: Array[String] = ["Adelante", "Derecha", "Atras", "Izquierda"]
+var _indice_carril_debug: int = 0
 
 @onready var contenedor_enemigos: Node3D = get_node(contenedor_enemigos_path)
 @onready var jugador: Node3D = get_tree().get_first_node_in_group("jugador")
@@ -28,6 +30,9 @@ func _ready() -> void:
 		activar_carril(carril_inicial)
 
 # Teclas de debug 1-4 para activar cada carril manualmente durante la demo.
+# R: spawnea otra pareja rotando de angulo cada vez (util porque los enemigos
+# neutralizados no vuelven a aparecer solos, asi se puede seguir probando sin
+# tener que recordar que numero corresponde a cada carril).
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
@@ -35,6 +40,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_2: activar_carril("Atras")
 			KEY_3: activar_carril("Izquierda")
 			KEY_4: activar_carril("Derecha")
+			KEY_R: _activar_siguiente_carril_debug()
+
+func _activar_siguiente_carril_debug() -> void:
+	var nombre_carril := _orden_carriles_debug[_indice_carril_debug]
+	_indice_carril_debug = (_indice_carril_debug + 1) % _orden_carriles_debug.size()
+	activar_carril(nombre_carril)
 
 func activar_carril(nombre_carril: String) -> void:
 	var marcador: Marker3D = marcadores.get(nombre_carril)
