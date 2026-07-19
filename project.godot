@@ -10,14 +10,14 @@ config_version=5
 
 [application]
 
-config/name="New Game Project"
+config/name="SoldierCarer"
 run/main_scene="uid://bmorjhsg5xpq2"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [dotnet]
 
-project/assembly_name="New Game Project"
+project/assembly_name="SoldierCarer"
 
 [physics]
 
@@ -26,3 +26,7 @@ project/assembly_name="New Game Project"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+
+[xr]
+
+openxr/enabled=true

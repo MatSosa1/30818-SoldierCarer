@@ -1,0 +1,88 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/Jugador/jugador.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/Jugador/manos_vr.gd" id="2"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jugador"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_mano"]
+size = Vector3(0.08, 0.06, 0.16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_manga"]
+size = Vector3(0.1, 0.1, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mano"]
+albedo_color = Color(0.75, 0.65, 0.55, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_manga"]
+albedo_color = Color(0.294, 0.325, 0.125, 1)
+
+[node name="Jugador" type="CharacterBody3D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_jugador")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+
+[node name="Camera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+current = true
+
+[node name="ManoIzquierda" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.0, -0.3)
+tracker = &"left_hand"
+script = ExtResource("2")
+
+[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda"]
+mesh = SubResource("BoxMesh_mano")
+surface_material_override/0 = SubResource("StandardMaterial3D_mano")
+
+[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
+mesh = SubResource("BoxMesh_manga")
+surface_material_override/0 = SubResource("StandardMaterial3D_manga")
+
+[node name="ManoDerecha" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1.0, -0.3)
+tracker = &"right_hand"
+script = ExtResource("2")
+
+[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha"]
+mesh = SubResource("BoxMesh_mano")
+surface_material_override/0 = SubResource("StandardMaterial3D_mano")
+
+[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
+mesh = SubResource("BoxMesh_manga")
+surface_material_override/0 = SubResource("StandardMaterial3D_manga")
+
+[node name="Arma" type="Node3D" parent="XROrigin3D/ManoDerecha"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+
+[node name="RayCast3D" type="RayCast3D" parent="XROrigin3D/ManoDerecha/Arma"]
+target_position = Vector3(0, 0, -100)
+collision_mask = 2
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="PantallaDanio" type="ColorRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.8, 0, 0, 0)
+
+[node name="EtiquetaSalud" type="Label" parent="UI"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 220.0
+offset_bottom = 48.0
+text = "Salud: 100"
