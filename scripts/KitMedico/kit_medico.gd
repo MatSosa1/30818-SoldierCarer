@@ -13,6 +13,7 @@ class_name KitMedico
 @export var radio_apertura: float = 0.15
 @export var radio_seleccion: float = 0.05
 @export var rango_tratamiento: float = 1.5
+@export var escala_hover: float = 1.2
 
 @onready var mano_izquierda: XRController3D = get_node_or_null("../ManoIzquierda")
 @onready var mano_derecha: XRController3D = get_node_or_null("../ManoDerecha")
@@ -22,6 +23,8 @@ class_name KitMedico
 
 var item_equipado: ItemMedico = null
 var _items: Array[ItemMedico] = []
+var _item_hover: ItemMedico = null
+var _posicion_original_equipado: Vector3
 
 func _ready() -> void:
 	visible = false
@@ -33,17 +36,23 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not mano_izquierda:
 		return
-	visible = mano_izquierda.position.distance_to(position) <= radio_apertura
+	# El kit permanece abierto mientras haya un item equipado: cerrar la
+	# mano izquierda de la mochila no debe interrumpir un tratamiento en
+	# curso (los gestos del item se procesan aca).
+	var cerca: bool = mano_izquierda.position.distance_to(position) <= radio_apertura
+	visible = cerca or item_equipado != null
+	GestorJuego.marcar_tratando(visible) # RF-42: el tiempo corre mas lento mientras el kit esta en uso
 	if not visible:
 		return
 
-	for item in _items:
-		item.visible = item != item_equipado
-
 	if not item_equipado:
 		etiqueta_equipado.text = ""
+		_actualizar_hover()
 		return
 
+	# El item equipado se ve EN la mano derecha (confirmacion visual de que
+	# esta equipado), no desaparece.
+	item_equipado.global_position = mano_derecha.global_position
 	etiqueta_equipado.text = "Equipado: %s" % item_equipado.nombre_item
 	if item_equipado.requiere_confirmacion_manual():
 		return
@@ -51,6 +60,32 @@ func _process(delta: float) -> void:
 	if herido and item_equipado.procesar_gesto(delta, mano_derecha, herido):
 		var exito: bool = herido.aplicar_tratamiento(item_equipado.tipo)
 		_completar_aplicacion(exito)
+
+# Resalta el item al alcance de la mano derecha (hover) antes de confirmar
+# con el gatillo, con un pulso haptico suave al entrar en rango.
+func _actualizar_hover() -> void:
+	var candidato := _item_en_rango_seleccion()
+	if candidato == _item_hover:
+		return
+	if is_instance_valid(_item_hover):
+		_item_hover.scale = Vector3.ONE
+	_item_hover = candidato
+	if _item_hover:
+		_item_hover.scale = Vector3.ONE * escala_hover
+		if mano_derecha:
+			mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.2, 0.05, 0.0)
+
+func _item_en_rango_seleccion() -> ItemMedico:
+	if not mano_derecha:
+		return null
+	var mas_cercano: ItemMedico = null
+	var distancia_min := radio_seleccion
+	for item in _items:
+		var d: float = mano_derecha.global_position.distance_to(item.global_position)
+		if d <= distancia_min:
+			distancia_min = d
+			mas_cercano = item
+	return mas_cercano
 
 # Llamado desde jugador.gd al presionar el gatillo derecho mientras el kit
 # esta abierto: sin item equipado, intenta seleccionar uno por proximidad;
@@ -60,11 +95,15 @@ func confirmar_seleccion() -> void:
 	if not visible or not mano_derecha:
 		return
 	if not item_equipado:
-		for item in _items:
-			if mano_derecha.global_position.distance_to(item.global_position) <= radio_seleccion:
-				item_equipado = item
-				item.reiniciar()
-				return
+		var item := _item_en_rango_seleccion()
+		if item:
+			if _item_hover == item:
+				item.scale = Vector3.ONE
+				_item_hover = null
+			_posicion_original_equipado = item.position
+			item_equipado = item
+			item.reiniciar()
+			mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.4, 0.1, 0.0)
 		return
 	if item_equipado.requiere_confirmacion_manual():
 		var herido := _herido_en_rango()
@@ -74,8 +113,16 @@ func confirmar_seleccion() -> void:
 
 func _completar_aplicacion(exito: bool) -> void:
 	_dar_feedback(exito)
+	if mano_derecha:
+		# Pulso largo y suave en fallo, corto y firme en exito: distinguibles
+		# sin mirar (RF-24 en su version haptica).
+		if exito:
+			mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.6, 0.15, 0.0)
+		else:
+			mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.3, 0.4, 0.0)
 	if item_equipado:
 		item_equipado.reiniciar()
+		item_equipado.position = _posicion_original_equipado # vuelve a su lugar del kit
 	item_equipado = null
 
 # RF-24: feedback visual + sonoro por gesto. El AudioStreamPlayer3D queda

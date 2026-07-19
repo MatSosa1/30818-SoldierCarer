@@ -15,14 +15,22 @@ extends Node3D
 @onready var paper_003: MeshInstance3D = $"../folder/Paper_003"
 
 
-# Called when the node enters the scene tree for the first time.
+# Hover: la sticky note crece levemente al pasar el puntero, para que se
+# sienta interactiva antes del clic (feedback previo a la accion).
+var _escala_base_hover: Vector3
+
 func _ready() -> void:
-	pass # Replace with function body.
+	_escala_base_hover = scale
+	area_clic.mouse_entered.connect(_al_entrar_hover)
+	area_clic.mouse_exited.connect(_al_salir_hover)
 
+func _al_entrar_hover() -> void:
+	if area_clic.input_ray_pickable:
+		create_tween().tween_property(self, "scale", _escala_base_hover * 1.08, 0.12).set_trans(Tween.TRANS_SINE)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func _al_salir_hover() -> void:
+	if area_clic.input_ray_pickable:
+		create_tween().tween_property(self, "scale", _escala_base_hover, 0.12).set_trans(Tween.TRANS_SINE)
 
 
 func _on_area_3d_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:

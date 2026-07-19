@@ -1,48 +1,42 @@
-extends Control
-## HUD no diegetico de la mision (RF-36: minimo y discreto).
-## - Temporizador (RF-34): cuenta regresiva en la esquina superior derecha;
-##   parpadea en rojo en el ultimo minuto (umbral_urgencia).
-## - Confirmacion de rescate (RF-35): "+RESCATE" breve al centro; el sonido
-##   ya lo cubre Herido/SonidoRescate (S4), espacial en el punto de rescate.
+extends Node3D
+## HUD diegetico de la mision (RF-36: minimo y discreto), en 3D porque los
+## CanvasLayer/Control no se renderizan en el headset con use_xr (solo en la
+## ventana espejo de escritorio) - ver pantalla_dano.gd.
 ##
-## RF-43 (fin de mision por tiempo agotado) es responsabilidad de S10 /
-## GestorJuego, que todavia no existe; aqui el temporizador solo se detiene
-## visualmente en 0.
+## - Temporizador (RF-34): reloj Label3D en la muneca izquierda (junto al
+##   mapa, diegetico como pide el pilar 2 de Contexto.md); parpadea en rojo
+##   en el ultimo minuto (umbral_urgencia). El tiempo en si lo lleva
+##   GestorJuego (S10, fuente unica de verdad); este script solo escucha
+##   tiempo_actualizado y refleja el valor.
+## - Confirmacion de rescate (RF-35): "+RESCATE" Label3D breve frente a la
+##   vista; el sonido lo cubre Herido/SonidoRescate (S4), espacial en el
+##   punto de rescate.
 
-@export var duracion_mision: float = 600.0 # 10 min; D1 (Contexto.md SS8) pendiente de confirmar valor final
 @export var umbral_urgencia: float = 60.0 # ultimo minuto: parpadeo rojo
 
-@onready var etiqueta_temporizador: Label = $EtiquetaTemporizador
-@onready var etiqueta_rescate: Label = $EtiquetaRescate
-
-var _tiempo_restante: float
-var _tiempo_agotado: bool = false
+# Este nodo es hijo de XROrigin3D/Camera3D; el reloj vive en la muneca.
+@onready var etiqueta_temporizador: Label3D = get_node("../../ManoIzquierda/RelojMuneca")
+@onready var etiqueta_rescate: Label3D = $EtiquetaRescate
 
 func _ready() -> void:
-	_tiempo_restante = duracion_mision
 	EventBus.herido_estabilizado.connect(_al_estabilizar_herido)
-	_actualizar_temporizador()
+	GestorJuego.tiempo_actualizado.connect(_actualizar_temporizador)
+	_actualizar_temporizador(GestorJuego.tiempo_restante)
 
-func _process(delta: float) -> void:
-	if _tiempo_agotado:
+func _actualizar_temporizador(segundos_restantes: float) -> void:
+	if not etiqueta_temporizador:
 		return
-	_tiempo_restante = max(_tiempo_restante - delta, 0.0)
-	_actualizar_temporizador()
-	if _tiempo_restante <= 0.0:
-		_tiempo_agotado = true
-		etiqueta_temporizador.text = "TIEMPO AGOTADO"
-		etiqueta_temporizador.modulate = Color(1.0, 0.3, 0.3)
-
-func _actualizar_temporizador() -> void:
-	var minutos := int(_tiempo_restante) / 60
-	var segundos := int(_tiempo_restante) % 60
+	var minutos := int(segundos_restantes) / 60
+	var segundos := int(segundos_restantes) % 60
 	etiqueta_temporizador.text = "%02d:%02d" % [minutos, segundos]
-	if _tiempo_restante <= umbral_urgencia:
+	if segundos_restantes <= umbral_urgencia:
 		var parpadeo := 0.5 + sin(Time.get_ticks_msec() / 100.0) * 0.5
 		etiqueta_temporizador.modulate = Color.WHITE.lerp(Color(1.0, 0.2, 0.2), parpadeo)
 	else:
 		etiqueta_temporizador.modulate = Color.WHITE
 
 func _al_estabilizar_herido(_herido: Node) -> void:
+	if not etiqueta_rescate:
+		return
 	etiqueta_rescate.visible = true
 	get_tree().create_timer(1.0).timeout.connect(func(): etiqueta_rescate.visible = false)

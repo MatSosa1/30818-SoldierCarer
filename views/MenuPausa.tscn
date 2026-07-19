@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/Menus/menu_pausa.gd" id="1"]
 
@@ -45,6 +45,20 @@ emission_enabled = true
 emission = Color(0, 0.749, 1, 1)
 emission_energy_multiplier = 1.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_reanudar"]
+shading_mode = 0
+albedo_color = Color(0.137, 0.545, 0.137, 1)
+emission_enabled = true
+emission = Color(0.137, 0.545, 0.137, 1)
+emission_energy_multiplier = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_salir"]
+shading_mode = 0
+albedo_color = Color(0.6, 0.15, 0.15, 1)
+emission_enabled = true
+emission = Color(0.6, 0.15, 0.15, 1)
+emission_energy_multiplier = 0.8
+
 [node name="MenuPausa" type="Node3D"]
 visible = false
 script = ExtResource("1")
@@ -68,7 +82,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_jugador_mapa")
 [node name="IconoReanudar" type="MeshInstance3D" parent="."]
 position = Vector3(0.15, 0.1, 0.001)
 mesh = SubResource("BoxMesh_icono")
-surface_material_override/0 = SubResource("StandardMaterial3D_icono")
+surface_material_override/0 = SubResource("StandardMaterial3D_icono_reanudar")
 
 [node name="Etiqueta" type="Label3D" parent="IconoReanudar"]
 position = Vector3(0, 0.035, 0)
@@ -102,7 +116,7 @@ text = "Teletransporte: DESVANECIDO_SUAVE"
 [node name="IconoSalir" type="MeshInstance3D" parent="."]
 position = Vector3(0.15, -0.1, 0.001)
 mesh = SubResource("BoxMesh_icono")
-surface_material_override/0 = SubResource("StandardMaterial3D_icono")
+surface_material_override/0 = SubResource("StandardMaterial3D_icono_salir")
 
 [node name="Etiqueta" type="Label3D" parent="IconoSalir"]
 position = Vector3(0, 0.035, 0)
