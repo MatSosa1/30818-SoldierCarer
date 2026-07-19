@@ -1,4 +1,5 @@
 extends Node3D
+class_name Pistola
 ## Pistola VR: extraccion de la funda de la cadera derecha (RF-25), disparo
 ## por raycast con municion limitada (RF-26) y recarga (RF-28). El indicador
 ## de cargador solo es visible con la pistola en mano (RF-27).

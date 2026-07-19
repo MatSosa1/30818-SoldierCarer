@@ -1,4 +1,5 @@
 extends Node3D
+class_name KitMedico
 ## Apertura del kit (RF-17) y aplicacion de items sobre heridos cercanos
 ## (RF-18..RF-24). Se abre acercando la mano izquierda a la posicion de este
 ## nodo, que representa la mochila colgada a la altura de la cadera (ver
@@ -88,10 +89,10 @@ func _dar_feedback(exito: bool) -> void:
 		sonido_feedback.play()
 	get_tree().create_timer(1.0).timeout.connect(func(): etiqueta_feedback.visible = false)
 
-func _herido_en_rango() -> Node:
-	var mas_cercano: Node = null
+func _herido_en_rango() -> Herido:
+	var mas_cercano: Herido = null
 	var distancia_min := rango_tratamiento
-	for herido in get_tree().get_nodes_in_group("heridos"):
+	for herido: Herido in get_tree().get_nodes_in_group("heridos"):
 		if not is_instance_valid(herido):
 			continue
 		var d: float = mano_derecha.global_position.distance_to(herido.global_position)
