@@ -1,4 +1,5 @@
 extends Node3D
+class_name MapaMuneca
 ## Mapa 2D diegetico en la muneca izquierda (RF-06..RF-10). Se activa al
 ## levantar la mano izquierda por encima de un umbral de altura; muestra la
 ## posicion del jugador (centro fijo del mapa), un icono por cada nodo del
@@ -14,8 +15,6 @@ extends Node3D
 @export var escala_mapa: float = 0.004
 @export var radio_mapa: float = 0.07
 @export var radio_seleccion: float = 0.03
-
-const HeridoScript := preload("res://scripts/Herido/herido.gd")
 
 const COLOR_ESTABLE := Color(0.137, 0.545, 0.137) # #228B22
 const COLOR_CRITICO := Color(0.855, 0.647, 0.125) # #DAA520
@@ -58,7 +57,7 @@ func _process(_delta: float) -> void:
 func _actualizar_iconos_heridos() -> void:
 	if not jugador:
 		return
-	for herido in get_tree().get_nodes_in_group("heridos"):
+	for herido: Herido in get_tree().get_nodes_in_group("heridos"):
 		if not is_instance_valid(herido):
 			continue
 		var icono: MeshInstance3D = _iconos_heridos.get(herido)
@@ -71,15 +70,14 @@ func _actualizar_iconos_heridos() -> void:
 			add_child(icono)
 			_iconos_heridos[herido] = icono
 
-		var estado = herido.get("estado_salud")
 		var oculto_por_muerte := false
 		var color: Color
-		match estado:
-			HeridoScript.EstadoSalud.CRITICO:
+		match herido.estado_salud:
+			Herido.EstadoSalud.CRITICO:
 				color = COLOR_CRITICO
-			HeridoScript.EstadoSalud.AGONIZANTE:
+			Herido.EstadoSalud.AGONIZANTE:
 				color = COLOR_AGONIZANTE
-			HeridoScript.EstadoSalud.MUERTO:
+			Herido.EstadoSalud.MUERTO:
 				color = COLOR_MUERTO
 				oculto_por_muerte = true
 			_: # ESTABLE o ESTABILIZADO

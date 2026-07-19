@@ -1,4 +1,5 @@
 extends Node3D
+class_name Herido
 ## Paciente en un punto de rescate fijo (RF-11). Su salud decae por
 ## temporizador interno (RF-12): ESTABLE -> CRITICO -> AGONIZANTE -> MUERTO,
 ## comunicado por color semaforico en el foco de emergencia y en MapaMuneca

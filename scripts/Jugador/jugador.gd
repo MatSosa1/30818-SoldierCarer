@@ -13,12 +13,11 @@ signal disparo_realizado(rayo: RayCast3D)
 @export var trazador_disparo_path: NodePath
 
 @onready var mano_derecha: XRController3D = $XROrigin3D/ManoDerecha
-@onready var pistola: Node3D = $XROrigin3D/ManoDerecha/Pistola
-@onready var mapa_muneca: Node3D = $XROrigin3D/ManoIzquierda/MapaMuneca
-@onready var kit_medico: Node3D = $XROrigin3D/KitMedico
-@onready var pantalla_danio: ColorRect = $UI/PantallaDanio
-@onready var etiqueta_salud: Label = $UI/EtiquetaSalud
-@onready var etiqueta_rescate: Label = $UI/EtiquetaRescate
+@onready var pistola: Pistola = $XROrigin3D/ManoDerecha/Pistola
+@onready var mapa_muneca: MapaMuneca = $XROrigin3D/ManoIzquierda/MapaMuneca
+@onready var kit_medico: KitMedico = $XROrigin3D/KitMedico
+@onready var pantalla_danio: PantallaDano = $UI/PantallaDanio
+@onready var etiqueta_salud: Label = $UI/EtiquetaSalud # ayuda de debug; RF-05 exige "sin barra numerica" para el jugador final
 @onready var trazador_disparo: MeshInstance3D = get_node_or_null(trazador_disparo_path)
 
 var salud: float
@@ -27,7 +26,6 @@ func _ready() -> void:
 	add_to_group("jugador")
 	_inicializar_openxr()
 	mano_derecha.button_pressed.connect(_al_presionar_boton_mano)
-	EventBus.herido_estabilizado.connect(_al_estabilizar_herido)
 	salud = salud_maxima
 	_actualizar_etiqueta_salud()
 
@@ -95,22 +93,15 @@ func _mostrar_trazador(origen: Vector3, destino: Vector3) -> void:
 	trazador_disparo.visible = true
 	get_tree().create_timer(0.08).timeout.connect(func(): trazador_disparo.visible = false)
 
+# RF-05: la comunicacion real de salud/critica es el tinte rojo de
+# pantalla_dano.gd (sin barra numerica); etiqueta_salud es solo debug.
 func recibir_dano(cantidad: float) -> void:
 	salud = max(salud - cantidad, 0.0)
 	_actualizar_etiqueta_salud()
 	if pantalla_danio:
-		pantalla_danio.color.a = min(pantalla_danio.color.a + 0.25, 0.6)
-		var tween := create_tween()
-		tween.tween_property(pantalla_danio, "color:a", 0.0, 0.6)
+		pantalla_danio.mostrar_dano()
 	print("Jugador recibio %s de dano. Salud: %s" % [cantidad, salud])
 
 func _actualizar_etiqueta_salud() -> void:
 	if etiqueta_salud:
 		etiqueta_salud.text = "Salud: %d" % salud
-
-# RF-16: confirmacion breve "+RESCATE" al estabilizar un herido.
-func _al_estabilizar_herido(_herido: Node) -> void:
-	if not etiqueta_rescate:
-		return
-	etiqueta_rescate.visible = true
-	get_tree().create_timer(1.5).timeout.connect(func(): etiqueta_rescate.visible = false)
