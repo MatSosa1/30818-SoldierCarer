@@ -34,3 +34,4 @@ openxr/enabled=true
 [autoload]
 
 EventBus="*res://scripts/Autoloads/event_bus.gd"
+GestorAudio="*res://scripts/Autoloads/gestor_audio.gd"

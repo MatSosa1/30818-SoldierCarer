@@ -9,6 +9,7 @@ signal disparo_realizado(rayo: RayCast3D)
 
 @export var salud_maxima: float = 100.0
 @export var dano_disparo: float = 10.0
+@export var umbral_salud_critica: float = 0.3 # RF-46: fraccion de salud_maxima que activa la musica "critico"
 
 @export var trazador_disparo_path: NodePath
 
@@ -28,6 +29,7 @@ func _ready() -> void:
 	mano_derecha.button_pressed.connect(_al_presionar_boton_mano)
 	salud = salud_maxima
 	_actualizar_etiqueta_salud()
+	GestorAudio.cambiar_estado(GestorAudio.EstadoMusica.COMBATE)
 
 # RF-01: inicializa OpenXR y activa el viewport en modo XR si detecta headset
 # y controladores. Si no hay runtime/headset disponible, el juego sigue
@@ -100,7 +102,17 @@ func recibir_dano(cantidad: float) -> void:
 	_actualizar_etiqueta_salud()
 	if pantalla_danio:
 		pantalla_danio.mostrar_dano()
+	_actualizar_musica_por_salud()
 	print("Jugador recibio %s de dano. Salud: %s" % [cantidad, salud])
+
+# RF-46: musica "critico" mientras la salud esta baja; vuelve a "combate" al
+# recuperarse (todavia no hay curacion del jugador, pero deja el enganche
+# listo para cuando exista).
+func _actualizar_musica_por_salud() -> void:
+	var critico := salud <= salud_maxima * umbral_salud_critica
+	GestorAudio.cambiar_estado(
+		GestorAudio.EstadoMusica.CRITICO if critico else GestorAudio.EstadoMusica.COMBATE
+	)
 
 func _actualizar_etiqueta_salud() -> void:
 	if etiqueta_salud:

@@ -34,3 +34,7 @@ no_depth_test = true
 outline_size = 8
 font_size = 48
 text = "AVANCE"
+
+[node name="SonidoPasos" type="AudioStreamPlayer3D" parent="."]
+
+[node name="SonidoEmbestida" type="AudioStreamPlayer3D" parent="."]

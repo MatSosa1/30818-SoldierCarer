@@ -12,6 +12,8 @@ var estado: Estado = Estado.AVANCE
 
 var _cooldown_disparo: float = 0.0
 
+@onready var sonido_disparo: AudioStreamPlayer3D = $SonidoDisparo
+
 func _physics_process(delta: float) -> void:
 	if not jugador or estado == Estado.NEUTRALIZADO:
 		return
@@ -22,10 +24,12 @@ func _physics_process(delta: float) -> void:
 			var dir := (jugador.global_position - global_position).normalized()
 			velocity = dir * velocidad_avance
 			move_and_slide()
+			_reproducir_pasos()
 			if distancia <= rango_disparo:
 				_cambiar_estado(Estado.DISPARO)
 		Estado.DISPARO:
 			velocity = Vector3.ZERO
+			_detener_pasos()
 			if distancia > rango_disparo * 1.2:
 				_cambiar_estado(Estado.AVANCE)
 				return
@@ -36,6 +40,8 @@ func _physics_process(delta: float) -> void:
 func _disparar_rafaga() -> void:
 	_cooldown_disparo = cadencia_disparo
 	print("%s dispara una rafaga al jugador" % name)
+	if sonido_disparo:
+		sonido_disparo.play()
 	if jugador.has_method("recibir_dano"):
 		jugador.recibir_dano(dano_disparo)
 

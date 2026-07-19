@@ -15,6 +15,7 @@ var salud: float
 
 @onready var jugador: Node3D = get_tree().get_first_node_in_group("jugador")
 @onready var etiqueta_estado: Label3D = $EtiquetaEstado
+@onready var sonido_pasos: AudioStreamPlayer3D = $SonidoPasos
 
 func _ready() -> void:
 	add_to_group("enemigos")
@@ -34,8 +35,21 @@ func _neutralizar() -> void:
 	collision_mask = 0
 	visible = false
 	set_physics_process(false)
+	if sonido_pasos:
+		sonido_pasos.stop()
 	print("%s neutralizado" % name)
 	neutralizado.emit(self)
+
+# RF-33/RF-45: audio espacial de pasos mientras avanza, para que el jugador
+# perciba la direccion del enemigo antes de verlo. No repite el play() si ya
+# esta sonando (evita reiniciar el loop en cada frame de AVANCE).
+func _reproducir_pasos() -> void:
+	if sonido_pasos and not sonido_pasos.playing:
+		sonido_pasos.play()
+
+func _detener_pasos() -> void:
+	if sonido_pasos:
+		sonido_pasos.stop()
 
 # --- Ganchos a implementar por cada subclase (su propio enum Estado) ---
 

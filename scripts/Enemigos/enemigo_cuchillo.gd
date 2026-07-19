@@ -17,6 +17,8 @@ var _direccion_esquiva: Vector3 = Vector3.ZERO
 var _tiempo_esquiva_restante: float = 0.0
 var _cooldown_embestida_restante: float = 0.0
 
+@onready var sonido_embestida: AudioStreamPlayer3D = $SonidoEmbestida
+
 func _ready() -> void:
 	super._ready()
 	if jugador and jugador.has_signal("disparo_realizado"):
@@ -31,6 +33,7 @@ func _physics_process(delta: float) -> void:
 			var dir := (jugador.global_position - global_position).normalized()
 			velocity = dir * velocidad_avance
 			move_and_slide()
+			_reproducir_pasos()
 			if global_position.distance_to(jugador.global_position) <= rango_embestida:
 				_cambiar_estado(Estado.EMBESTIDA)
 		Estado.ESQUIVA:
@@ -41,6 +44,7 @@ func _physics_process(delta: float) -> void:
 				_cambiar_estado(Estado.AVANCE)
 		Estado.EMBESTIDA:
 			velocity = Vector3.ZERO
+			_detener_pasos()
 			if global_position.distance_to(jugador.global_position) > rango_embestida * 1.5:
 				_cambiar_estado(Estado.AVANCE)
 				return
@@ -64,6 +68,8 @@ func _iniciar_esquiva() -> void:
 func _atacar_cuerpo_a_cuerpo() -> void:
 	_cooldown_embestida_restante = cooldown_embestida
 	print("%s embiste al jugador por %s de dano" % [name, dano_embestida])
+	if sonido_embestida:
+		sonido_embestida.play()
 	if jugador.has_method("recibir_dano"):
 		jugador.recibir_dano(dano_embestida)
 
