@@ -22,6 +22,7 @@ signal disparo_realizado(rayo: RayCast3D)
 @onready var mapa_muneca: MapaMuneca = $XROrigin3D/ManoIzquierda/MapaMuneca
 @onready var kit_medico: KitMedico = $XROrigin3D/KitMedico
 @onready var menu_pausa: MenuPausa = $XROrigin3D/MenuPausa
+@onready var resultados_mision: ResultadosMision = $XROrigin3D/ResultadosMision
 # HUD diegetico en 3D (los CanvasLayer no se ven en el headset, ver pantalla_dano.gd)
 @onready var pantalla_danio: PantallaDano = $XROrigin3D/Camera3D/VignetteDanio
 @onready var desvanecido: MeshInstance3D = $XROrigin3D/Camera3D/Desvanecido3D
@@ -53,15 +54,18 @@ func _inicializar_openxr() -> void:
 	else:
 		print("OpenXR no disponible: ejecutando sin XR activo (revisa el runtime/headset).")
 
-# El gatillo derecho dispara el arma por defecto. Si el menu de pausa esta
-# abierto tiene prioridad total (RF-40); si no, el mapa de muneca (RF-08);
-# si no, el kit medico (RF-17..RF-24). El mapa y el kit se abren con gestos
-# de la mano izquierda mutuamente excluyentes (altura vs. proximidad a la
-# mochila), asi que no compiten entre si por el gatillo.
+# El gatillo derecho dispara el arma por defecto. La pantalla de resultados
+# (RF-44) tiene la maxima prioridad -si la mision termino, nada mas importa-,
+# luego el menu de pausa (RF-40), luego el mapa de muneca (RF-08), luego el
+# kit medico (RF-17..RF-24). El mapa y el kit se abren con gestos de la mano
+# izquierda mutuamente excluyentes (altura vs. proximidad a la mochila), asi
+# que no compiten entre si por el gatillo.
 func _al_presionar_boton_mano(nombre_boton: String) -> void:
 	if nombre_boton != "trigger_click":
 		return
-	if menu_pausa and menu_pausa.visible:
+	if resultados_mision and resultados_mision.visible:
+		resultados_mision.confirmar_seleccion()
+	elif menu_pausa and menu_pausa.visible:
 		menu_pausa.confirmar_seleccion()
 	elif mapa_muneca and mapa_muneca.visible:
 		mapa_muneca.confirmar_seleccion()
@@ -117,6 +121,7 @@ func _mostrar_trazador(origen: Vector3, destino: Vector3) -> void:
 # RF-05: la comunicacion real de salud/critica es el tinte rojo de
 # pantalla_dano.gd (sin barra numerica); etiqueta_salud es solo debug.
 # El pulso haptico en ambas manos refuerza el impacto sin depender de mirar.
+# RF-43: salud en 0 termina la mision (eliminado).
 func recibir_dano(cantidad: float) -> void:
 	salud = max(salud - cantidad, 0.0)
 	_actualizar_etiqueta_salud()
@@ -126,6 +131,8 @@ func recibir_dano(cantidad: float) -> void:
 	mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.2, 0.0)
 	_actualizar_musica_por_salud()
 	print("Jugador recibio %s de dano. Salud: %s" % [cantidad, salud])
+	if salud <= 0.0:
+		GestorJuego.terminar_mision("eliminado")
 
 # RF-46: musica "critico" mientras la salud esta baja; vuelve a "combate" al
 # recuperarse (todavia no hay curacion del jugador, pero deja el enganche

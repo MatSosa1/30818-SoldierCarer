@@ -41,6 +41,7 @@ func _process(delta: float) -> void:
 	# curso (los gestos del item se procesan aca).
 	var cerca: bool = mano_izquierda.position.distance_to(position) <= radio_apertura
 	visible = cerca or item_equipado != null
+	GestorJuego.marcar_tratando(visible) # RF-42: el tiempo corre mas lento mientras el kit esta en uso
 	if not visible:
 		return
 

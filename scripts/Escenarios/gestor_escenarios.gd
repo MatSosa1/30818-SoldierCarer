@@ -51,8 +51,13 @@ func punto_despliegue(nombre: String) -> Vector3:
 # despliegue por defecto del escenario" (seleccion directa de un icono de
 # escenario en el mapa, sin un herido puntual como destino).
 func _al_solicitar_teletransporte(punto_destino: Vector3, escenario: String) -> void:
+	var punto_final: Vector3 = punto_destino if punto_destino != Vector3.ZERO else punto_despliegue(escenario)
+	# RF-42: el salto consume tiempo de mision segun la distancia real
+	# recorrida en el mapa, calculada ANTES de mover al jugador.
+	if jugador:
+		GestorJuego.consumir_tiempo_por_distancia(jugador.global_position.distance_to(punto_final))
 	activar_escenario(escenario)
 	if not jugador:
 		return
-	jugador.global_position = punto_destino if punto_destino != Vector3.ZERO else punto_despliegue(escenario)
+	jugador.global_position = punto_final
 	jugador.fundido_teletransporte()
