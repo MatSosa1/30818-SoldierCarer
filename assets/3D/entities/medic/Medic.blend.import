@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://c67fpca6fyiuf"
-path="res://.godot/imported/paper.blend-3a01be8ea3ce9fb78f098d1ee0cf30c8.scn"
+uid="uid://cr7skovyt1sow"
+path="res://.godot/imported/Medic.blend-3eed4ea2cfd4673f7daefd2a488204d9.scn"
 
 [deps]
 
-source_file="res://assets/2D/folder/paper.blend"
-dest_files=["res://.godot/imported/paper.blend-3a01be8ea3ce9fb78f098d1ee0cf30c8.scn"]
+source_file="res://assets/3D/entities/medic/Medic.blend"
+dest_files=["res://.godot/imported/Medic.blend-3eed4ea2cfd4673f7daefd2a488204d9.scn"]
 
 [params]
 
@@ -46,7 +46,7 @@ blender/nodes/punctual_lights=true
 blender/nodes/cameras=true
 blender/nodes/custom_properties=true
 blender/nodes/modifiers=1
-blender/meshes/vertex_colors=2
+blender/meshes/vertex_colors=1
 blender/meshes/uvs=true
 blender/meshes/normals=true
 blender/meshes/export_geometry_nodes_instances=false
@@ -60,4 +60,4 @@ blender/animation/limit_playback=true
 blender/animation/always_sample=true
 blender/animation/group_tracks=true
 gltf/naming_version=2
-gltf/texture_map_mode=0
+gltf/texture_map_mode=1
