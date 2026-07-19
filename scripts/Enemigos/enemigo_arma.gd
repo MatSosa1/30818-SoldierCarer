@@ -4,7 +4,9 @@ extends EnemigoBase
 enum Estado {AVANCE, DISPARO, NEUTRALIZADO}
 var estado: Estado = Estado.AVANCE
 
-@export var salud_maxima: float = 25.0
+func _init() -> void:
+	salud_maxima = 25.0
+
 @export var velocidad_avance: float = 2.5
 @export var rango_disparo: float = 6.0
 @export var dano_disparo: float = 5.0
