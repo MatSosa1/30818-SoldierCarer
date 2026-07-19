@@ -39,7 +39,7 @@ albedo_color = Color(0.35, 0.32, 0.3, 1)
 size = Vector3(6, 8, 6)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_edificio"]
-albedo_color = Color(0.353, 0.353, 0.353, 1) # #5A5A5A gris urbano (UI_ART_Design.md SS2.2)
+albedo_color = Color(0.353, 0.353, 0.353, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_tronco"]
 top_radius = 0.12
@@ -74,7 +74,7 @@ cull_mode = 2
 size = Vector3(20, 3.5, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pared"]
-albedo_color = Color(0.235, 0.235, 0.235, 1) # interior danado, mas oscuro que la calle
+albedo_color = Color(0.235, 0.235, 0.235, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_mueble"]
 size = Vector3(1.6, 0.7, 0.8)
