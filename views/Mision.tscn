@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://views/Jugador.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/DirectorDeOleadas/director_de_oleadas.gd" id="2"]
 [ext_resource type="Script" path="res://scripts/Herido/herido.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/Escenarios/gestor_escenarios.gd" id="4"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_horizon_color = Color(0.65, 0.68, 0.7, 1)
@@ -44,9 +45,6 @@ environment = SubResource("Environment_1")
 transform = Transform3D(0.7071068, -0.5, 0.5, 0, 0.7071068, 0.7071068, -0.7071068, -0.5, 0.5, 0, 5, 0)
 shadow_enabled = true
 
-[node name="Piso" type="MeshInstance3D" parent="."]
-mesh = SubResource("PlaneMesh_piso")
-
 [node name="TrazadorDisparo" type="MeshInstance3D" parent="."]
 visible = false
 mesh = SubResource("ImmediateMesh_trazador")
@@ -55,17 +53,29 @@ material_override = SubResource("StandardMaterial3D_trazador")
 [node name="Jugador" parent="." instance=ExtResource("1")]
 trazador_disparo_path = NodePath("../TrazadorDisparo")
 
-[node name="Herido" type="Node3D" parent="."]
+[node name="GestorEscenarios" type="Node3D" parent="."]
+script = ExtResource("4")
+contenedor_e1_path = NodePath("../Escenario_E1_Calle")
+contenedor_e2_path = NodePath("../Escenario_E2_Edificio")
+
+[node name="Escenario_E1_Calle" type="Node3D" parent="."]
+
+[node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E1_Calle"]
+
+[node name="Piso" type="MeshInstance3D" parent="Escenario_E1_Calle"]
+mesh = SubResource("PlaneMesh_piso")
+
+[node name="Herido" type="Node3D" parent="Escenario_E1_Calle"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
 script = ExtResource("3")
 director_oleadas_path = NodePath("../DirectorDeOleadas")
 
-[node name="Malla" type="MeshInstance3D" parent="Herido"]
+[node name="Malla" type="MeshInstance3D" parent="Escenario_E1_Calle/Herido"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0.3, 0)
 mesh = SubResource("CapsuleMesh_herido")
 surface_material_override/0 = SubResource("StandardMaterial3D_herido")
 
-[node name="EtiquetaEstado" type="Label3D" parent="Herido"]
+[node name="EtiquetaEstado" type="Label3D" parent="Escenario_E1_Calle/Herido"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
 billboard = 1
 no_depth_test = true
@@ -73,22 +83,30 @@ outline_size = 8
 font_size = 40
 text = "HERIDO (E para curar)"
 
-[node name="DirectorDeOleadas" type="Node3D" parent="."]
+[node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E1_Calle"]
 script = ExtResource("2")
 contenedor_enemigos_path = NodePath("../Enemigos")
 
-[node name="PuntosDeSpawn" type="Node3D" parent="DirectorDeOleadas"]
+[node name="PuntosDeSpawn" type="Node3D" parent="Escenario_E1_Calle/DirectorDeOleadas"]
 
-[node name="Adelante" type="Marker3D" parent="DirectorDeOleadas/PuntosDeSpawn"]
+[node name="Adelante" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
 
-[node name="Atras" type="Marker3D" parent="DirectorDeOleadas/PuntosDeSpawn"]
+[node name="Atras" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
-[node name="Izquierda" type="Marker3D" parent="DirectorDeOleadas/PuntosDeSpawn"]
+[node name="Izquierda" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
 
-[node name="Derecha" type="Marker3D" parent="DirectorDeOleadas/PuntosDeSpawn"]
+[node name="Derecha" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
 
-[node name="Enemigos" type="Node3D" parent="."]
+[node name="Enemigos" type="Node3D" parent="Escenario_E1_Calle"]
+
+[node name="Escenario_E2_Edificio" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 0)
+
+[node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E2_Edificio"]
+
+[node name="Piso" type="MeshInstance3D" parent="Escenario_E2_Edificio"]
+mesh = SubResource("PlaneMesh_piso")

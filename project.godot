@@ -30,3 +30,7 @@ rendering_device/driver.windows="d3d12"
 [xr]
 
 openxr/enabled=true
+
+[autoload]
+
+EventBus="*res://scripts/Autoloads/event_bus.gd"
