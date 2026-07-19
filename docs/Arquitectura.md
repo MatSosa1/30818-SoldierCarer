@@ -93,7 +93,7 @@ res://
 
 | Autoload | Responsabilidad | Notas |
 |---|---|---|
-| `EventBus` | Señales globales desacopladas entre sistemas. | **Creado en S2** (`scripts/Autoloads/event_bus.gd`, registrado en `project.godot`) con `solicitar_teletransporte(punto_destino, escenario)` y `escenario_activado(escenario)`. El resto de señales documentadas (`herido_muerto(id)`, `herido_estabilizado(id)`, `mision_terminada(resultado)`) se agregan en S4/S10 cuando tengan consumidor real. |
+| `EventBus` | Señales globales desacopladas entre sistemas. | **Creado en S2** (`scripts/Autoloads/event_bus.gd`, registrado en `project.godot`) con `solicitar_teletransporte(punto_destino, escenario)` y `escenario_activado(escenario)`. **S4** sumó `herido_estabilizado(herido: Node)` (payload es el nodo, no un `id` dedicado). `herido_muerto(id)` y `mision_terminada(resultado)` se agregan cuando tengan consumidor real (S10). |
 | `GestorJuego` | Estado de partida: score, tiempo restante, condición de fin, escenario activo. | Fuente única de verdad del game loop. |
 | `GestorAudio` | Buses, música por estado (menú/combate/crítico), disparo de SFX. | Aísla la reproducción del resto de sistemas. |
 
@@ -179,7 +179,7 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 
 - `KitMedico` gestiona el inventario de `ItemMedico` (vendas, morfina, alcohol, suturas, analgésicos).
 - Cada `ItemMedico` define su **gesto** (patrón de movimiento del controlador) y su **efecto**.
-- `SecuenciaTratamiento` valida el orden requerido por la herida (p.ej. alcohol → sutura; vendas como paso base) y emite `herido_estabilizado(id)` al completarse.
+- `SecuenciaTratamiento` valida el orden requerido por la herida (p.ej. alcohol → sutura; vendas como paso base) y emite su propia señal local `estabilizado`; `herido.gd` la escucha y re-emite `EventBus.herido_estabilizado(herido)` al completarse (implementado en S4, ver más abajo).
 - Feedback por ítem (RF-24) vía `GestorAudio` + señal visual.
 
 **Implementado en S3** (rama `feature/kit-medico`, pendiente de commit manual):
@@ -188,6 +188,14 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 - `scripts/KitMedico/kit_medico.gd` + `views/KitMedico.tscn`, instanciado en `Jugador.tscn` bajo `XROrigin3D` (anclado a la cadera izquierda, posición fija que representa la mochila — **distinta** de `ManoIzquierda`, para no competir con el gesto de "levantar mano" que abre `MapaMuneca`; por construcción geométrica ambos gestos son mutuamente excluyentes, ver comentario en `jugador.gd`). Se abre por proximidad de la mano izquierda; selección de ítem y aplicación de ítems de confirmación manual comparten el gatillo derecho con el mapa y el arma (arbitrados en `jugador.gd._al_presionar_boton_mano`, orden: mapa → kit → disparo).
 - **`herido.gd` reescrito**: se retiró la mecánica rudimentaria de la demo S0 (teclas `E`/`T`, "mirar al herido", "zona despejada sin enemigos") — no eran requisitos documentados, solo un hack del prototipo S0. `Herido.aplicar_tratamiento(tipo)` delega en su propia instancia de `SecuenciaTratamiento`; `curado_completo` (contrato ya consumido por `MapaMuneca` desde S2) se actualiza al recibir la señal `estabilizado`. Ya no depende de `DirectorDeOleadas` ni de la cámara del jugador.
 - **Sin verificar en editor/headset real** (mismo motivo que S1/S2).
+
+**Implementado en S4** (rama `feature/sistema-heridos`, pendiente de commit manual) — sistema de heridos (RF-11..RF-16), corre en paralelo a la secuencia de tratamiento de S3 sin gatearla:
+- `herido.gd` suma `enum EstadoSalud {ESTABLE, CRITICO, AGONIZANTE, MUERTO, ESTABILIZADO}` con decaimiento por temporizador (`@export duracion_estable/critico/agonizante`, RNF-12) independiente de `SecuenciaTratamiento`: el jugador debe completar el tratamiento **antes** de que el temporizador llegue a `MUERTO`, que es la tensión de triaje del pilar 4 de `Contexto.md §2`. `MUERTO` y `ESTABILIZADO` son terminales: `aplicar_tratamiento()` devuelve `false` en ambos (RF-14, ya no rescatable).
+- **Foco de emergencia** (RF-11): nodo `Foco` (hijo de `Herido`) con `OmniLight3D` + `SphereMesh` emisivo; color y `light_energy` (parpadeo sinusoidal en `AGONIZANTE`) sincronizados cada frame con `estado_salud`; ambos se ocultan al morir.
+- **`EventBus.herido_estabilizado(herido: Node)`** — segunda señal de `EventBus` en implementarse (después de `solicitar_teletransporte` en S2), antes diferida por falta de consumidor real. Payload es el nodo `Herido` mismo, no un `id` numérico dedicado (no existe todavía un esquema de IDs). Consumida por `jugador.gd` para el flash "+RESCATE" (RF-16, nuevo `Label UI/EtiquetaRescate` en `Jugador.tscn`).
+- **`mapa_muneca.gd`** deja de usar el color gris placeholder: ahora hace `preload("res://scripts/Herido/herido.gd")` para leer `HeridoScript.EstadoSalud` por reflexión (`herido.get("estado_salud")`, mismo patrón duck-typed que ya usaba para `curado_completo`) y pinta verde/amarillo/rojo real; oculta el icono si `estado_salud == MUERTO` (RF-10).
+- Puntuación/pantalla de resultados por rescates (RF-16 parte "S10", RF-44) sigue **fuera de alcance**: no se creó `GestorJuego` todavía, es territorio de S10.
+- **Sin verificar en editor/headset real** (mismo motivo que S1/S2/S3).
 
 ## 10. Rendimiento (guías para cumplir RNF-01/02)
 

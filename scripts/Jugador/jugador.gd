@@ -18,6 +18,7 @@ signal disparo_realizado(rayo: RayCast3D)
 @onready var kit_medico: Node3D = $XROrigin3D/KitMedico
 @onready var pantalla_danio: ColorRect = $UI/PantallaDanio
 @onready var etiqueta_salud: Label = $UI/EtiquetaSalud
+@onready var etiqueta_rescate: Label = $UI/EtiquetaRescate
 @onready var trazador_disparo: MeshInstance3D = get_node_or_null(trazador_disparo_path)
 
 var salud: float
@@ -26,6 +27,7 @@ func _ready() -> void:
 	add_to_group("jugador")
 	_inicializar_openxr()
 	mano_derecha.button_pressed.connect(_al_presionar_boton_mano)
+	EventBus.herido_estabilizado.connect(_al_estabilizar_herido)
 	salud = salud_maxima
 	_actualizar_etiqueta_salud()
 
@@ -99,3 +101,10 @@ func recibir_dano(cantidad: float) -> void:
 func _actualizar_etiqueta_salud() -> void:
 	if etiqueta_salud:
 		etiqueta_salud.text = "Salud: %d" % salud
+
+# RF-16: confirmacion breve "+RESCATE" al estabilizar un herido.
+func _al_estabilizar_herido(_herido: Node) -> void:
+	if not etiqueta_rescate:
+		return
+	etiqueta_rescate.visible = true
+	get_tree().create_timer(1.5).timeout.connect(func(): etiqueta_rescate.visible = false)

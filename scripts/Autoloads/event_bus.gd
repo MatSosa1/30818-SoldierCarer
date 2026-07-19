@@ -1,10 +1,10 @@
 extends Node
 ## Bus de senales global para desacoplar sistemas (Arquitectura.md SS4).
-## S2 solo agrega el contrato de teletransporte/escenario, que es el que
-## tiene consumidores reales en este sprint (MapaMuneca emite,
-## GestorEscenarios escucha). El resto de senales documentadas
-## (herido_muerto, herido_estabilizado, mision_terminada) se agregan en los
-## sprints que las implementen (S4/S10) para no declarar contratos sin uso.
+## Cada senal se agrega en el sprint que le da un consumidor real, para no
+## declarar contratos sin uso: S2 sumo teletransporte/escenario; S4 suma
+## herido_estabilizado (RF-16, consumida por jugador.gd para el "+RESCATE").
+## herido_muerto y mision_terminada quedan para cuando S4/S10 las necesiten.
 
 signal solicitar_teletransporte(punto_destino: Vector3, escenario: String)
 signal escenario_activado(escenario: String)
+signal herido_estabilizado(herido: Node)

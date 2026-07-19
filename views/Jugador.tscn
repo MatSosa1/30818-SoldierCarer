@@ -94,3 +94,18 @@ offset_top = 16.0
 offset_right = 220.0
 offset_bottom = 48.0
 text = "Salud: 100"
+
+[node name="EtiquetaRescate" type="Label" parent="UI"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.3
+anchor_right = 0.5
+anchor_bottom = 0.3
+offset_left = -60.0
+offset_top = -20.0
+offset_right = 60.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+text = "+RESCATE"
