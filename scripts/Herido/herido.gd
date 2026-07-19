@@ -18,6 +18,12 @@ enum EstadoSalud {ESTABLE, CRITICO, AGONIZANTE, MUERTO, ESTABILIZADO}
 @export var duracion_critico: float = 30.0
 @export var duracion_agonizante: float = 20.0
 
+# Nombre del escenario donde vive este herido (clave que usa GestorEscenarios,
+# "E1_Calle"/"E2_Edificio"). MapaMuneca lo usa para saber a que escenario
+# activar al teletransportar hacia este herido (S7: ya hay heridos en mas de
+# un escenario).
+@export var escenario: String = "E1_Calle"
+
 const COLOR_ESTABLE := Color(0.137, 0.545, 0.137) # verde #228B22
 const COLOR_CRITICO := Color(0.855, 0.647, 0.125) # amarillo #DAA520
 const COLOR_AGONIZANTE := Color(0.8, 0.0, 0.0) # rojo #CC0000
