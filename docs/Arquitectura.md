@@ -117,8 +117,8 @@ De `IA_SoldierCarer_Resumen_Implementacion.md`:
 - Búsqueda por grupo `get_first_node_in_group("jugador")`.
 
 **Deuda técnica conocida a atender**
-- El jugador de la demo es **no-VR** (rota con mouse). En **S1** se debe evolucionar a rig **OpenXR** conservando el contrato de disparo (`disparo_realizado`, `recibir_dano`) para no romper la IA existente.
-- Orden de nodos en escena importa (`_ready()` por orden de hermanos): `Jugador` antes que `Herido`. Mantener este orden al recomponer `Mision.tscn`.
+- ~~El jugador de la demo es no-VR (rota con mouse). En S1 se debe evolucionar a rig OpenXR conservando el contrato de disparo.~~ **Resuelto en S1** (rama `feature/vr-core`, pendiente de commit manual): `views/Jugador.tscn` ahora es un rig `CharacterBody3D` → `XROrigin3D` → `XRCamera3D` + `XRController3D` (izq./der.) formalizado como escena propia e instanciado en `Mision.tscn`. Contratos preservados: señal `disparo_realizado(rayo)`, `recibir_dano()`, grupo `"jugador"`. El disparo pasa de clic de mouse a `trigger_click` del controlador derecho (`scripts/Jugador/jugador.gd`); las manos VR usan `scripts/Jugador/manos_vr.gd` con malla placeholder `PH_Mano`/`PH_Manga` que reacciona al `grip`. **Cambio de contrato no cubierto por la nota original:** `scripts/Herido/herido.gd` accedía a `jugador.get_node("Camera3D")`; se actualizó a `jugador.get_node("XROrigin3D/Camera3D")` porque la cámara ahora vive bajo el nuevo `XROrigin3D`. OpenXR habilitado en `project.godot` (`[xr] openxr/enabled=true`). **Sin verificar en headset real** (sin hardware VR disponible durante la implementación); revisar en el editor Godot 4.6/4.7 con runtime OpenXR antes de dar por cerrado el sprint.
+- Orden de nodos en escena importa (`_ready()` por orden de hermanos): `Jugador` antes que `Herido`. Mantener este orden al recomponer `Mision.tscn` (se mantuvo al instanciar `Jugador.tscn`).
 - Extraer un `enemigo_base.gd` común para no duplicar la FSM entre arma y cuchillo (refactor en S5, sin cambiar comportamiento observable).
 
 ## 6. Máquina de estados (patrón estándar del proyecto)

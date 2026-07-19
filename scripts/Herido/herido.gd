@@ -18,7 +18,7 @@ signal curado
 
 @onready var director: Node = get_node_or_null(director_oleadas_path)
 @onready var jugador: Node3D = get_tree().get_first_node_in_group("jugador")
-@onready var camara: Camera3D = jugador.get_node("Camera3D") if jugador else null
+@onready var camara: Camera3D = jugador.get_node("XROrigin3D/Camera3D") if jugador else null
 @onready var etiqueta_estado: Label3D = $EtiquetaEstado
 @onready var malla: MeshInstance3D = $Malla
 
@@ -66,9 +66,10 @@ func _reiniciar_progreso() -> void:
 func _hay_enemigos_activos() -> bool:
 	return director and director.has_method("hay_enemigos_activos") and director.hay_enemigos_activos()
 
-# Solo compara el rumbo horizontal (yaw): el jugador no puede inclinar la
-# camara hacia abajo, asi que "enfocar" al herido significa girar hacia el,
-# no apuntarle con precision vertical.
+# Solo compara el rumbo horizontal (yaw), ignorando la inclinacion real del
+# headset: asi "enfocar" al herido significa girar el cuerpo hacia el, sin
+# forzar al jugador a inclinar la cabeza con incomodidad para mirar algo a
+# ras de piso.
 func _esta_mirando_al_herido() -> bool:
 	if not camara:
 		return false

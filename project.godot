@@ -26,3 +26,7 @@ project/assembly_name="SoldierCarer"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+
+[xr]
+
+openxr/enabled=true
