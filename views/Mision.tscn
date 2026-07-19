@@ -68,7 +68,6 @@ mesh = SubResource("PlaneMesh_piso")
 [node name="Herido" type="Node3D" parent="Escenario_E1_Calle"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
 script = ExtResource("3")
-director_oleadas_path = NodePath("../DirectorDeOleadas")
 
 [node name="Malla" type="MeshInstance3D" parent="Escenario_E1_Calle/Herido"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0.3, 0)

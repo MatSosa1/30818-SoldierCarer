@@ -182,6 +182,13 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 - `SecuenciaTratamiento` valida el orden requerido por la herida (p.ej. alcohol → sutura; vendas como paso base) y emite `herido_estabilizado(id)` al completarse.
 - Feedback por ítem (RF-24) vía `GestorAudio` + señal visual.
 
+**Implementado en S3** (rama `feature/kit-medico`, pendiente de commit manual):
+- `scripts/KitMedico/item_medico.gd` (`class_name ItemMedico`, `extends Node3D`) — base con `enum TipoItem`, `procesar_gesto(delta, mano_derecha, herido) -> bool` (virtual) y `requiere_confirmacion_manual() -> bool`. Cinco subclases por herencia de ruta (`extends "res://scripts/KitMedico/item_medico.gd"`): `vendas.gd` (gira alrededor de la herida, acumula ángulo ≥320°), `alcohol.gd` (inclina la mano >100° sostenido 0.4s), `suturas.gd` (aprieta/suelta el `grip` 3 veces), `morfina.gd`/`analgesicos.gd` (`requiere_confirmacion_manual() == true`: proximidad al herido + gatillo).
+- `scripts/KitMedico/secuencia_tratamiento.gd` (`class_name SecuenciaTratamiento`) — FSM `SIN_ATENDER → LIMPIANDO → SUTURANDO → ESTABILIZADO` (nombres tal como los define `Personajes.md §2.4`); morfina/analgésicos no forman parte de la secuencia obligatoria (`aplicar()` siempre devuelve `true` para esos tipos). Se instancia **una por herido** (`herido.gd` la crea como hijo en `_ready()`), no como recurso compartido.
+- `scripts/KitMedico/kit_medico.gd` + `views/KitMedico.tscn`, instanciado en `Jugador.tscn` bajo `XROrigin3D` (anclado a la cadera izquierda, posición fija que representa la mochila — **distinta** de `ManoIzquierda`, para no competir con el gesto de "levantar mano" que abre `MapaMuneca`; por construcción geométrica ambos gestos son mutuamente excluyentes, ver comentario en `jugador.gd`). Se abre por proximidad de la mano izquierda; selección de ítem y aplicación de ítems de confirmación manual comparten el gatillo derecho con el mapa y el arma (arbitrados en `jugador.gd._al_presionar_boton_mano`, orden: mapa → kit → disparo).
+- **`herido.gd` reescrito**: se retiró la mecánica rudimentaria de la demo S0 (teclas `E`/`T`, "mirar al herido", "zona despejada sin enemigos") — no eran requisitos documentados, solo un hack del prototipo S0. `Herido.aplicar_tratamiento(tipo)` delega en su propia instancia de `SecuenciaTratamiento`; `curado_completo` (contrato ya consumido por `MapaMuneca` desde S2) se actualiza al recibir la señal `estabilizado`. Ya no depende de `DirectorDeOleadas` ni de la cámara del jugador.
+- **Sin verificar en editor/headset real** (mismo motivo que S1/S2).
+
 ## 10. Rendimiento (guías para cumplir RNF-01/02)
 
 - Low-poly + `StandardMaterial3D` simples; evitar transparencias y luces dinámicas innecesarias.
