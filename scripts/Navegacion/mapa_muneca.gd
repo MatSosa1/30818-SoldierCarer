@@ -93,10 +93,7 @@ func _actualizar_iconos_heridos() -> void:
 
 		var punto_frente: Vector3 = herido.global_position
 		punto_frente += (jugador.global_position - herido.global_position).normalized()
-		# PLACEHOLDER: escenario fijo a "E1_Calle" porque hoy solo existe un
-		# herido y vive ahi. Cuando S4 agregue heridos en E2, resolver el
-		# escenario real del herido en vez de fijarlo aqui.
-		_destinos[icono] = {"punto": punto_frente, "escenario": "E1_Calle"}
+		_destinos[icono] = {"punto": punto_frente, "escenario": herido.escenario}
 
 # Llamado desde jugador.gd cuando se presiona el gatillo derecho mientras el
 # mapa esta visible (en vez de disparar el arma).
