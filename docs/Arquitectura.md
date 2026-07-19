@@ -93,7 +93,7 @@ res://
 
 | Autoload | Responsabilidad | Notas |
 |---|---|---|
-| `EventBus` | Señales globales desacopladas entre sistemas. | Ej.: `herido_muerto(id)`, `herido_estabilizado(id)`, `mision_terminada(resultado)`. |
+| `EventBus` | Señales globales desacopladas entre sistemas. | **Creado en S2** (`scripts/Autoloads/event_bus.gd`, registrado en `project.godot`) con `solicitar_teletransporte(punto_destino, escenario)` y `escenario_activado(escenario)`. El resto de señales documentadas (`herido_muerto(id)`, `herido_estabilizado(id)`, `mision_terminada(resultado)`) se agregan en S4/S10 cuando tengan consumidor real. |
 | `GestorJuego` | Estado de partida: score, tiempo restante, condición de fin, escenario activo. | Fuente única de verdad del game loop. |
 | `GestorAudio` | Buses, música por estado (menú/combate/crítico), disparo de SFX. | Aísla la reproducción del resto de sistemas. |
 
@@ -164,6 +164,16 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 - El **mapa de muñeca** (`MapaMuneca`) presenta iconos de heridos con color de urgencia y un cursor de selección VR.
 - Al confirmar destino: `EventBus.solicitar_teletransporte(punto_destino, escenario)` → `GestorEscenarios` asegura el escenario activo → reposiciona el `XROrigin3D` del jugador → cierra el mapa.
 - No hay locomoción continua (RNF-04). El "tiempo por distancia" (RF-42) se calcula al confirmar el salto.
+
+**Implementado en S2** (rama `feature/mapa-navegacion`, pendiente de commit manual):
+- `scripts/Navegacion/mapa_muneca.gd` + `views/MapaMuneca.tscn`, instanciado bajo `Jugador.tscn` → `XROrigin3D/ManoIzquierda`. Activación: se muestra mientras la mano izquierda está por encima de `altura_activacion` (RF-06). Muestra un icono por nodo del grupo `"heridos"` (posicionado relativo al jugador, que queda fijo al centro del mapa) más dos iconos fijos `E1`/`E2` para saltar directo de escenario (RF-07/RF-09).
+- Selección (RF-08): el gatillo derecho normalmente dispara (`jugador.gd:disparar()`), pero si el mapa está visible, en su lugar llama `MapaMuneca.confirmar_seleccion()`, que compara la posición de `ManoDerecha` contra cada icono (radio de tolerancia `radio_seleccion`, RNF-06) y emite `EventBus.solicitar_teletransporte`.
+- `scripts/Escenarios/gestor_escenarios.gd`, instanciado en `Mision.tscn`: escucha esa señal, activa/desactiva el contenedor de escenario correcto vía `Node.process_mode = PROCESS_MODE_DISABLED` (pausa recursiva de toda la subrama) y reposiciona al jugador (`jugador.global_position`) al punto recibido, o al `Marker3D PuntoDespliegue` del escenario si el punto es `Vector3.ZERO` (selección directa de escenario, sin herido puntual).
+- `Mision.tscn` reestructurada: `Piso`, `Herido`, `DirectorDeOleadas`, `Enemigos` ahora viven dentro de `Escenario_E1_Calle`; se agregó `Escenario_E2_Edificio` con piso + `PuntoDespliegue` placeholder (sin contenido de S7 todavía). `Jugador`, luces y `TrazadorDisparo` siguen siendo globales (fuera de ambos contenedores), ya que el rig del jugador es compartido entre escenarios.
+- `herido.gd` ahora hace `add_to_group("heridos")` (grupo documentado en §2 pero no implementado hasta ahora).
+- **Bug de orden evitado:** `MapaMuneca` es descendiente de `Jugador` (no hermano); Godot llama `_ready()` de abajo hacia arriba, así que una búsqueda por grupo `get_first_node_in_group("jugador")` dentro de `mapa_muneca.gd` resolvería `null` (el `add_to_group` de `Jugador._ready()` corre después). Se resolvió con una referencia directa por ruta relativa (`get_node_or_null("../../..")`) en vez de por grupo.
+- Color de urgencia de los iconos de herido: **gris placeholder** (no hay FSM de salud real todavía, ver `PH-014`); pasa a verde solo si `herido.curado_completo == true`. La urgencia real (verde/amarillo/rojo) llega con el sistema de heridos de S4.
+- **Sin verificar en headset real** (mismo motivo que S1, sin hardware VR disponible durante la implementación).
 
 ## 9. Sistema del kit médico (resumen técnico)
 

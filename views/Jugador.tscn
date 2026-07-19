@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/Jugador/jugador.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/Jugador/manos_vr.gd" id="2"]
+[ext_resource type="PackedScene" path="res://views/MapaMuneca.tscn" id="3"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jugador"]
 radius = 0.4
@@ -47,6 +48,9 @@ surface_material_override/0 = SubResource("StandardMaterial3D_mano")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
 mesh = SubResource("BoxMesh_manga")
 surface_material_override/0 = SubResource("StandardMaterial3D_manga")
+
+[node name="MapaMuneca" parent="XROrigin3D/ManoIzquierda" instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.1)
 
 [node name="ManoDerecha" type="XRController3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1.0, -0.3)

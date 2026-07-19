@@ -27,6 +27,7 @@ var _progreso: float = 0.0
 var curado_completo: bool = false
 
 func _ready() -> void:
+	add_to_group("heridos")
 	_actualizar_etiqueta(false, false, false)
 
 func _unhandled_input(event: InputEvent) -> void:

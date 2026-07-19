@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/Navegacion/mapa_muneca.gd" id="1"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_fondo"]
+size = Vector2(0.16, 0.16)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fondo"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0.749, 1, 0.45)
+emission_enabled = true
+emission = Color(0, 0.749, 1, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="SphereMesh" id="SphereMesh_jugador"]
+radius = 0.008
+height = 0.016
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jugador"]
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 1)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_icono_escenario"]
+size = Vector3(0.014, 0.014, 0.014)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_escenario"]
+shading_mode = 0
+albedo_color = Color(0, 0.749, 1, 1)
+emission_enabled = true
+emission = Color(0, 0.749, 1, 1)
+emission_energy_multiplier = 1.0
+
+[node name="MapaMuneca" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Fondo" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0)
+mesh = SubResource("QuadMesh_fondo")
+surface_material_override/0 = SubResource("StandardMaterial3D_fondo")
+
+[node name="IconoJugador" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.01, 0)
+mesh = SubResource("SphereMesh_jugador")
+surface_material_override/0 = SubResource("StandardMaterial3D_jugador")
+
+[node name="IconoE1" type="MeshInstance3D" parent="."]
+position = Vector3(-0.06, 0.01, -0.06)
+mesh = SubResource("BoxMesh_icono_escenario")
+surface_material_override/0 = SubResource("StandardMaterial3D_icono_escenario")
+
+[node name="EtiquetaE1" type="Label3D" parent="IconoE1"]
+position = Vector3(0, 0.02, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.0015
+font_size = 48
+text = "E1"
+
+[node name="IconoE2" type="MeshInstance3D" parent="."]
+position = Vector3(0.06, 0.01, -0.06)
+mesh = SubResource("BoxMesh_icono_escenario")
+surface_material_override/0 = SubResource("StandardMaterial3D_icono_escenario")
+
+[node name="EtiquetaE2" type="Label3D" parent="IconoE2"]
+position = Vector3(0, 0.02, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.0015
+font_size = 48
+text = "E2"
