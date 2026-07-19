@@ -5,7 +5,11 @@ extends Node3D
 
 @export var contenedor_e1_path: NodePath
 @export var contenedor_e2_path: NodePath
-@export var escenario_inicial: String = "E1_Calle"
+# Vacio = arrancar sin escenario activo: el jugador aparece en el puesto de
+# mando (fase DESPLIEGUE) y el primer escenario se activa recien al confirmar
+# un punto en el mapa de despliegue. Un nombre concreto ("E1_Calle") conserva
+# el arranque directo, util para probar un escenario desde el editor.
+@export var escenario_inicial: String = ""
 
 @onready var contenedor_e1: Node3D = get_node_or_null(contenedor_e1_path)
 @onready var contenedor_e2: Node3D = get_node_or_null(contenedor_e2_path)
@@ -16,7 +20,23 @@ var escenario_activo: String = ""
 func _ready() -> void:
 	add_to_group("gestor_escenarios") # para que menu_pausa.gd (RF-40) lo encuentre
 	EventBus.solicitar_teletransporte.connect(_al_solicitar_teletransporte)
-	activar_escenario(escenario_inicial)
+	# GestorJuego es autoload: sobrevive al cambio de escena, asi que cada
+	# carga de Mision.tscn debe devolverlo a DESPLIEGUE con el reloj lleno
+	# (antes, al rejugar, quedaba el estado de la partida anterior).
+	GestorJuego.reiniciar()
+	if escenario_inicial != "":
+		activar_escenario(escenario_inicial)
+	else:
+		_desactivar_todos()
+
+# Fase DESPLIEGUE: ambos escenarios quedan invisibles y congelados (los
+# heridos no se desangran mientras el jugador elige destino en el mapa).
+func _desactivar_todos() -> void:
+	for contenedor: Node3D in [contenedor_e1, contenedor_e2]:
+		if contenedor:
+			contenedor.visible = false
+			contenedor.process_mode = Node.PROCESS_MODE_DISABLED
+	escenario_activo = ""
 
 # RF-40: pausa/reanuda la simulacion del escenario activo (enemigos,
 # heridos) sin usar SceneTree.paused, para no tener que lidiar con el

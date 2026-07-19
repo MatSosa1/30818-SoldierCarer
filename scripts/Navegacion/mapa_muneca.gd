@@ -52,7 +52,12 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if not mano_izquierda:
 		return
-	visible = mano_izquierda.position.y >= altura_activacion
+	# Solo opera en mision: en el puesto de mando (DESPLIEGUE) la navegacion
+	# pasa por el mapa de la ciudad, no por la muneca.
+	visible = (
+		mano_izquierda.position.y >= altura_activacion
+		and GestorJuego.fase == GestorJuego.Fase.MISION
+	)
 	if visible:
 		_actualizar_iconos_heridos()
 		_actualizar_hover()

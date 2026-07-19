@@ -41,7 +41,12 @@ func _ready() -> void:
 	salud = salud_maxima
 	etiqueta_salud.visible = mostrar_debug_salud
 	_actualizar_etiqueta_salud()
-	GestorAudio.cambiar_estado(GestorAudio.EstadoMusica.COMBATE)
+	# En el puesto de mando (fase DESPLIEGUE) suena musica de menu; el combate
+	# recien empieza al confirmar el despliegue en el mapa de la ciudad.
+	GestorAudio.cambiar_estado(GestorAudio.EstadoMusica.MENU)
+	EventBus.mision_desplegada.connect(
+		func(_escenario: String): GestorAudio.cambiar_estado(GestorAudio.EstadoMusica.COMBATE)
+	)
 
 # RF-01: inicializa OpenXR y activa el viewport en modo XR si detecta headset
 # y controladores. Si no hay runtime/headset disponible, el juego sigue
@@ -67,6 +72,12 @@ func _al_presionar_boton_mano(nombre_boton: String) -> void:
 		resultados_mision.confirmar_seleccion()
 	elif menu_pausa and menu_pausa.visible:
 		menu_pausa.confirmar_seleccion()
+	elif GestorJuego.fase == GestorJuego.Fase.DESPLIEGUE:
+		# En el puesto de mando el gatillo solo confirma en el mapa de la
+		# ciudad: no hay disparo ni kit hasta desplegarse.
+		var mapa_despliegue: MapaDespliegue = get_tree().get_first_node_in_group("mapa_despliegue")
+		if mapa_despliegue:
+			mapa_despliegue.confirmar_seleccion()
 	elif mapa_muneca and mapa_muneca.visible:
 		mapa_muneca.confirmar_seleccion()
 	elif kit_medico and kit_medico.visible:
