@@ -1,91 +1,138 @@
 extends Node3D
-## Decide que carriles activar y spawnea la pareja arma+cuchillo en cada uno.
-## Reutiliza la misma FSM para escalar dificultad: activa mas carriles con el score,
-## no requiere una IA distinta.
+## Director de oleadas de UN escenario (hay una instancia por contenedor de
+## escenario). Ya no spawnea parejas encima del jugador al cargar la escena:
+## se arma al confirmar el despliegue (EventBus.mision_desplegada) o al
+## entrar al escenario con la mision ya activa, respeta un periodo de gracia
+## para llegar hasta el herido, y luego los enemigos entran DE A UNO por las
+## entradas del escenario ($Entradas, en los bordes: extremos de la calle en
+## E1, puertas y escalera en E2), avanzando desde la lejania (RF-33: los
+## pasos espaciales anticipan la direccion).
+##
+## La presion escala con la curacion: cada paso de tratamiento completado
+## (EventBus.tratamiento_progresado) encola refuerzos y acelera el goteo —
+## la Oposicion converge al detectar actividad del medico. Sin curar, solo
+## llega un goteo lento de patrullas.
 
 const ENEMIGO_ARMA := preload("res://views/EnemigoArma.tscn")
 const ENEMIGO_CUCHILLO := preload("res://views/EnemigoCuchillo.tscn")
 
+# Nombre del escenario que este director defiende (clave de GestorEscenarios).
+@export var escenario: String = "E1_Calle"
 @export var contenedor_enemigos_path: NodePath
-@export var activar_carril_inicial: bool = true
-@export var carril_inicial: String = "Adelante"
-@export var umbral_escalado: int = 3
+# Gracia inicial: tiempo desde el despliegue hasta el primer enemigo, para
+# poder orientarse y llegar al herido sin ser emboscado en el punto de entrada.
+@export var retardo_primera_oleada: float = 15.0
+# Goteo base de patrullas por tiempo (se acelera con la presion de curacion).
+@export var intervalo_goteo: float = 30.0
+@export var max_enemigos_simultaneos: int = 4
+@export var max_cola: int = 8
+# Refuerzos encolados por cada paso de curacion completado.
+@export var enemigos_por_avance_curacion: int = 1
+# Separacion aleatoria entre entradas consecutivas: los enemigos aparecen
+# "poco a poco", nunca en parejas instantaneas.
+@export var retardo_spawn_min: float = 2.0
+@export var retardo_spawn_max: float = 5.0
 
 var score: int = 0
 var enemigos_activos: int = 0
-var _carriles_activos: Dictionary = {}
-var _orden_carriles_debug: Array[String] = ["Adelante", "Derecha", "Atras", "Izquierda"]
-var _indice_carril_debug: int = 0
+
+var _armado: bool = false
+var _pendientes: int = 0
+var _tiempo_gracia: float = 0.0
+var _tiempo_goteo: float = 0.0
+var _tiempo_spawn: float = 0.0
+var _alternar_cuchillo: bool = false
+var _presion: float = 0.0 # 0..1 segun el progreso de curacion del herido local
+var _indice_entrada_debug: int = 0
 
 @onready var contenedor_enemigos: Node3D = get_node(contenedor_enemigos_path)
-@onready var jugador: Node3D = get_tree().get_first_node_in_group("jugador")
-@onready var marcadores: Dictionary = {
-	"Adelante": $PuntosDeSpawn/Adelante,
-	"Atras": $PuntosDeSpawn/Atras,
-	"Izquierda": $PuntosDeSpawn/Izquierda,
-	"Derecha": $PuntosDeSpawn/Derecha,
-}
+@onready var entradas: Array[Node] = $Entradas.get_children()
 
 func _ready() -> void:
-	if activar_carril_inicial:
-		activar_carril(carril_inicial)
+	EventBus.mision_desplegada.connect(_al_desplegar)
+	EventBus.escenario_activado.connect(_al_activar_escenario)
+	EventBus.tratamiento_progresado.connect(_al_progresar_tratamiento)
 
-# Teclas de debug 1-4 para activar cada carril manualmente durante la demo.
-# R: spawnea otra pareja rotando de angulo cada vez (util porque los enemigos
-# neutralizados no vuelven a aparecer solos, asi se puede seguir probando sin
-# tener que recordar que numero corresponde a cada carril).
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		match event.keycode:
-			KEY_1: activar_carril("Adelante")
-			KEY_2: activar_carril("Atras")
-			KEY_3: activar_carril("Izquierda")
-			KEY_4: activar_carril("Derecha")
-			KEY_R: _activar_siguiente_carril_debug()
+func _al_desplegar(nombre: String) -> void:
+	if nombre == escenario:
+		_armar()
 
-func _activar_siguiente_carril_debug() -> void:
-	var nombre_carril := _orden_carriles_debug[_indice_carril_debug]
-	_indice_carril_debug = (_indice_carril_debug + 1) % _orden_carriles_debug.size()
-	activar_carril(nombre_carril)
+# Cambio de escenario a mitad de mision (teletransporte por mapa de muneca):
+# el director del escenario recien visitado se arma la primera vez, tambien
+# con su periodo de gracia.
+func _al_activar_escenario(nombre: String) -> void:
+	if nombre == escenario and GestorJuego.mision_activa and not _armado:
+		_armar()
 
-func activar_carril(nombre_carril: String) -> void:
-	var marcador: Marker3D = marcadores.get(nombre_carril)
-	if not marcador:
-		push_warning("Carril desconocido: %s" % nombre_carril)
+func _armar() -> void:
+	_armado = true
+	_tiempo_gracia = retardo_primera_oleada
+	_tiempo_goteo = intervalo_goteo
+	print("Director %s armado: primera oleada en %.0fs." % [escenario, retardo_primera_oleada])
+
+func _process(delta: float) -> void:
+	if not _armado or not GestorJuego.mision_activa:
 		return
+	if _tiempo_gracia > 0.0:
+		_tiempo_gracia -= delta
+		if _tiempo_gracia <= 0.0:
+			_encolar(1) # explorador inicial: un unico enemigo de reconocimiento
+		return
+	# Goteo de patrullas por tiempo; la presion de curacion lo acelera.
+	_tiempo_goteo -= delta * (1.0 + _presion)
+	if _tiempo_goteo <= 0.0:
+		_tiempo_goteo = intervalo_goteo
+		_encolar(1)
+	# La cola se vacia de a un enemigo, con pausa aleatoria entre entradas.
+	if _pendientes > 0 and enemigos_activos < max_enemigos_simultaneos:
+		_tiempo_spawn -= delta
+		if _tiempo_spawn <= 0.0:
+			_tiempo_spawn = randf_range(retardo_spawn_min, retardo_spawn_max)
+			_pendientes -= 1
+			_spawnear_en_entrada(entradas.pick_random())
 
-	var lateral := Vector3.RIGHT
-	if jugador:
-		var hacia_jugador := (jugador.global_position - marcador.global_position).normalized()
-		lateral = hacia_jugador.cross(Vector3.UP).normalized()
+func _al_progresar_tratamiento(herido: Node, fraccion: float) -> void:
+	if not _armado or not ("escenario" in herido) or herido.escenario != escenario:
+		return
+	_presion = clampf(fraccion, 0.0, 1.0)
+	# Mas cerca de estabilizar = refuerzos mas numerosos: defender al herido
+	# se vuelve progresivamente mas tenso (RF-31).
+	_encolar(enemigos_por_avance_curacion + int(fraccion * 2.0))
 
-	var arma := ENEMIGO_ARMA.instantiate()
-	var cuchillo := ENEMIGO_CUCHILLO.instantiate()
-	contenedor_enemigos.add_child(arma)
-	contenedor_enemigos.add_child(cuchillo)
-	arma.global_position = marcador.global_position + lateral * 0.75
-	cuchillo.global_position = marcador.global_position - lateral * 0.75
-	arma.neutralizado.connect(_al_neutralizar_enemigo)
-	cuchillo.neutralizado.connect(_al_neutralizar_enemigo)
-	enemigos_activos += 2
+func _encolar(cantidad: int) -> void:
+	_pendientes = min(_pendientes + cantidad, max_cola)
 
-	_carriles_activos[nombre_carril] = true
-	print("Carril activado: %s" % nombre_carril)
+func _spawnear_en_entrada(entrada: Node3D) -> void:
+	var escena := ENEMIGO_CUCHILLO if _alternar_cuchillo else ENEMIGO_ARMA
+	_alternar_cuchillo = not _alternar_cuchillo
+	var enemigo := escena.instantiate()
+	contenedor_enemigos.add_child(enemigo)
+	# Pequeno desvio lateral para que dos enemigos de la misma entrada no
+	# aparezcan exactamente en el mismo punto.
+	var desvio := Vector3(randf_range(-0.8, 0.8), 0.0, randf_range(-0.8, 0.8))
+	enemigo.global_position = entrada.global_position + desvio
+	enemigo.neutralizado.connect(_al_neutralizar_enemigo)
+	enemigos_activos += 1
+	print("Enemigo entra por %s (%s) | activos: %s | en cola: %s" % [entrada.name, escenario, enemigos_activos, _pendientes])
 
 func _al_neutralizar_enemigo(_enemigo: CharacterBody3D) -> void:
 	score += 1
 	enemigos_activos = max(enemigos_activos - 1, 0)
 	print("Score: %s | Enemigos activos: %s" % [score, enemigos_activos])
-	if score % umbral_escalado == 0:
-		_activar_carril_extra()
 
-# Usado por el Herido para saber si la zona esta despejada antes de curar.
+# Usado por sistemas que necesitan saber si la zona esta despejada.
 func hay_enemigos_activos() -> bool:
 	return enemigos_activos > 0
 
-# Escalado simple: al cruzar el umbral, activa el siguiente carril aun inactivo.
-func _activar_carril_extra() -> void:
-	for nombre_carril in marcadores.keys():
-		if not _carriles_activos.get(nombre_carril, false):
-			activar_carril(nombre_carril)
-			return
+# Teclas de debug (solo procesan con el escenario activo): R encola un
+# enemigo; 1-4 spawnean inmediato en la entrada correspondiente.
+func _unhandled_input(event: InputEvent) -> void:
+	if not _armado or not event is InputEventKey or not event.pressed or event.echo:
+		return
+	match event.keycode:
+		KEY_R:
+			_encolar(1)
+		KEY_1, KEY_2, KEY_3, KEY_4:
+			var indice: int = event.keycode - KEY_1
+			if indice < entradas.size():
+				_spawnear_en_entrada(entradas[indice])
