@@ -1,12 +1,26 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/Herido/herido.gd" id="1"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_herido"]
-radius = 0.3
-height = 1.2
+[sub_resource type="BoxMesh" id="BoxMesh_torso"]
+size = Vector3(0.42, 0.18, 0.6)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_herido"]
+[sub_resource type="SphereMesh" id="SphereMesh_cabeza"]
+radius = 0.11
+height = 0.22
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_brazo"]
+radius = 0.055
+height = 0.5
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_pierna"]
+radius = 0.07
+height = 0.65
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uniforme"]
+albedo_color = Color(0.29, 0.33, 0.23, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piel"]
 albedo_color = Color(0.82, 0.72, 0.6, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_foco"]
@@ -20,13 +34,69 @@ emission_enabled = true
 emission = Color(0.137, 0.545, 0.137, 1)
 emission_energy_multiplier = 2.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_botas"]
+albedo_color = Color(0.15, 0.13, 0.11, 1)
+
 [node name="SoldadoHerido" type="Node3D"]
 script = ExtResource("1")
 
-[node name="Malla" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0.3, 0)
-mesh = SubResource("CapsuleMesh_herido")
-surface_material_override/0 = SubResource("StandardMaterial3D_herido")
+[node name="Cuerpo" type="Node3D" parent="."]
+# PLACEHOLDER: soldado tendido boca arriba con primitivas (PH-002/PH-021):
+# cabeza hacia -Z, pies hacia +Z. Las heridas procedurales se cuelgan de
+# PuntosDeHerida, sobre estas partes del cuerpo. El swap por el modelo real
+# (entities/model.blend) solo debe conservar los nombres de los puntos.
+
+[node name="Torso" type="MeshInstance3D" parent="Cuerpo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
+mesh = SubResource("BoxMesh_torso")
+surface_material_override/0 = SubResource("StandardMaterial3D_uniforme")
+
+[node name="Cabeza" type="MeshInstance3D" parent="Cuerpo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, -0.42)
+mesh = SubResource("SphereMesh_cabeza")
+surface_material_override/0 = SubResource("StandardMaterial3D_piel")
+
+[node name="BrazoIzq" type="MeshInstance3D" parent="Cuerpo"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.27, 0.1, 0.02)
+mesh = SubResource("CapsuleMesh_brazo")
+surface_material_override/0 = SubResource("StandardMaterial3D_uniforme")
+
+[node name="BrazoDer" type="MeshInstance3D" parent="Cuerpo"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -0.27, 0.1, 0.02)
+mesh = SubResource("CapsuleMesh_brazo")
+surface_material_override/0 = SubResource("StandardMaterial3D_uniforme")
+
+[node name="PiernaIzq" type="MeshInstance3D" parent="Cuerpo"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.12, 0.11, 0.62)
+mesh = SubResource("CapsuleMesh_pierna")
+surface_material_override/0 = SubResource("StandardMaterial3D_uniforme")
+
+[node name="PiernaDer" type="MeshInstance3D" parent="Cuerpo"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -0.12, 0.11, 0.62)
+mesh = SubResource("CapsuleMesh_pierna")
+surface_material_override/0 = SubResource("StandardMaterial3D_botas")
+
+[node name="PuntosDeHerida" type="Node3D" parent="."]
+# Puntos anatomicos donde GeneradorHeridas puede colocar heridas. Mantener
+# los nombres al hacer el swap del modelo: la curacion apunta a su posicion.
+
+[node name="Pecho" type="Marker3D" parent="PuntosDeHerida"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -0.12)
+
+[node name="Abdomen" type="Marker3D" parent="PuntosDeHerida"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0.15)
+
+[node name="BrazoIzq" type="Marker3D" parent="PuntosDeHerida"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27, 0.17, 0.02)
+
+[node name="BrazoDer" type="Marker3D" parent="PuntosDeHerida"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27, 0.17, 0.02)
+
+[node name="PiernaIzq" type="Marker3D" parent="PuntosDeHerida"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.2, 0.55)
+
+[node name="PiernaDer" type="Marker3D" parent="PuntosDeHerida"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.2, 0.55)
 
 [node name="EtiquetaEstado" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)

@@ -39,6 +39,10 @@ func _process(delta: float) -> void:
 	# El kit permanece abierto mientras haya un item equipado: cerrar la
 	# mano izquierda de la mochila no debe interrumpir un tratamiento en
 	# curso (los gestos del item se procesan aca).
+	if GestorJuego.fase != GestorJuego.Fase.MISION:
+		visible = false # el kit no se abre en el puesto de mando ni tras finalizar
+		GestorJuego.marcar_tratando(false)
+		return
 	var cerca: bool = mano_izquierda.position.distance_to(position) <= radio_apertura
 	visible = cerca or item_equipado != null
 	GestorJuego.marcar_tratando(visible) # RF-42: el tiempo corre mas lento mientras el kit esta en uso
@@ -53,13 +57,39 @@ func _process(delta: float) -> void:
 	# El item equipado se ve EN la mano derecha (confirmacion visual de que
 	# esta equipado), no desaparece.
 	item_equipado.global_position = mano_derecha.global_position
-	etiqueta_equipado.text = "Equipado: %s" % item_equipado.nombre_item
 	if item_equipado.requiere_confirmacion_manual():
+		etiqueta_equipado.text = "Equipado: %s (gatillo cerca del herido)" % item_equipado.nombre_item
 		return
+
+	# Los gestos se ejecutan sobre una HERIDA concreta del cuerpo, no sobre
+	# el herido generico: el medico tiene que trabajar donde esta la lesion.
 	var herido := _herido_en_rango()
-	if herido and item_equipado.procesar_gesto(delta, mano_derecha, herido):
-		var exito: bool = herido.aplicar_tratamiento(item_equipado.tipo)
-		_completar_aplicacion(exito)
+	if not herido:
+		etiqueta_equipado.text = "Equipado: %s | acercate a un herido" % item_equipado.nombre_item
+		return
+	var herida := herido.herida_mas_cercana(mano_derecha.global_position)
+	if not herida:
+		etiqueta_equipado.text = "Equipado: %s | sin heridas pendientes aqui" % item_equipado.nombre_item
+		item_equipado.reiniciar()
+		return
+	if herido.dolor_bloqueante():
+		# Con el paciente retorciendose no se puede trabajar: el gesto no
+		# avanza hasta controlar el dolor (morfina/analgesicos).
+		etiqueta_equipado.text = "DOLOR ALTO: administra morfina o analgesicos"
+		item_equipado.reiniciar()
+		return
+	if item_equipado.tipo != herida.item_esperado():
+		etiqueta_equipado.text = "Equipado: %s | la %s pide %s" % [
+			item_equipado.nombre_item, herida.nombre(), herida.nombre_item_esperado(),
+		]
+		item_equipado.reiniciar()
+		return
+	etiqueta_equipado.text = "Equipado: %s | %s %d%%" % [
+		item_equipado.nombre_item, herida.nombre(), int(item_equipado.progreso() * 100.0),
+	]
+	herida.mostrar_progreso_gesto(item_equipado.progreso())
+	if item_equipado.procesar_gesto(delta, mano_derecha, herida):
+		_completar_aplicacion(herido.aplicar_tratamiento_en(herida, item_equipado.tipo))
 
 # Resalta el item al alcance de la mano derecha (hover) antes de confirmar
 # con el gatillo, con un pulso haptico suave al entrar en rango.
@@ -108,11 +138,12 @@ func confirmar_seleccion() -> void:
 	if item_equipado.requiere_confirmacion_manual():
 		var herido := _herido_en_rango()
 		if herido:
-			var exito: bool = herido.aplicar_tratamiento(item_equipado.tipo)
-			_completar_aplicacion(exito)
+			# Morfina/analgesicos actuan sobre el paciente completo (herida null).
+			_completar_aplicacion(herido.aplicar_tratamiento_en(null, item_equipado.tipo))
 
-func _completar_aplicacion(exito: bool) -> void:
-	_dar_feedback(exito)
+func _completar_aplicacion(resultado: Dictionary) -> void:
+	var exito: bool = resultado["exito"]
+	_dar_feedback(exito, resultado["mensaje"])
 	if mano_derecha:
 		# Pulso largo y suave en fallo, corto y firme en exito: distinguibles
 		# sin mirar (RF-24 en su version haptica).
@@ -125,16 +156,17 @@ func _completar_aplicacion(exito: bool) -> void:
 		item_equipado.position = _posicion_original_equipado # vuelve a su lugar del kit
 	item_equipado = null
 
-# RF-24: feedback visual + sonoro por gesto. El AudioStreamPlayer3D queda
-# cableado sin stream (PLACEHOLDER de audio, ver Contexto.md SS6.2); .play()
-# es un no-op seguro hasta que S8 asigne el clip final.
-func _dar_feedback(exito: bool) -> void:
-	etiqueta_feedback.text = "OK" if exito else "FALLO: orden incorrecto"
+# RF-24: feedback visual + sonoro por gesto, con el mensaje contextual del
+# herido (que pide la herida, dolor bloqueante, etc.). El AudioStreamPlayer3D
+# queda cableado sin stream (PLACEHOLDER de audio, ver Contexto.md SS6.2);
+# .play() es un no-op seguro hasta que se asigne el clip final.
+func _dar_feedback(exito: bool, mensaje: String) -> void:
+	etiqueta_feedback.text = mensaje
 	etiqueta_feedback.modulate = Color(0.2, 0.8, 0.3) if exito else Color(0.9, 0.2, 0.2)
 	etiqueta_feedback.visible = true
 	if sonido_feedback:
 		sonido_feedback.play()
-	get_tree().create_timer(1.0).timeout.connect(func(): etiqueta_feedback.visible = false)
+	get_tree().create_timer(1.6).timeout.connect(func(): etiqueta_feedback.visible = false)
 
 func _herido_en_rango() -> Herido:
 	var mas_cercano: Herido = null

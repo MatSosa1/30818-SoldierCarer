@@ -10,7 +10,7 @@ extends "res://scripts/KitMedico/item_medico.gd"
 
 var _tiempo_inclinado: float = 0.0
 
-func procesar_gesto(delta: float, mano_derecha: XRController3D, _herido: Node) -> bool:
+func procesar_gesto(delta: float, mano_derecha: XRController3D, _objetivo: Node) -> bool:
 	var arriba: Vector3 = mano_derecha.global_transform.basis.y
 	var angulo := rad_to_deg(arriba.angle_to(Vector3.UP))
 	_tiempo_inclinado = _tiempo_inclinado + delta if angulo >= umbral_grados else 0.0
@@ -18,6 +18,9 @@ func procesar_gesto(delta: float, mano_derecha: XRController3D, _herido: Node) -
 		reiniciar()
 		return true
 	return false
+
+func progreso() -> float:
+	return clampf(_tiempo_inclinado / duracion_sostenida, 0.0, 1.0)
 
 func reiniciar() -> void:
 	_tiempo_inclinado = 0.0

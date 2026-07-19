@@ -8,6 +8,13 @@ extends Node
 signal tiempo_actualizado(segundos_restantes: float)
 signal mision_finalizada(resultado: String, rescates: int)
 
+# Fase de la partida: la mision ya no arranca al cargar Mision.tscn. El
+# jugador aparece en el puesto de mando (DESPLIEGUE), elige en el mapa de la
+# ciudad a que punto dirigirse, y recien ahi (MISION) corre el reloj y los
+# enemigos pueden aparecer. FINALIZADA congela todo hasta volver al menu.
+enum Fase {DESPLIEGUE, MISION, FINALIZADA}
+var fase: Fase = Fase.DESPLIEGUE
+
 @export var duracion_mision: float = 600.0 # 10 min; D1 (Contexto.md SS8) pendiente de confirmar valor final
 # RF-42 "tiempo diferenciado frente a un herido": mientras el kit medico
 # esta abierto (tratamiento activo) el tiempo corre mas lento - la medicina
@@ -31,8 +38,23 @@ func _ready() -> void:
 func reiniciar() -> void:
 	tiempo_restante = duracion_mision
 	rescates = 0
-	mision_activa = true
+	fase = Fase.DESPLIEGUE
+	mision_activa = false # el reloj no corre hasta confirmar el despliegue
 	_tratando = false
+	# Refresca el reloj del HUD al instante: al rejugar, la muneca mostraba el
+	# tiempo de la partida anterior hasta el primer tick de mision.
+	tiempo_actualizado.emit(tiempo_restante)
+
+# Llamado por mapa_despliegue.gd al confirmar un punto en el mapa del puesto
+# de mando: arranca el reloj y avisa (EventBus.mision_desplegada) al director
+# de oleadas del escenario elegido.
+func iniciar_mision(escenario: String) -> void:
+	if fase != Fase.DESPLIEGUE:
+		return
+	fase = Fase.MISION
+	mision_activa = true
+	EventBus.mision_desplegada.emit(escenario)
+	print("Mision desplegada en %s: el reloj comienza a correr." % escenario)
 
 func _process(delta: float) -> void:
 	if not mision_activa:
@@ -69,6 +91,7 @@ func terminar_mision(resultado: String) -> void:
 	if not mision_activa:
 		return
 	mision_activa = false
+	fase = Fase.FINALIZADA
 	var gestor := get_tree().get_first_node_in_group("gestor_escenarios")
 	if gestor:
 		gestor.pausar_activo(true)

@@ -1,9 +1,10 @@
-[gd_scene load_steps=32 format=3]
+[gd_scene load_steps=50 format=3]
 
 [ext_resource type="PackedScene" path="res://views/Jugador.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/DirectorDeOleadas/director_de_oleadas.gd" id="2"]
 [ext_resource type="Script" path="res://scripts/Escenarios/gestor_escenarios.gd" id="4"]
 [ext_resource type="PackedScene" path="res://views/SoldadoHerido.tscn" id="5"]
+[ext_resource type="Script" path="res://scripts/Navegacion/mapa_despliegue.gd" id="6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_horizon_color = Color(0.65, 0.68, 0.7, 1)
@@ -97,6 +98,71 @@ albedo_color = Color(0.4, 0.4, 0.4, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_techo"]
 size = Vector3(20, 0.3, 20)
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_piso_puesto"]
+size = Vector2(10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso_puesto"]
+albedo_color = Color(0.22, 0.22, 0.23, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mesa_mapa"]
+size = Vector3(1.6, 0.9, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mesa_mapa"]
+albedo_color = Color(0.2, 0.24, 0.18, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_mapa_fondo"]
+size = Vector2(1.4, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mapa_fondo"]
+shading_mode = 0
+albedo_color = Color(0.07, 0.157, 0.235, 1)
+emission_enabled = true
+emission = Color(0.07, 0.157, 0.235, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="QuadMesh" id="QuadMesh_calle_horizontal"]
+size = Vector2(1.3, 0.06)
+
+[sub_resource type="QuadMesh" id="QuadMesh_calle_vertical"]
+size = Vector2(0.06, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_calle_mapa"]
+shading_mode = 0
+albedo_color = Color(0.55, 0.6, 0.65, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_icono_despliegue"]
+radius = 0.045
+height = 0.026
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_e1"]
+shading_mode = 0
+albedo_color = Color(0.137, 0.545, 0.137, 1)
+emission_enabled = true
+emission = Color(0.137, 0.545, 0.137, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_e2"]
+shading_mode = 0
+albedo_color = Color(0.137, 0.545, 0.137, 1)
+emission_enabled = true
+emission = Color(0.137, 0.545, 0.137, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_icono_despliegue"]
+radius = 0.07
+
+[sub_resource type="BoxMesh" id="BoxMesh_radio_campana"]
+size = Vector3(0.35, 0.16, 0.22)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_radio_campana"]
+albedo_color = Color(0.13, 0.15, 0.13, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_saco_arena"]
+size = Vector3(0.7, 0.3, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_saco_arena"]
+albedo_color = Color(0.45, 0.4, 0.3, 1)
+
 [node name="Mision" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -112,6 +178,7 @@ mesh = SubResource("ImmediateMesh_trazador")
 material_override = SubResource("StandardMaterial3D_trazador")
 
 [node name="Jugador" parent="." instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -78.5)
 trazador_disparo_path = NodePath("../TrazadorDisparo")
 
 [node name="GestorEscenarios" type="Node3D" parent="."]
@@ -119,9 +186,106 @@ script = ExtResource("4")
 contenedor_e1_path = NodePath("../Escenario_E1_Calle")
 contenedor_e2_path = NodePath("../Escenario_E2_Edificio")
 
+[node name="PuestoDeMando" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -80)
+
+[node name="PisoPuesto" type="MeshInstance3D" parent="PuestoDeMando"]
+mesh = SubResource("PlaneMesh_piso_puesto")
+surface_material_override/0 = SubResource("StandardMaterial3D_piso_puesto")
+
+[node name="MesaMapa" type="MeshInstance3D" parent="PuestoDeMando"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.9)
+mesh = SubResource("BoxMesh_mesa_mapa")
+surface_material_override/0 = SubResource("StandardMaterial3D_mesa_mapa")
+
+[node name="PanelMapa" type="Node3D" parent="PuestoDeMando"]
+transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0.93, 0.9)
+script = ExtResource("6")
+
+[node name="Fondo" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa"]
+mesh = SubResource("QuadMesh_mapa_fondo")
+surface_material_override/0 = SubResource("StandardMaterial3D_mapa_fondo")
+
+[node name="CallePrincipal" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0.005)
+mesh = SubResource("QuadMesh_calle_horizontal")
+surface_material_override/0 = SubResource("StandardMaterial3D_calle_mapa")
+
+[node name="CalleSecundaria" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.05, 0.005)
+mesh = SubResource("QuadMesh_calle_vertical")
+surface_material_override/0 = SubResource("StandardMaterial3D_calle_mapa")
+
+[node name="EtiquetaTitulo" type="Label3D" parent="PuestoDeMando/PanelMapa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0.02)
+pixel_size = 0.0006
+outline_size = 8
+font_size = 48
+text = "SELECCIONA PUNTO DE DESPLIEGUE"
+
+[node name="IconoE1" type="Node3D" parent="PuestoDeMando/PanelMapa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.08, 0.01)
+
+[node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE1"]
+mesh = SubResource("SphereMesh_icono_despliegue")
+material_override = SubResource("StandardMaterial3D_icono_e1")
+
+[node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.085, 0.01)
+pixel_size = 0.0006
+outline_size = 6
+font_size = 36
+text = "E1 — CALLE"
+
+[node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE1/Area3D"]
+shape = SubResource("SphereShape3D_icono_despliegue")
+
+[node name="IconoE2" type="Node3D" parent="PuestoDeMando/PanelMapa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.1, 0.01)
+
+[node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE2"]
+mesh = SubResource("SphereMesh_icono_despliegue")
+material_override = SubResource("StandardMaterial3D_icono_e2")
+
+[node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.085, 0.01)
+pixel_size = 0.0006
+outline_size = 6
+font_size = 36
+text = "E2 — EDIFICIO"
+
+[node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE2/Area3D"]
+shape = SubResource("SphereShape3D_icono_despliegue")
+
+[node name="LamparaPuesto" type="OmniLight3D" parent="PuestoDeMando"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0.6)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 1.2
+omni_range = 7.0
+
+[node name="RadioCampana" type="MeshInstance3D" parent="PuestoDeMando"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.99, 1.15)
+mesh = SubResource("BoxMesh_radio_campana")
+surface_material_override/0 = SubResource("StandardMaterial3D_radio_campana")
+
+[node name="SacoArena1" type="MeshInstance3D" parent="PuestoDeMando"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.15, 0.3)
+mesh = SubResource("BoxMesh_saco_arena")
+surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
+
+[node name="SacoArena2" type="MeshInstance3D" parent="PuestoDeMando"]
+transform = Transform3D(0.866, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866, -2.1, 0.45, 0.4)
+mesh = SubResource("BoxMesh_saco_arena")
+surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
+
 [node name="Escenario_E1_Calle" type="Node3D" parent="."]
 
 [node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E1_Calle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
 
 [node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E1_Calle"]
 # PLACEHOLDER: ambiente urbano (RF-47), sin stream. autoplay=true para que
@@ -137,8 +301,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
 
 [node name="Ambientacion" type="Node3D" parent="Escenario_E1_Calle"]
 # PLACEHOLDER: props de ambientacion de E1 (PH-007), primitivas sin colision.
-# Posicionadas fuera de los 4 carriles de spawn (ejes x=0/z=0) para no
-# interferir con el avance en linea recta de los enemigos.
+# Posicionadas fuera de los ejes x=0/z=0 para no interferir con el avance en
+# linea recta de los enemigos desde las entradas de la calle.
 
 [node name="VehiculoAbandonado1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(0.906, 0, 0.423, -0.386, 0.454, 0.827, -0.192, -0.891, 0.411, 9, 0.9, 9)
@@ -230,21 +394,22 @@ cast_shadow = 0
 
 [node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E1_Calle"]
 script = ExtResource("2")
+escenario = "E1_Calle"
 contenedor_enemigos_path = NodePath("../Enemigos")
 
-[node name="PuntosDeSpawn" type="Node3D" parent="Escenario_E1_Calle/DirectorDeOleadas"]
+[node name="Entradas" type="Node3D" parent="Escenario_E1_Calle/DirectorDeOleadas"]
 
-[node name="Adelante" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+[node name="ExtremoNorte" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19)
 
-[node name="Atras" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+[node name="ExtremoSur" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 19)
 
-[node name="Izquierda" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+[node name="CallejonOeste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -8)
 
-[node name="Derecha" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/PuntosDeSpawn"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+[node name="CallejonEste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 8)
 
 [node name="Enemigos" type="Node3D" parent="Escenario_E1_Calle"]
 
@@ -343,6 +508,24 @@ surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, -1.8)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
+
+[node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E2_Edificio"]
+script = ExtResource("2")
+escenario = "E2_Edificio"
+contenedor_enemigos_path = NodePath("../Enemigos")
+
+[node name="Entradas" type="Node3D" parent="Escenario_E2_Edificio/DirectorDeOleadas"]
+
+[node name="PuertaEntreabierta" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 9.3)
+
+[node name="PuertaCaida" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 9.3)
+
+[node name="Escalera" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 4)
+
+[node name="Enemigos" type="Node3D" parent="Escenario_E2_Edificio"]
 
 [node name="Escombros" type="Node3D" parent="Escenario_E2_Edificio"]
 

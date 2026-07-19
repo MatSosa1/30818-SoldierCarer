@@ -11,7 +11,7 @@ extends "res://scripts/KitMedico/item_medico.gd"
 var _grapas_aplicadas: int = 0
 var _presionado: bool = false
 
-func procesar_gesto(_delta: float, mano_derecha: XRController3D, _herido: Node) -> bool:
+func procesar_gesto(_delta: float, mano_derecha: XRController3D, _objetivo: Node) -> bool:
 	var presion := mano_derecha.get_float("grip")
 	if not _presionado and presion >= umbral_presion:
 		_presionado = true
@@ -22,6 +22,9 @@ func procesar_gesto(_delta: float, mano_derecha: XRController3D, _herido: Node) 
 		reiniciar()
 		return true
 	return false
+
+func progreso() -> float:
+	return clampf(float(_grapas_aplicadas) / float(grapas_requeridas), 0.0, 1.0)
 
 func reiniciar() -> void:
 	_grapas_aplicadas = 0
