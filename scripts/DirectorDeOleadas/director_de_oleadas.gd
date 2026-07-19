@@ -32,6 +32,10 @@ const ENEMIGO_CUCHILLO := preload("res://views/EnemigoCuchillo.tscn")
 # "poco a poco", nunca en parejas instantaneas.
 @export var retardo_spawn_min: float = 2.0
 @export var retardo_spawn_max: float = 5.0
+# Las entradas a menos de esta distancia del jugador se descartan al elegir
+# por donde entra un enemigo: nadie debe aparecer "en la cara" del medico
+# (p.ej. la entrada sur de E1 esta a 2 m del punto de despliegue).
+@export var distancia_minima_al_jugador: float = 8.0
 
 var score: int = 0
 var enemigos_activos: int = 0
@@ -89,7 +93,25 @@ func _process(delta: float) -> void:
 		if _tiempo_spawn <= 0.0:
 			_tiempo_spawn = randf_range(retardo_spawn_min, retardo_spawn_max)
 			_pendientes -= 1
-			_spawnear_en_entrada(entradas.pick_random())
+			_spawnear_en_entrada(_elegir_entrada())
+
+# Entrada aleatoria entre las que estan lejos del jugador; si todas estan
+# cerca (escenario chico), la mas lejana.
+func _elegir_entrada() -> Node3D:
+	var jugador: Node3D = get_tree().get_first_node_in_group("jugador")
+	if not jugador:
+		return entradas.pick_random()
+	var lejanas := entradas.filter(
+		func(e: Node3D) -> bool:
+			return e.global_position.distance_to(jugador.global_position) >= distancia_minima_al_jugador
+	)
+	if not lejanas.is_empty():
+		return lejanas.pick_random()
+	var mas_lejana: Node3D = entradas[0]
+	for entrada: Node3D in entradas:
+		if entrada.global_position.distance_to(jugador.global_position) > mas_lejana.global_position.distance_to(jugador.global_position):
+			mas_lejana = entrada
+	return mas_lejana
 
 func _al_progresar_tratamiento(herido: Node, fraccion: float) -> void:
 	if not _armado or not ("escenario" in herido) or herido.escenario != escenario:

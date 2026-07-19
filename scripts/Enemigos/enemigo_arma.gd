@@ -27,17 +27,31 @@ func _physics_process(delta: float) -> void:
 			velocity = dir * velocidad_avance
 			move_and_slide()
 			_reproducir_pasos()
-			if distancia <= rango_disparo:
+			# Solo abre fuego si ademas VE al jugador: sin linea de vision
+			# (pared, vehiculo) sigue avanzando para flanquear la cobertura.
+			if distancia <= rango_disparo and _tiene_linea_de_vision():
 				_cambiar_estado(Estado.DISPARO)
 		Estado.DISPARO:
 			velocity = Vector3.ZERO
 			_detener_pasos()
-			if distancia > rango_disparo * 1.2:
+			if distancia > rango_disparo * 1.2 or not _tiene_linea_de_vision():
 				_cambiar_estado(Estado.AVANCE)
 				return
 			_cooldown_disparo -= delta
 			if _cooldown_disparo <= 0.0:
 				_disparar_rafaga()
+
+# Raycast fisico a la altura del pecho: el dano deja de atravesar paredes y
+# props con colision (la cobertura funciona en ambos sentidos, igual que la
+# pistola del jugador que ya usaba raycast). Otro cuerpo en el medio (aliado
+# incluido) tambien bloquea la rafaga.
+func _tiene_linea_de_vision() -> bool:
+	var origen := global_position + Vector3.UP * 1.4
+	var destino: Vector3 = jugador.global_position + Vector3.UP * 1.4
+	var consulta := PhysicsRayQueryParameters3D.create(origen, destino)
+	consulta.exclude = [get_rid()]
+	var resultado := get_world_3d().direct_space_state.intersect_ray(consulta)
+	return resultado.is_empty() or resultado.get("collider") == jugador
 
 func _disparar_rafaga() -> void:
 	_cooldown_disparo = cadencia_disparo
