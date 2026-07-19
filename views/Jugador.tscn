@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/Jugador/jugador.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/Jugador/manos_vr.gd" id="2"]
 [ext_resource type="PackedScene" path="res://views/MapaMuneca.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://views/KitMedico.tscn" id="4"]
+[ext_resource type="Script" path="res://scripts/Arma/pistola.gd" id="5"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jugador"]
 radius = 0.4
@@ -20,6 +21,12 @@ albedo_color = Color(0.75, 0.65, 0.55, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_manga"]
 albedo_color = Color(0.294, 0.325, 0.125, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pistola"]
+size = Vector3(0.04, 0.09, 0.18)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pistola"]
+albedo_color = Color(0.15, 0.15, 0.15, 1)
 
 [node name="Jugador" type="CharacterBody3D"]
 collision_layer = 1
@@ -53,6 +60,9 @@ surface_material_override/0 = SubResource("StandardMaterial3D_manga")
 [node name="MapaMuneca" parent="XROrigin3D/ManoIzquierda" instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.1)
 
+[node name="PuntoFunda" type="Marker3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.9, -0.05)
+
 [node name="ManoDerecha" type="XRController3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1.0, -0.3)
 tracker = &"right_hand"
@@ -67,10 +77,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
 mesh = SubResource("BoxMesh_manga")
 surface_material_override/0 = SubResource("StandardMaterial3D_manga")
 
-[node name="Arma" type="Node3D" parent="XROrigin3D/ManoDerecha"]
+[node name="Pistola" type="Node3D" parent="XROrigin3D/ManoDerecha"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+script = ExtResource("5")
 
-[node name="RayCast3D" type="RayCast3D" parent="XROrigin3D/ManoDerecha/Arma"]
+[node name="PH_Pistola" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha/Pistola"]
+visible = false
+mesh = SubResource("BoxMesh_pistola")
+surface_material_override/0 = SubResource("StandardMaterial3D_pistola")
+
+[node name="EtiquetaCargador" type="Label3D" parent="XROrigin3D/ManoDerecha/Pistola"]
+visible = false
+position = Vector3(0, 0.06, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.001
+font_size = 32
+text = "7/7"
+
+[node name="RayCast3D" type="RayCast3D" parent="XROrigin3D/ManoDerecha/Pistola"]
 target_position = Vector3(0, 0, -100)
 collision_mask = 2
 

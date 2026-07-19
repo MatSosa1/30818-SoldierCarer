@@ -1,34 +1,26 @@
-extends CharacterBody3D
+extends EnemigoBase
 ## Enemigo cuerpo a cuerpo. FSM reactiva: AVANCE -> ESQUIVA (al ser apuntado por el
 ## disparo del jugador) -> AVANCE -> EMBESTIDA -> NEUTRALIZADO.
-
-signal neutralizado(enemigo: CharacterBody3D)
 
 enum Estado {AVANCE, ESQUIVA, EMBESTIDA, NEUTRALIZADO}
 var estado: Estado = Estado.AVANCE
 
+@export var salud_maxima: float = 20.0
 @export var velocidad_avance: float = 3.0
 @export var rango_embestida: float = 1.5
-@export var salud_maxima: float = 20.0
 @export var dano_embestida: float = 10.0
 @export var cooldown_embestida: float = 1.0
 @export var velocidad_esquiva: float = 5.0
 @export var duracion_esquiva: float = 0.35
 
-var salud: float
 var _direccion_esquiva: Vector3 = Vector3.ZERO
 var _tiempo_esquiva_restante: float = 0.0
 var _cooldown_embestida_restante: float = 0.0
 
-@onready var jugador: Node3D = get_tree().get_first_node_in_group("jugador")
-@onready var etiqueta_estado: Label3D = $EtiquetaEstado
-
 func _ready() -> void:
-	add_to_group("enemigos")
-	salud = salud_maxima
+	super._ready()
 	if jugador and jugador.has_signal("disparo_realizado"):
 		jugador.disparo_realizado.connect(_al_recibir_disparo)
-	_actualizar_etiqueta()
 
 func _physics_process(delta: float) -> void:
 	if not jugador or estado == Estado.NEUTRALIZADO:
@@ -75,21 +67,12 @@ func _atacar_cuerpo_a_cuerpo() -> void:
 	if jugador.has_method("recibir_dano"):
 		jugador.recibir_dano(dano_embestida)
 
-func recibir_dano(cantidad: float) -> void:
-	if estado == Estado.NEUTRALIZADO:
-		return
-	salud = max(salud - cantidad, 0.0)
-	if salud <= 0.0:
-		_neutralizar()
+func _esta_neutralizado() -> bool:
+	return estado == Estado.NEUTRALIZADO
 
-func _neutralizar() -> void:
-	_cambiar_estado(Estado.NEUTRALIZADO)
-	collision_layer = 0
-	collision_mask = 0
-	visible = false
-	set_physics_process(false)
-	print("%s neutralizado" % name)
-	neutralizado.emit(self)
+func _marcar_neutralizado() -> void:
+	estado = Estado.NEUTRALIZADO
+	_actualizar_etiqueta()
 
 func _cambiar_estado(nuevo: Estado) -> void:
 	estado = nuevo
