@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/Jugador/jugador.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/Jugador/manos_vr.gd" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/Arma/pistola.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/HUD/pantalla_dano.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/HUD/hud_mision.gd" id="7"]
+[ext_resource type="PackedScene" path="res://views/MenuPausa.tscn" id="8"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jugador"]
 radius = 0.4
@@ -44,6 +45,9 @@ shape = SubResource("CapsuleShape3D_jugador")
 [node name="Camera3D" type="XRCamera3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 current = true
+
+[node name="MenuPausa" parent="XROrigin3D/Camera3D" instance=ExtResource("8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.2)
 
 [node name="ManoIzquierda" type="XRController3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.0, -0.3)
@@ -126,6 +130,15 @@ offset_top = 16.0
 offset_right = 220.0
 offset_bottom = 48.0
 text = "Salud: 100"
+
+[node name="Desvanecido" type="ColorRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
 
 [node name="HudMision" type="Control" parent="UI"]
 anchors_preset = 15
