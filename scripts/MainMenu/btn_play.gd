@@ -75,4 +75,5 @@ func comenzar_animacion_menu():
 
 func cambiar_de_escena():
 	print("Carpeta cerrada. Iniciando el nivel de juego...")
-	get_tree().change_scene_to_file("res://views/Mision.tscn")
+	# RF-39: pasa por la pantalla de transicion narrativa antes de la mision.
+	get_tree().change_scene_to_file("res://views/EstadoInicial.tscn")

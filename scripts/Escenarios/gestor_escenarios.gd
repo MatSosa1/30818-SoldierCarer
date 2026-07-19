@@ -9,13 +9,23 @@ extends Node3D
 
 @onready var contenedor_e1: Node3D = get_node_or_null(contenedor_e1_path)
 @onready var contenedor_e2: Node3D = get_node_or_null(contenedor_e2_path)
-@onready var jugador: Node3D = get_tree().get_first_node_in_group("jugador")
+@onready var jugador: Jugador = get_tree().get_first_node_in_group("jugador")
 
 var escenario_activo: String = ""
 
 func _ready() -> void:
+	add_to_group("gestor_escenarios") # para que menu_pausa.gd (RF-40) lo encuentre
 	EventBus.solicitar_teletransporte.connect(_al_solicitar_teletransporte)
 	activar_escenario(escenario_inicial)
+
+# RF-40: pausa/reanuda la simulacion del escenario activo (enemigos,
+# heridos) sin usar SceneTree.paused, para no tener que lidiar con el
+# process_mode de los XRController3D solo para que el menu de pausa siga
+# recibiendo el gatillo mientras esta abierto.
+func pausar_activo(pausado: bool) -> void:
+	var contenedor: Node3D = {"E1_Calle": contenedor_e1, "E2_Edificio": contenedor_e2}.get(escenario_activo)
+	if contenedor:
+		contenedor.process_mode = Node.PROCESS_MODE_DISABLED if pausado else Node.PROCESS_MODE_INHERIT
 
 func activar_escenario(nombre: String) -> void:
 	var contenedores := {"E1_Calle": contenedor_e1, "E2_Edificio": contenedor_e2}
@@ -45,3 +55,4 @@ func _al_solicitar_teletransporte(punto_destino: Vector3, escenario: String) -> 
 	if not jugador:
 		return
 	jugador.global_position = punto_destino if punto_destino != Vector3.ZERO else punto_despliegue(escenario)
+	jugador.fundido_teletransporte()
