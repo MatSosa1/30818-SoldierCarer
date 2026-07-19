@@ -11,10 +11,17 @@ signal disparo_realizado(rayo: RayCast3D)
 @export var salud_maxima: float = 100.0
 @export var dano_disparo: float = 10.0
 @export var umbral_salud_critica: float = 0.3 # RF-46: fraccion de salud_maxima que activa la musica "critico"
+# Regeneracion estilo Uncharted: tras retardo_regeneracion segundos sin
+# recibir dano, la salud vuelve sola; la unica lectura de salud es el tinte
+# rojo de la pantalla (RF-05, diegetico), que se limpia al regenerar.
+@export var retardo_regeneracion: float = 4.0
+@export var regeneracion_por_segundo: float = 25.0
 
 @export var trazador_disparo_path: NodePath
 
-@export var mostrar_debug_salud: bool = true # etiqueta 2D solo visible en la ventana espejo de escritorio
+# Etiqueta 2D de la ventana espejo: SOLO para depurar (la salud no debe verse
+# como numero, es diegetica via el tinte de pantalla). Apagada por defecto.
+@export var mostrar_debug_salud: bool = false
 
 @onready var mano_derecha: XRController3D = $XROrigin3D/ManoDerecha
 @onready var mano_izquierda: XRController3D = $XROrigin3D/ManoIzquierda
@@ -32,6 +39,19 @@ signal disparo_realizado(rayo: RayCast3D)
 @onready var trazador_disparo: MeshInstance3D = get_node_or_null(trazador_disparo_path)
 
 var salud: float
+
+var _tiempo_desde_dano: float = 999.0
+
+func _process(delta: float) -> void:
+	if GestorJuego.en_pausa or salud <= 0.0:
+		return
+	_tiempo_desde_dano += delta
+	if salud < salud_maxima and _tiempo_desde_dano >= retardo_regeneracion:
+		salud = min(salud + regeneracion_por_segundo * delta, salud_maxima)
+		_actualizar_etiqueta_salud()
+		if pantalla_danio:
+			pantalla_danio.fraccion_salud = salud / salud_maxima
+		_actualizar_musica_por_salud() # vuelve a "combate" al salir de critico
 
 func _ready() -> void:
 	add_to_group("jugador")
@@ -135,8 +155,10 @@ func _mostrar_trazador(origen: Vector3, destino: Vector3) -> void:
 # RF-43: salud en 0 termina la mision (eliminado).
 func recibir_dano(cantidad: float) -> void:
 	salud = max(salud - cantidad, 0.0)
+	_tiempo_desde_dano = 0.0 # reinicia la ventana de regeneracion
 	_actualizar_etiqueta_salud()
 	if pantalla_danio:
+		pantalla_danio.fraccion_salud = salud / salud_maxima
 		pantalla_danio.mostrar_dano()
 	mano_izquierda.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.2, 0.0)
 	mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.2, 0.0)
