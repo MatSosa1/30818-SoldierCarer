@@ -64,6 +64,8 @@ func intentar_disparar() -> RayCast3D:
 	raycast.force_raycast_update()
 	if sonido_disparo:
 		sonido_disparo.play()
+	# Retroceso haptico: pulso corto y fuerte en la mano que dispara.
+	mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.7, 0.1, 0.0)
 	_actualizar_visual()
 	return raycast
 
@@ -75,6 +77,8 @@ func recargar() -> void:
 	municion_actual = balas_por_cargador
 	if sonido_recarga:
 		sonido_recarga.play()
+	if mano_izquierda:
+		mano_izquierda.trigger_haptic_pulse("haptic", 0.0, 0.4, 0.15, 0.0)
 	_actualizar_visual()
 	print("Cargador recargado. Cargadores restantes: %s" % cargadores_restantes)
 

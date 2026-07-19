@@ -24,9 +24,23 @@ var escala_original_btn_options: Vector3
 var escala_original_btn_play: Vector3
 var escala_original_btn_exit: Vector3
 
+# Hover: la sticky note crece levemente al pasar el puntero (ver btn_play.gd).
+var _escala_base_hover: Vector3
+
 func _ready() -> void:
 	if area_clic_volver:
 		area_clic_volver.input_event.connect(_on_btn_volver_input_event)
+	_escala_base_hover = scale
+	area_clic.mouse_entered.connect(_al_entrar_hover)
+	area_clic.mouse_exited.connect(_al_salir_hover)
+
+func _al_entrar_hover() -> void:
+	if area_clic.input_ray_pickable:
+		create_tween().tween_property(self, "scale", _escala_base_hover * 1.08, 0.12).set_trans(Tween.TRANS_SINE)
+
+func _al_salir_hover() -> void:
+	if area_clic.input_ray_pickable:
+		create_tween().tween_property(self, "scale", _escala_base_hover, 0.12).set_trans(Tween.TRANS_SINE)
 
 func _on_area_3d_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -37,6 +51,7 @@ func _on_btn_volver_input_event(camera: Node, event: InputEvent, event_position:
 		animacion_volver_menu()
 
 func comenzar_animacion_opciones():
+	scale = _escala_base_hover # deshace el hover antes de capturar escalas originales
 	area_clic.input_ray_pickable = false
 	btn_play.get_node("Area3D").input_ray_pickable = false
 	btn_exit.get_node("Area3D").input_ray_pickable = false

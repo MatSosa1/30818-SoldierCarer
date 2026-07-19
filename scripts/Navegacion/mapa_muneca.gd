@@ -15,6 +15,7 @@ class_name MapaMuneca
 @export var escala_mapa: float = 0.004
 @export var radio_mapa: float = 0.07
 @export var radio_seleccion: float = 0.03
+@export var escala_hover: float = 1.3
 
 const COLOR_ESTABLE := Color(0.137, 0.545, 0.137) # #228B22
 const COLOR_CRITICO := Color(0.855, 0.647, 0.125) # #DAA520
@@ -32,9 +33,11 @@ const COLOR_MUERTO := Color(0.25, 0.25, 0.25)
 @onready var icono_e2: Node3D = $IconoE2
 
 var mano_derecha: XRController3D
+var camara: XRCamera3D
 var _malla_icono_herido := SphereMesh.new()
 var _iconos_heridos: Dictionary = {} # herido -> MeshInstance3D
 var _destinos: Dictionary = {} # icono -> {"punto": Vector3, "escenario": String}
+var _icono_hover: Node3D = null
 
 func _ready() -> void:
 	visible = false
@@ -44,6 +47,7 @@ func _ready() -> void:
 	_destinos[icono_e2] = {"punto": Vector3.ZERO, "escenario": "E2_Edificio"}
 	if jugador:
 		mano_derecha = jugador.get_node_or_null("XROrigin3D/ManoDerecha")
+		camara = jugador.get_node_or_null("XROrigin3D/Camera3D")
 
 func _process(_delta: float) -> void:
 	if not mano_izquierda:
@@ -51,6 +55,7 @@ func _process(_delta: float) -> void:
 	visible = mano_izquierda.position.y >= altura_activacion
 	if visible:
 		_actualizar_iconos_heridos()
+		_actualizar_hover()
 
 # Plotea cada herido activo en coordenadas locales del mapa, relativas a la
 # posicion del jugador (que siempre queda al centro, en el origen local).
@@ -86,6 +91,12 @@ func _actualizar_iconos_heridos() -> void:
 		(icono.material_override as StandardMaterial3D).albedo_color = color
 
 		var offset: Vector3 = herido.global_position - jugador.global_position
+		# Mapa "forward-up": el offset se rota por el yaw de la cabeza para
+		# que "adelante del jugador" sea siempre "arriba del mapa". Sin esta
+		# rotacion los iconos quedan en coordenadas de mundo y el mapa
+		# "miente" apenas el jugador gira el cuerpo.
+		if camara:
+			offset = offset.rotated(Vector3.UP, -camara.global_rotation.y)
 		var local_pos := Vector3(offset.x, 0.01, offset.z) * escala_mapa
 		local_pos.x = clamp(local_pos.x, -radio_mapa, radio_mapa)
 		local_pos.z = clamp(local_pos.z, -radio_mapa, radio_mapa)
@@ -95,15 +106,43 @@ func _actualizar_iconos_heridos() -> void:
 		punto_frente += (jugador.global_position - herido.global_position).normalized()
 		_destinos[icono] = {"punto": punto_frente, "escenario": herido.escenario}
 
-# Llamado desde jugador.gd cuando se presiona el gatillo derecho mientras el
-# mapa esta visible (en vez de disparar el arma).
-func confirmar_seleccion() -> void:
-	if not visible or not mano_derecha:
+# Resalta el icono al alcance de la mano derecha (hover) antes de confirmar
+# con el gatillo, con un pulso haptico suave al entrar en rango.
+func _actualizar_hover() -> void:
+	var candidato := _icono_en_rango()
+	if candidato == _icono_hover:
 		return
+	if is_instance_valid(_icono_hover):
+		_icono_hover.scale = Vector3.ONE
+	_icono_hover = candidato
+	if _icono_hover:
+		_icono_hover.scale = Vector3.ONE * escala_hover
+		if mano_derecha:
+			mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.2, 0.05, 0.0)
+
+func _icono_en_rango() -> Node3D:
+	if not mano_derecha:
+		return null
+	var mas_cercano: Node3D = null
+	var distancia_min := radio_seleccion
 	for icono in _destinos.keys():
 		if not is_instance_valid(icono):
 			continue
-		if mano_derecha.global_position.distance_to(icono.global_position) <= radio_seleccion:
-			var destino: Dictionary = _destinos[icono]
-			EventBus.solicitar_teletransporte.emit(destino["punto"], destino["escenario"])
-			return
+		var d: float = mano_derecha.global_position.distance_to(icono.global_position)
+		if d <= distancia_min:
+			distancia_min = d
+			mas_cercano = icono
+	return mas_cercano
+
+# Llamado desde jugador.gd cuando se presiona el gatillo derecho mientras el
+# mapa esta visible (en vez de disparar el arma).
+func confirmar_seleccion() -> void:
+	if not visible:
+		return
+	var icono := _icono_en_rango()
+	if not icono:
+		return
+	if mano_derecha:
+		mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.6, 0.15, 0.0)
+	var destino: Dictionary = _destinos[icono]
+	EventBus.solicitar_teletransporte.emit(destino["punto"], destino["escenario"])

@@ -69,3 +69,5 @@ modulate = Color(0.7, 0.7, 0.7, 1)
 pixel_size = 0.0012
 font_size = 24
 text = "(clic para continuar)"
+
+[node name="SonidoTecleo" type="AudioStreamPlayer" parent="."]

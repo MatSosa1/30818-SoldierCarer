@@ -37,5 +37,13 @@ func ciclar_intensidad_teletransporte() -> void:
 	var indice := valores.find(intensidad_teletransporte)
 	intensidad_teletransporte = valores[(indice + 1) % valores.size()]
 
+# Nombre legible para UI (no el identificador crudo del enum).
 func nombre_intensidad_actual() -> String:
-	return IntensidadTeletransporte.keys()[intensidad_teletransporte]
+	match intensidad_teletransporte:
+		IntensidadTeletransporte.INSTANTANEO:
+			return "Instantáneo"
+		IntensidadTeletransporte.DESVANECIDO_SUAVE:
+			return "Suave"
+		IntensidadTeletransporte.DESVANECIDO_FUERTE:
+			return "Fuerte"
+	return "?"

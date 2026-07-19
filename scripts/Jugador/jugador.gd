@@ -14,15 +14,20 @@ signal disparo_realizado(rayo: RayCast3D)
 
 @export var trazador_disparo_path: NodePath
 
+@export var mostrar_debug_salud: bool = true # etiqueta 2D solo visible en la ventana espejo de escritorio
+
 @onready var mano_derecha: XRController3D = $XROrigin3D/ManoDerecha
 @onready var mano_izquierda: XRController3D = $XROrigin3D/ManoIzquierda
 @onready var pistola: Pistola = $XROrigin3D/ManoDerecha/Pistola
 @onready var mapa_muneca: MapaMuneca = $XROrigin3D/ManoIzquierda/MapaMuneca
 @onready var kit_medico: KitMedico = $XROrigin3D/KitMedico
-@onready var menu_pausa: MenuPausa = $XROrigin3D/Camera3D/MenuPausa
-@onready var pantalla_danio: PantallaDano = $UI/PantallaDanio
-@onready var etiqueta_salud: Label = $UI/EtiquetaSalud # ayuda de debug; RF-05 exige "sin barra numerica" para el jugador final
-@onready var desvanecido: ColorRect = $UI/Desvanecido
+@onready var menu_pausa: MenuPausa = $XROrigin3D/MenuPausa
+# HUD diegetico en 3D (los CanvasLayer no se ven en el headset, ver pantalla_dano.gd)
+@onready var pantalla_danio: PantallaDano = $XROrigin3D/Camera3D/VignetteDanio
+@onready var desvanecido: MeshInstance3D = $XROrigin3D/Camera3D/Desvanecido3D
+# Etiqueta 2D de debug: al vivir en CanvasLayer solo aparece en la ventana
+# espejo de escritorio, nunca en el headset - util como consola del encargado.
+@onready var etiqueta_salud: Label = $UI/EtiquetaSalud
 @onready var trazador_disparo: MeshInstance3D = get_node_or_null(trazador_disparo_path)
 
 var salud: float
@@ -33,6 +38,7 @@ func _ready() -> void:
 	mano_derecha.button_pressed.connect(_al_presionar_boton_mano)
 	mano_izquierda.button_pressed.connect(_al_presionar_boton_mano_izquierda)
 	salud = salud_maxima
+	etiqueta_salud.visible = mostrar_debug_salud
 	_actualizar_etiqueta_salud()
 	GestorAudio.cambiar_estado(GestorAudio.EstadoMusica.COMBATE)
 
@@ -110,11 +116,14 @@ func _mostrar_trazador(origen: Vector3, destino: Vector3) -> void:
 
 # RF-05: la comunicacion real de salud/critica es el tinte rojo de
 # pantalla_dano.gd (sin barra numerica); etiqueta_salud es solo debug.
+# El pulso haptico en ambas manos refuerza el impacto sin depender de mirar.
 func recibir_dano(cantidad: float) -> void:
 	salud = max(salud - cantidad, 0.0)
 	_actualizar_etiqueta_salud()
 	if pantalla_danio:
 		pantalla_danio.mostrar_dano()
+	mano_izquierda.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.2, 0.0)
+	mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.2, 0.0)
 	_actualizar_musica_por_salud()
 	print("Jugador recibio %s de dano. Salud: %s" % [cantidad, salud])
 
@@ -133,14 +142,18 @@ func _actualizar_etiqueta_salud() -> void:
 
 # RNF-05: fundido a negro que oculta el "salto" del teletransporte (RF-08);
 # la duracion depende de GestorOpciones.intensidad_teletransporte (0 =
-# instantaneo, sin fundido). Llamado por gestor_escenarios.gd luego de
-# reposicionar al jugador.
+# instantaneo, sin fundido). Es un quad negro frente a la camara (visible en
+# headset, a diferencia de un ColorRect 2D). Llamado por gestor_escenarios.gd
+# luego de reposicionar al jugador.
 func fundido_teletransporte() -> void:
 	if not desvanecido:
 		return
 	var duracion := GestorOpciones.duracion_fundido()
 	if duracion <= 0.0:
 		return
-	desvanecido.color.a = 1.0
+	var material := desvanecido.material_override as StandardMaterial3D
+	if not material:
+		return
+	material.albedo_color.a = 1.0
 	var tween := create_tween()
-	tween.tween_property(desvanecido, "color:a", 0.0, duracion)
+	tween.tween_property(material, "albedo_color:a", 0.0, duracion)

@@ -242,6 +242,27 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 - **Tipado:** único `class_name` nuevo de S9 es `Jugador` (en `jugador.gd`), necesario para que `gestor_escenarios.gd` pudiera tipar su referencia y llamar `jugador.fundido_teletransporte()` sin recaer en el mismo problema de tipado genérico corregido en S6.
 - **Sin verificar en editor/headset real** (mismo motivo que sprints anteriores) — particularmente relevante para el menú de pausa (posición del panel frente a la cámara, tamaño de los iconos) y la pantalla de estado inicial (encuadre de cámara), que no pude previsualizar visualmente.
 
+## 9.3 Pase de UX VR (revisión de menús/UI)
+
+**Implementado en rama `feature/ux-vr`** (pendiente de commit manual) — revisión de UX posterior a S9, con dos hallazgos **P0** y una capa de intuitividad/pulido:
+
+**P0 — Hallazgos que rompían la experiencia en headset:**
+- **El HUD 2D era invisible en el HMD.** En Godot 4 con `use_xr`, los `CanvasLayer`/`Control` **no se renderizan en el headset** — solo en la ventana espejo de escritorio (limitación documentada de XR en Godot; existe el tutorial oficial "2D in 3D" para esto). Afectaba a: tinte de daño (RF-05), temporizador (RF-34), "+RESCATE" (RF-35) y el fundido de teletransporte (RNF-05). **Solución (además más diegética, pilar 2):** `pantalla_dano.gd` ahora extiende `MeshInstance3D` — quad rojo frente a `XRCamera3D` (`VignetteDanio`, `no_depth_test`, `render_priority 100`); el fundido es otro quad negro (`Desvanecido3D`, prioridad 110); el temporizador es un **reloj Label3D en la muñeca izquierda** (`RelojMuneca`, junto al mapa); "+RESCATE" es un `Label3D` verde breve frente a la vista (`HudMision/EtiquetaRescate`, hijo de la cámara). `hud_mision.gd` pasó de `Control` a `Node3D`. El `CanvasLayer` **se conserva solo con `EtiquetaSalud`**: al ser invisible en el HMD funciona como consola de debug del encargado en el espejo de escritorio (con `@export mostrar_debug_salud` para apagarla).
+- **El menú de pausa era físicamente inalcanzable.** Estaba a 1.2 m de la cámara con selección por proximidad de mano (radio 6 cm) y el jugador fijo (RF-03): ningún botón se podía tocar. Ahora `MenuPausa` es hijo de `XROrigin3D` (no de la cámara) y al abrirse se posiciona **una sola vez** frente a la vista a `distancia_apertura` (0.45 m, alcance de brazo) mirando al jugador, y queda **anclado al mundo** — un panel pegado a la cabeza se mueve con cada micro-giro y resulta incómodo/mareante (estándar moderno: anclar o *lazy-follow*).
+
+**P1 — Intuitividad:**
+- **Hover states** en todo lo seleccionable por proximidad (`MapaMuneca`, `KitMedico`, `MenuPausa`): el icono/ítem al alcance de la mano derecha se escala (~1.15-1.3×) con un pulso háptico suave al entrar en rango — el jugador sabe *qué* va a seleccionar antes de apretar el gatillo. `confirmar_seleccion()` de los tres ahora reutiliza el mismo `_icono_en_rango()` del hover (una sola fuente de verdad de "qué está al alcance").
+- **Háptica** (`XRController3D.trigger_haptic_pulse`, acción `"haptic"` del action map OpenXR por defecto): hover suave (0.2), selección (0.4-0.6), disparo (0.7, retroceso), recarga (0.4 mano izq.), gesto médico éxito/fallo (corto-firme vs. largo-suave, distinguibles sin mirar — RF-24 háptico), daño recibido (0.5 ambas manos), teletransporte (0.6).
+- **Mapa de muñeca *forward-up***: los offsets de los iconos ahora se rotan por el yaw de la cámara — "adelante del jugador" es siempre "arriba del mapa". Antes quedaban en coordenadas de mundo y el mapa "mentía" apenas el jugador giraba el cuerpo.
+- **Ítem del kit visible en mano**: al equipar, el ítem sigue a la mano derecha (antes desaparecía) y vuelve a su lugar del kit al soltarse. Además el kit **permanece abierto mientras haya un ítem equipado** (antes, alejar la mano izquierda de la mochila cerraba el kit y congelaba el gesto en curso, porque los gestos se procesan en `kit_medico._process` gateado por `visible`).
+
+**P2 — Pulido:**
+- Iconos del menú de pausa con color semántico (REANUDAR verde, OPCIONES azul, SALIR rojo tenue); ítems del kit con color propio (venda blanca, morfina celeste, alcohol claro, suturas metálicas, analgésicos naranja).
+- `GestorOpciones.nombre_intensidad_actual()` devuelve nombres legibles ("Suave") en vez del identificador crudo del enum ("DESVANECIDO_SUAVE").
+- `EstadoInicial`: briefing con **efecto máquina de escribir** (revelado por substring — `Label3D` no tiene `visible_characters`) + tic de tecleo cableado sin stream; primer clic completa el texto, segundo continúa; contador visible del auto-avance para que no tome por sorpresa.
+- Sticky notes del menú principal con **hover** (escala 1.08× vía Tween al `mouse_entered` del `Area3D`, sin tocar la escena del equipo — solo los scripts ya adjuntos); `btn_options` deshace el hover antes de capturar sus escalas originales para no ensuciar las animaciones existentes.
+- **Sin verificar en editor/headset real** — este pase toca exactamente lo que más necesita validación visual/física (alcances, escalas de hover, posición del reloj en muñeca, cobertura del quad de vignette en el FOV del headset).
+
 ## 10. Rendimiento (guías para cumplir RNF-01/02)
 
 - Low-poly + `StandardMaterial3D` simples; evitar transparencias y luces dinámicas innecesarias.
