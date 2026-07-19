@@ -14,6 +14,11 @@ class_name KitMedico
 @export var radio_seleccion: float = 0.05
 @export var rango_tratamiento: float = 1.5
 @export var escala_hover: float = 1.2
+# Personajes.md SS4: la presencia enemiga bloquea la curacion — la zona debe
+# estar razonablemente despejada. Enemigos vivos dentro de este radio (m)
+# alrededor del medico impiden los gestos de secuencia (morfina/analgesicos
+# se permiten: un pinchazo rapido bajo fuego es plausible y evita softlocks).
+@export var radio_zona_hostil: float = 10.0
 
 @onready var mano_izquierda: XRController3D = get_node_or_null("../ManoIzquierda")
 @onready var mano_derecha: XRController3D = get_node_or_null("../ManoDerecha")
@@ -39,8 +44,8 @@ func _process(delta: float) -> void:
 	# El kit permanece abierto mientras haya un item equipado: cerrar la
 	# mano izquierda de la mochila no debe interrumpir un tratamiento en
 	# curso (los gestos del item se procesan aca).
-	if GestorJuego.fase != GestorJuego.Fase.MISION:
-		visible = false # el kit no se abre en el puesto de mando ni tras finalizar
+	if GestorJuego.fase != GestorJuego.Fase.MISION or GestorJuego.en_pausa:
+		visible = false # el kit no se abre en el puesto de mando, en pausa ni tras finalizar
 		GestorJuego.marcar_tratando(false)
 		return
 	var cerca: bool = mano_izquierda.position.distance_to(position) <= radio_apertura
@@ -70,6 +75,12 @@ func _process(delta: float) -> void:
 	var herida := herido.herida_mas_cercana(mano_derecha.global_position)
 	if not herida:
 		etiqueta_equipado.text = "Equipado: %s | sin heridas pendientes aqui" % item_equipado.nombre_item
+		item_equipado.reiniciar()
+		return
+	if _hay_enemigos_cerca():
+		# RF/diseno "zona despejada": no se puede trabajar bajo fuego; primero
+		# defender (o alejarse), despues curar.
+		etiqueta_equipado.text = "ZONA HOSTIL: neutraliza a los enemigos cercanos"
 		item_equipado.reiniciar()
 		return
 	if herido.dolor_bloqueante():
@@ -120,7 +131,10 @@ func _item_en_rango_seleccion() -> ItemMedico:
 # Llamado desde jugador.gd al presionar el gatillo derecho mientras el kit
 # esta abierto: sin item equipado, intenta seleccionar uno por proximidad;
 # con un item de confirmacion manual equipado, lo aplica si hay un herido
-# en rango.
+# en rango; con cualquier otro item equipado, LO DEVUELVE al kit. Sin esa
+# salida, un item de secuencia quedaba pegado a la mano para siempre cuando
+# su gesto no podia completarse (la herida pide otro item, dolor bloqueante,
+# sin heridas pendientes) y el tratamiento entero se bloqueaba.
 func confirmar_seleccion() -> void:
 	if not visible or not mano_derecha:
 		return
@@ -140,6 +154,22 @@ func confirmar_seleccion() -> void:
 		if herido:
 			# Morfina/analgesicos actuan sobre el paciente completo (herida null).
 			_completar_aplicacion(herido.aplicar_tratamiento_en(null, item_equipado.tipo))
+			return
+	# Item de secuencia (o de confirmacion sin herido cerca): guardar.
+	_guardar_item()
+
+# Devuelve el item equipado a su lugar del kit sin aplicarlo. Los gestos de
+# secuencia no usan el gatillo (circular/inclinacion/grip), asi que el
+# gatillo queda libre como "guardar" sin conflicto.
+func _guardar_item() -> void:
+	if not item_equipado:
+		return
+	item_equipado.reiniciar()
+	item_equipado.position = _posicion_original_equipado
+	item_equipado = null
+	etiqueta_equipado.text = ""
+	if mano_derecha:
+		mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.3, 0.08, 0.0)
 
 func _completar_aplicacion(resultado: Dictionary) -> void:
 	var exito: bool = resultado["exito"]
@@ -167,6 +197,17 @@ func _dar_feedback(exito: bool, mensaje: String) -> void:
 	if sonido_feedback:
 		sonido_feedback.play()
 	get_tree().create_timer(1.6).timeout.connect(func(): etiqueta_feedback.visible = false)
+
+# Enemigos activos a menos de radio_zona_hostil del medico. Los NEUTRALIZADO
+# quedan invisibles hasta liberarse (enemigo_base.gd), por eso el filtro por
+# visible; los enemigos de un escenario congelado quedan a +80 m y no cuentan.
+func _hay_enemigos_cerca() -> bool:
+	for enemigo: Node3D in get_tree().get_nodes_in_group("enemigos"):
+		if not is_instance_valid(enemigo) or not enemigo.visible:
+			continue
+		if enemigo.global_position.distance_to(global_position) <= radio_zona_hostil:
+			return true
+	return false
 
 func _herido_en_rango() -> Herido:
 	var mas_cercano: Herido = null

@@ -67,6 +67,9 @@ func alternar() -> void:
 	var gestor := get_tree().get_first_node_in_group("gestor_escenarios")
 	if gestor:
 		gestor.pausar_activo(visible)
+	# El reloj de mision vive en GestorJuego (autoload, fuera del contenedor
+	# del escenario): hay que congelarlo aparte o la pausa quema tiempo.
+	GestorJuego.marcar_pausa(visible)
 
 # Ancla el panel una vez al abrirse: frente a la camara (solo rumbo
 # horizontal, sin heredar la inclinacion de la cabeza), a distancia de

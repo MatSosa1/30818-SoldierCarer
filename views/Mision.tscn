@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3]
+[gd_scene load_steps=53 format=3]
 
 [ext_resource type="PackedScene" path="res://views/Jugador.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/DirectorDeOleadas/director_de_oleadas.gd" id="2"]
@@ -163,6 +163,15 @@ size = Vector3(0.7, 0.3, 0.4)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_saco_arena"]
 albedo_color = Color(0.45, 0.4, 0.3, 1)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_pared"]
+size = Vector3(20, 3.5, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vehiculo"]
+size = Vector3(4.2, 1.5, 1.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edificio"]
+size = Vector3(6, 8, 6)
+
 [node name="Mision" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -288,8 +297,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
 
 [node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E1_Calle"]
-# PLACEHOLDER: ambiente urbano (RF-47), sin stream. autoplay=true para que
-# quede sonando apenas se active el escenario, sin necesitar script propio.
 autoplay = true
 unit_size = 20.0
 
@@ -300,29 +307,46 @@ mesh = SubResource("PlaneMesh_piso")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
 
 [node name="Ambientacion" type="Node3D" parent="Escenario_E1_Calle"]
-# PLACEHOLDER: props de ambientacion de E1 (PH-007), primitivas sin colision.
-# Posicionadas fuera de los ejes x=0/z=0 para no interferir con el avance en
-# linea recta de los enemigos desde las entradas de la calle.
 
 [node name="VehiculoAbandonado1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(0.906, 0, 0.423, -0.386, 0.454, 0.827, -0.192, -0.891, 0.411, 9, 0.9, 9)
 mesh = SubResource("BoxMesh_vehiculo")
 surface_material_override/0 = SubResource("StandardMaterial3D_vehiculo")
 
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1/Colision"]
+shape = SubResource("BoxShape3D_vehiculo")
+
 [node name="VehiculoAbandonado2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(0.643, 0, -0.766, 0.766, 0, 0.643, 0, -1, 0, -11, 0.75, 7)
 mesh = SubResource("BoxMesh_vehiculo")
 surface_material_override/0 = SubResource("StandardMaterial3D_vehiculo")
+
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2/Colision"]
+shape = SubResource("BoxShape3D_vehiculo")
 
 [node name="EdificioLateralIzq" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 4, 0)
 mesh = SubResource("BoxMesh_edificio")
 surface_material_override/0 = SubResource("StandardMaterial3D_edificio")
 
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq/Colision"]
+shape = SubResource("BoxShape3D_edificio")
+
 [node name="EdificioLateralDer" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 4, 0)
 mesh = SubResource("BoxMesh_edificio")
 surface_material_override/0 = SubResource("StandardMaterial3D_edificio")
+
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer/Colision"]
+shape = SubResource("BoxShape3D_edificio")
 
 [node name="Grafiti" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16.8, 2, 5)
@@ -420,7 +444,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
 [node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E2_Edificio"]
-# PLACEHOLDER: ambiente de tension/interior (RF-47), sin stream.
 autoplay = true
 unit_size = 15.0
 
@@ -433,30 +456,46 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -5)
 escenario = "E2_Edificio"
 
 [node name="Estructura" type="Node3D" parent="Escenario_E2_Edificio"]
-# PLACEHOLDER: caja interior de E2 (PH-008), sin colision. Las paredes y el
-# techo bloquean la luz direccional exterior via sombra, generando la baja
-# visibilidad que pide UI_ART_Design.md SS6.2; el foco del herido queda como
-# fuente de luz principal.
 
 [node name="ParedNorte" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -10)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedNorte"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedNorte/Colision"]
+shape = SubResource("BoxShape3D_pared")
+
 [node name="ParedSur" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 10)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
+
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedSur"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedSur/Colision"]
+shape = SubResource("BoxShape3D_pared")
 
 [node name="ParedEste" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 1.75, 0)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedEste"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedEste/Colision"]
+shape = SubResource("BoxShape3D_pared")
+
 [node name="ParedOeste" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 1.75, 0)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
+
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste"]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste/Colision"]
+shape = SubResource("BoxShape3D_pared")
 
 [node name="Techo" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
@@ -486,7 +525,6 @@ mesh = SubResource("BoxMesh_puerta")
 surface_material_override/0 = SubResource("StandardMaterial3D_puerta")
 
 [node name="Escalera" type="Node3D" parent="Escenario_E2_Edificio"]
-# Decorativa: sugiere extension del edificio, no es accesible (UI_ART_Design.md SS6.2).
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 6)
 
 [node name="Escalon1" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera"]

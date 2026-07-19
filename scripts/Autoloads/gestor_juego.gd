@@ -28,18 +28,25 @@ var fase: Fase = Fase.DESPLIEGUE
 var tiempo_restante: float
 var rescates: int = 0
 var mision_activa: bool = false
+# true mientras el menu de pausa esta abierto: congela el reloj de mision.
+# pausar_activo() solo congela el CONTENEDOR del escenario; este autoload
+# vive fuera de el, asi que sin esta bandera el tiempo seguia drenandose
+# durante la pausa.
+var en_pausa: bool = false
 
 var _tratando: bool = false
 
 func _ready() -> void:
 	reiniciar()
 	EventBus.herido_estabilizado.connect(_al_estabilizar_herido)
+	EventBus.herido_muerto.connect(_al_morir_herido)
 
 func reiniciar() -> void:
 	tiempo_restante = duracion_mision
 	rescates = 0
 	fase = Fase.DESPLIEGUE
 	mision_activa = false # el reloj no corre hasta confirmar el despliegue
+	en_pausa = false
 	_tratando = false
 	# Refresca el reloj del HUD al instante: al rejugar, la muneca mostraba el
 	# tiempo de la partida anterior hasta el primer tick de mision.
@@ -57,7 +64,7 @@ func iniciar_mision(escenario: String) -> void:
 	print("Mision desplegada en %s: el reloj comienza a correr." % escenario)
 
 func _process(delta: float) -> void:
-	if not mision_activa:
+	if not mision_activa or en_pausa:
 		return
 	var factor := factor_tiempo_tratando if _tratando else 1.0
 	tiempo_restante = max(tiempo_restante - delta * factor, 0.0)
@@ -68,6 +75,10 @@ func _process(delta: float) -> void:
 # Llamado por kit_medico.gd cada frame con su propia visibilidad.
 func marcar_tratando(activo: bool) -> void:
 	_tratando = activo
+
+# Llamado por menu_pausa.gd al abrirse/cerrarse.
+func marcar_pausa(pausado: bool) -> void:
+	en_pausa = pausado
 
 # Llamado por gestor_escenarios.gd antes de reposicionar, con la distancia
 # real entre la posicion actual del jugador y el destino.
@@ -82,6 +93,26 @@ func consumir_tiempo_por_distancia(distancia: float) -> void:
 func _al_estabilizar_herido(_herido: Node) -> void:
 	if mision_activa:
 		rescates += 1
+		_verificar_cierre()
+
+func _al_morir_herido(_herido: Node) -> void:
+	if mision_activa:
+		_verificar_cierre()
+
+# Cierre temprano: si ya no queda ningun herido pendiente (todos ESTABILIZADO
+# o MUERTO), no tiene sentido dejar correr el reloj hasta agotarlo — la
+# mision termina con su propio resultado en vez de un "tiempo agotado" igual
+# al de fracasar.
+func _verificar_cierre() -> void:
+	var heridos := get_tree().get_nodes_in_group("heridos")
+	if heridos.is_empty():
+		return
+	for herido: Herido in heridos:
+		if not is_instance_valid(herido):
+			continue
+		if herido.estado_salud != Herido.EstadoSalud.ESTABILIZADO and herido.estado_salud != Herido.EstadoSalud.MUERTO:
+			return
+	terminar_mision("completada" if rescates > 0 else "heridos_perdidos")
 
 # RF-43: termina la mision por tiempo agotado o jugador eliminado. Pausa la
 # simulacion del escenario activo (mismo mecanismo que el menu de pausa,

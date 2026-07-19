@@ -38,13 +38,10 @@ emission_energy_multiplier = 2.0
 albedo_color = Color(0.15, 0.13, 0.11, 1)
 
 [node name="SoldadoHerido" type="Node3D"]
+process_mode = 3
 script = ExtResource("1")
 
 [node name="Cuerpo" type="Node3D" parent="."]
-# PLACEHOLDER: soldado tendido boca arriba con primitivas (PH-002/PH-021):
-# cabeza hacia -Z, pies hacia +Z. Las heridas procedurales se cuelgan de
-# PuntosDeHerida, sobre estas partes del cuerpo. El swap por el modelo real
-# (entities/model.blend) solo debe conservar los nombres de los puntos.
 
 [node name="Torso" type="MeshInstance3D" parent="Cuerpo"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
@@ -77,8 +74,6 @@ mesh = SubResource("CapsuleMesh_pierna")
 surface_material_override/0 = SubResource("StandardMaterial3D_botas")
 
 [node name="PuntosDeHerida" type="Node3D" parent="."]
-# Puntos anatomicos donde GeneradorHeridas puede colocar heridas. Mantener
-# los nombres al hacer el swap del modelo: la curacion apunta a su posicion.
 
 [node name="Pecho" type="Marker3D" parent="PuntosDeHerida"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -0.12)

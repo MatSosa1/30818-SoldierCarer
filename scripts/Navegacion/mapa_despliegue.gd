@@ -128,7 +128,10 @@ func confirmar_seleccion() -> void:
 	_seleccionar(icono)
 
 func _seleccionar(icono: Node3D) -> void:
-	if GestorJuego.fase != GestorJuego.Fase.DESPLIEGUE:
+	# en_pausa: el clic de mouse sobre el Area3D no pasa por el arbitraje del
+	# gatillo en jugador.gd, asi que sin esta guarda se podia desplegar la
+	# mision con el menu de pausa abierto.
+	if GestorJuego.fase != GestorJuego.Fase.DESPLIEGUE or GestorJuego.en_pausa:
 		return
 	var escenario: String = _escenario_por_icono[icono]
 	# Vector3.ZERO = centinela "usar el PuntoDespliegue del escenario" (la
