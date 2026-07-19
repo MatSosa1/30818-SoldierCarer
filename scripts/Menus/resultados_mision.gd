@@ -29,7 +29,12 @@ func _ready() -> void:
 	GestorJuego.mision_finalizada.connect(_al_finalizar_mision)
 
 func _al_finalizar_mision(resultado: String, rescates: int) -> void:
-	var nombres := {"tiempo_agotado": "TIEMPO AGOTADO", "eliminado": "HAS CAIDO"}
+	var nombres := {
+		"tiempo_agotado": "TIEMPO AGOTADO",
+		"eliminado": "HAS CAIDO",
+		"completada": "MISION COMPLETADA",
+		"heridos_perdidos": "TODOS LOS HERIDOS MURIERON",
+	}
 	etiqueta_resultado.text = nombres.get(resultado, resultado.to_upper())
 	etiqueta_rescates.text = "Soldados rescatados: %d" % rescates
 	if menu_pausa:

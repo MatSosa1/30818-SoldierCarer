@@ -74,6 +74,13 @@ func _ready() -> void:
 	print("Herido en %s: %d heridas -> %s" % [escenario, heridas.size(), _resumen_heridas()])
 
 func _process(delta: float) -> void:
+	# Presion de triaje (Contexto.md pilar 4): el nodo usa PROCESS_MODE_ALWAYS
+	# en SoldadoHerido.tscn para seguir procesando aunque su escenario este
+	# desactivado — TODOS los heridos se desangran en paralelo, no solo el del
+	# escenario visitado. A cambio, el propio herido respeta aqui las fases de
+	# la partida: sin decaimiento antes del despliegue, en pausa ni al final.
+	if GestorJuego.fase != GestorJuego.Fase.MISION or GestorJuego.en_pausa:
+		return
 	if estado_salud == EstadoSalud.MUERTO or estado_salud == EstadoSalud.ESTABILIZADO:
 		return
 	_alivio = max(_alivio - decaimiento_alivio * delta, 0.0)
@@ -201,6 +208,7 @@ func _morir() -> void:
 	cuerpo.position = _posicion_base_cuerpo
 	_actualizar_etiqueta()
 	print("Herido murio sin ser estabilizado a tiempo.")
+	EventBus.herido_muerto.emit(self)
 
 func _al_estabilizar() -> void:
 	estado_salud = EstadoSalud.ESTABILIZADO
