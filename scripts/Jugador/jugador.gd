@@ -15,6 +15,7 @@ signal disparo_realizado(rayo: RayCast3D)
 @onready var mano_derecha: XRController3D = $XROrigin3D/ManoDerecha
 @onready var arma_raycast: RayCast3D = $XROrigin3D/ManoDerecha/Arma/RayCast3D
 @onready var mapa_muneca: Node3D = $XROrigin3D/ManoIzquierda/MapaMuneca
+@onready var kit_medico: Node3D = $XROrigin3D/KitMedico
 @onready var pantalla_danio: ColorRect = $UI/PantallaDanio
 @onready var etiqueta_salud: Label = $UI/EtiquetaSalud
 @onready var trazador_disparo: MeshInstance3D = get_node_or_null(trazador_disparo_path)
@@ -39,13 +40,19 @@ func _inicializar_openxr() -> void:
 	else:
 		print("OpenXR no disponible: ejecutando sin XR activo (revisa el runtime/headset).")
 
-# El gatillo derecho dispara el arma, salvo que el mapa de muneca este
-# abierto: en ese caso confirma la seleccion del mapa (RF-08) en su lugar.
+# El gatillo derecho dispara el arma por defecto. Si el mapa de muneca esta
+# abierto, confirma su seleccion (RF-08) en su lugar; si no, y el kit medico
+# esta abierto, confirma la seleccion/aplicacion de item (RF-17..RF-24).
+# Ambos paneles se abren con gestos de la mano izquierda mutuamente
+# excluyentes (altura vs. proximidad a la mochila), asi que no compiten
+# entre si por el gatillo.
 func _al_presionar_boton_mano(nombre_boton: String) -> void:
 	if nombre_boton != "trigger_click":
 		return
 	if mapa_muneca and mapa_muneca.visible:
 		mapa_muneca.confirmar_seleccion()
+	elif kit_medico and kit_medico.visible:
+		kit_medico.confirmar_seleccion()
 	else:
 		disparar()
 

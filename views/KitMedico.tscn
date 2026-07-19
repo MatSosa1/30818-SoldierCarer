@@ -1,0 +1,117 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/KitMedico/kit_medico.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/KitMedico/vendas.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/KitMedico/morfina.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/KitMedico/alcohol.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/KitMedico/suturas.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/KitMedico/analgesicos.gd" id="6"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_item"]
+size = Vector3(0.03, 0.03, 0.03)
+
+[node name="KitMedico" type="Node3D"]
+script = ExtResource("1")
+
+[node name="EtiquetaEquipado" type="Label3D" parent="."]
+position = Vector3(0, 0.09, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.0015
+font_size = 32
+text = ""
+
+[node name="EtiquetaFeedback" type="Label3D" parent="."]
+position = Vector3(0, 0.06, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.0015
+font_size = 32
+text = "OK"
+
+[node name="SonidoFeedback" type="AudioStreamPlayer3D" parent="."]
+
+[node name="ItemVendas" type="Node3D" parent="."]
+position = Vector3(-0.08, 0, -0.03)
+script = ExtResource("2")
+tipo = 0
+nombre_item = "Vendas"
+
+[node name="Icono" type="MeshInstance3D" parent="ItemVendas"]
+mesh = SubResource("BoxMesh_item")
+
+[node name="Etiqueta" type="Label3D" parent="ItemVendas"]
+position = Vector3(0, 0.03, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.001
+font_size = 24
+text = "Vendas"
+
+[node name="ItemMorfina" type="Node3D" parent="."]
+position = Vector3(-0.04, 0, -0.03)
+script = ExtResource("3")
+tipo = 1
+nombre_item = "Morfina"
+
+[node name="Icono" type="MeshInstance3D" parent="ItemMorfina"]
+mesh = SubResource("BoxMesh_item")
+
+[node name="Etiqueta" type="Label3D" parent="ItemMorfina"]
+position = Vector3(0, 0.03, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.001
+font_size = 24
+text = "Morfina"
+
+[node name="ItemAlcohol" type="Node3D" parent="."]
+position = Vector3(0, 0, -0.03)
+script = ExtResource("4")
+tipo = 2
+nombre_item = "Alcohol"
+
+[node name="Icono" type="MeshInstance3D" parent="ItemAlcohol"]
+mesh = SubResource("BoxMesh_item")
+
+[node name="Etiqueta" type="Label3D" parent="ItemAlcohol"]
+position = Vector3(0, 0.03, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.001
+font_size = 24
+text = "Alcohol"
+
+[node name="ItemSuturas" type="Node3D" parent="."]
+position = Vector3(0.04, 0, -0.03)
+script = ExtResource("5")
+tipo = 3
+nombre_item = "Suturas"
+
+[node name="Icono" type="MeshInstance3D" parent="ItemSuturas"]
+mesh = SubResource("BoxMesh_item")
+
+[node name="Etiqueta" type="Label3D" parent="ItemSuturas"]
+position = Vector3(0, 0.03, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.001
+font_size = 24
+text = "Suturas"
+
+[node name="ItemAnalgesicos" type="Node3D" parent="."]
+position = Vector3(0.08, 0, -0.03)
+script = ExtResource("6")
+tipo = 4
+nombre_item = "Analgesicos"
+
+[node name="Icono" type="MeshInstance3D" parent="ItemAnalgesicos"]
+mesh = SubResource("BoxMesh_item")
+
+[node name="Etiqueta" type="Label3D" parent="ItemAnalgesicos"]
+position = Vector3(0, 0.03, 0)
+billboard = 1
+no_depth_test = true
+pixel_size = 0.001
+font_size = 24
+text = "Analgesicos"
