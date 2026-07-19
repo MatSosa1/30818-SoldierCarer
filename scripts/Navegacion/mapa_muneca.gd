@@ -2,10 +2,10 @@ extends Node3D
 ## Mapa 2D diegetico en la muneca izquierda (RF-06..RF-10). Se activa al
 ## levantar la mano izquierda por encima de un umbral de altura; muestra la
 ## posicion del jugador (centro fijo del mapa), un icono por cada nodo del
-## grupo "heridos" (color de urgencia real pendiente de la FSM de salud de
-## S4 - ver COLOR_PENDIENTE) y dos iconos fijos para saltar de escenario.
-## Seleccion: acercar la mano derecha a un icono y presionar el gatillo
-## (arbitrado en jugador.gd para no disparar el arma al mismo tiempo).
+## grupo "heridos" con el color semaforico real de Herido.EstadoSalud
+## (RF-13, desde S4) y dos iconos fijos para saltar de escenario. Un herido
+## MUERTO atenua/oculta su icono (RF-10). Seleccion: acercar la mano derecha
+## a un icono y presionar el gatillo (arbitrado en jugador.gd).
 ##
 ## PLACEHOLDER: fondo y iconos son primitivas de Godot (PH-014). El arte de
 ## mapa holografico final ya existe en assets/2D/2D_neon_map/.
@@ -15,8 +15,12 @@ extends Node3D
 @export var radio_mapa: float = 0.07
 @export var radio_seleccion: float = 0.03
 
-const COLOR_ESTABILIZADO := Color(0.137, 0.545, 0.137) # verde estable #228B22
-const COLOR_PENDIENTE := Color(0.5, 0.5, 0.5) # PLACEHOLDER: urgencia real llega en S4
+const HeridoScript := preload("res://scripts/Herido/herido.gd")
+
+const COLOR_ESTABLE := Color(0.137, 0.545, 0.137) # #228B22
+const COLOR_CRITICO := Color(0.855, 0.647, 0.125) # #DAA520
+const COLOR_AGONIZANTE := Color(0.8, 0.0, 0.0) # #CC0000
+const COLOR_MUERTO := Color(0.25, 0.25, 0.25)
 
 @onready var mano_izquierda: XRController3D = get_parent()
 # No se usa get_tree().get_first_node_in_group("jugador"): MapaMuneca es
@@ -67,11 +71,21 @@ func _actualizar_iconos_heridos() -> void:
 			add_child(icono)
 			_iconos_heridos[herido] = icono
 
-		var valor_curado = herido.get("curado_completo")
-		var esta_curado: bool = valor_curado if valor_curado is bool else false
-		(icono.material_override as StandardMaterial3D).albedo_color = (
-			COLOR_ESTABILIZADO if esta_curado else COLOR_PENDIENTE
-		)
+		var estado = herido.get("estado_salud")
+		var oculto_por_muerte := false
+		var color: Color
+		match estado:
+			HeridoScript.EstadoSalud.CRITICO:
+				color = COLOR_CRITICO
+			HeridoScript.EstadoSalud.AGONIZANTE:
+				color = COLOR_AGONIZANTE
+			HeridoScript.EstadoSalud.MUERTO:
+				color = COLOR_MUERTO
+				oculto_por_muerte = true
+			_: # ESTABLE o ESTABILIZADO
+				color = COLOR_ESTABLE
+		icono.visible = not oculto_por_muerte
+		(icono.material_override as StandardMaterial3D).albedo_color = color
 
 		var offset: Vector3 = herido.global_position - jugador.global_position
 		var local_pos := Vector3(offset.x, 0.01, offset.z) * escala_mapa
