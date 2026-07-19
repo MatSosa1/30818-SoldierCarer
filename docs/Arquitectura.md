@@ -274,10 +274,22 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 - **RF-32 (escalado de dificultad):** ya implementado desde S0 y sin cambios — se confirma que sigue integrado correctamente con el mecanismo de pausa por escenario, ya que `DirectorDeOleadas` vive dentro de `Escenario_E1_Calle` y hereda su `process_mode`.
 - **Sin verificar en editor/headset real** (mismo motivo que sprints anteriores).
 
+## 9.5 Pulido y verificación de RNF (S11)
+
+**Implementado en rama `feature/pulido`** (pendiente de commit manual) — verificación de RNF-01..RNF-06. Sin acceso a editor/headset no hay forma de perfilar FPS real ni de "ajustar por sensación", así que este sprint se limitó a **bugs concretos y verificables por lectura de código**, no a tuning especulativo de números que ya son `@export`:
+
+- **RNF-01 (fuga de nodos, bug real):** `enemigo_base.gd._neutralizar()` dejaba al enemigo invisible/sin colisión para siempre, sin `queue_free()` — `Arquitectura.md §10` ya afirmaba lo contrario ("se liberan tras un breve retardo") pero nunca se había implementado. En una misión de 10 min con escalado de dificultad activo, esto acumula nodos indefinidamente. Se agregó `@export var retardo_liberacion: float = 2.0` + `queue_free()` diferido tras emitir `neutralizado` (el retardo deja terminar cualquier animación/sonido asociado a la baja; `DirectorDeOleadas._al_neutralizar_enemigo` no retiene la referencia al nodo, así que liberarlo después es seguro).
+- **RNF-01 (draw calls, ajuste menor):** los 7 `Escombro*` decorativos de `Ambientacion`/`Escombros` (E1 y E2) pasan a `cast_shadow = 0` — clutter pequeño cuya sombra no aporta nada visible pero sí cuesta un draw call extra en el shadow map cada uno.
+- **RNF-03 (transición con fundido, gap real):** ningún cambio de escena tenía fundido — todos eran cortes duros (`change_scene_to_file` directo). `EstadoInicial.tscn` (escena plana, sin `use_xr`) suma un `ColorRect` de fundido propio: entra en negro y se desvanece al mostrar el briefing, y vuelve a fundir a negro antes de cargar `Mision.tscn`. Para las salidas **desde** la misión (menú de pausa "SALIR", resultados "VOLVER AL MENÚ") se agregó `jugador.gd.fundido_salida(escena, duracion)`, que reutiliza el quad 3D `Desvanecido3D` ya existente (necesario en VR porque un `CanvasLayer` no se renderiza en el headset, `§9.3`) — funde a negro y recién ahí cambia de escena, en vez del fundido autodesvanecido de `fundido_teletransporte()`.
+- **RNF-06 (tolerancias de gesto ajustables) — verificado, sin cambios:** todos los umbrales de gesto (`vendas.grados_requeridos`, `alcohol.umbral_grados`/`duracion_sostenida`, `suturas.grapas_requeridas`/`umbral_presion`/`umbral_liberado`) y de interacción (`kit_medico.radio_apertura`/`radio_seleccion`, `mapa_muneca.altura_activacion`/`radio_seleccion`, `pistola.radio_funda`) ya eran `@export` desde que se escribieron. `RNF-12` (tiempos de decaimiento de heridos) también: `herido.duracion_estable/critico/agonizante`.
+- **RNF-02, RNF-04, RNF-05** — ya cubiertos por diseño desde sprints anteriores (low-poly + materiales compartidos; sin locomoción continua; `GestorOpciones.intensidad_teletransporte`); no se encontró nada concreto que corregir sin poder perfilar.
+- **No se tocaron** números de balanceo (duración de misión, salud, daño, cadencias) — cambiarlos sin datos de playtesting real sería inventar un balance, no corregir uno. Quedan exactamente como se definieron en S1-S10, todos ya parametrizables.
+- **Sin verificar en editor/headset real** — este es el sprint que, por definición, más necesita esa validación; lo hecho aquí es lo máximo defendible sin ella.
+
 ## 10. Rendimiento (guías para cumplir RNF-01/02)
 
 - Low-poly + `StandardMaterial3D` simples; evitar transparencias y luces dinámicas innecesarias.
-- Instanciar/liberar enemigos por oleada; no dejar nodos inertes acumulándose (los `NEUTRALIZADO` se liberan tras un breve retardo).
+- Instanciar/liberar enemigos por oleada; no dejar nodos inertes acumulándose (los `NEUTRALIZADO` se liberan tras un breve retardo — **cierto desde S11**; antes de eso la nota ya lo afirmaba pero no estaba implementado, ver `§9.5`).
 - Perfilar con el monitor de Godot al cierre de cada sprint; registrar FPS por escenario.
 - Reutilizar materiales y mallas entre placeholders.
 

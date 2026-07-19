@@ -10,6 +10,12 @@ class_name EnemigoBase
 signal neutralizado(enemigo: CharacterBody3D)
 
 @export var salud_maxima: float = 20.0
+# RNF-01: los NEUTRALIZADO se liberan tras este retardo en vez de quedar
+# invisibles para siempre en el arbol (fuga de nodos: en una mision larga
+# con escalado de dificultad, DirectorDeOleadas puede llegar a instanciar
+# decenas de parejas). El retardo (no queue_free inmediato) deja tiempo a
+# que el disparo/animacion que causo la baja termine de reproducirse.
+@export var retardo_liberacion: float = 2.0
 
 var salud: float
 
@@ -39,6 +45,7 @@ func _neutralizar() -> void:
 		sonido_pasos.stop()
 	print("%s neutralizado" % name)
 	neutralizado.emit(self)
+	get_tree().create_timer(retardo_liberacion).timeout.connect(queue_free)
 
 # RF-33/RF-45: audio espacial de pasos mientras avanza, para que el jugador
 # perciba la direccion del enemigo antes de verlo. No repite el play() si ya

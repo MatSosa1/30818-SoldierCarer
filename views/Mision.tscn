@@ -208,21 +208,25 @@ surface_material_override/0 = SubResource("StandardMaterial3D_copa")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.08, 9)
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+cast_shadow = 0
 
 [node name="Escombro2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.08, 6)
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+cast_shadow = 0
 
 [node name="Escombro3" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.08, -7)
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+cast_shadow = 0
 
 [node name="Escombro4" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.08, -9)
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+cast_shadow = 0
 
 [node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E1_Calle"]
 script = ExtResource("2")
@@ -346,13 +350,16 @@ surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.08, 2)
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+cast_shadow = 0
 
 [node name="Escombro2" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.08, -2)
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+cast_shadow = 0
 
 [node name="Escombro3" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.08, -4)
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+cast_shadow = 0

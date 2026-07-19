@@ -164,3 +164,16 @@ func fundido_teletransporte() -> void:
 	material.albedo_color.a = 1.0
 	var tween := create_tween()
 	tween.tween_property(material, "albedo_color:a", 0.0, duracion)
+
+# RNF-03: fundido a negro completo antes de salir de la mision (menu de
+# pausa "SALIR", pantalla de resultados "VOLVER AL MENU"). A diferencia de
+# fundido_teletransporte() (que se autodesvanece), este queda en negro
+# hasta que la escena cambia, para no mostrar el "salto" de vuelta al menu.
+func fundido_salida(escena_destino: String, duracion: float = 0.4) -> void:
+	var material: StandardMaterial3D = desvanecido.material_override if desvanecido else null
+	if not material:
+		get_tree().change_scene_to_file(escena_destino)
+		return
+	var tween := create_tween()
+	tween.tween_property(material, "albedo_color:a", 1.0, duracion)
+	tween.tween_callback(func(): get_tree().change_scene_to_file(escena_destino))

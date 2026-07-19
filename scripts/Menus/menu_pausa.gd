@@ -37,6 +37,7 @@ const RADIO_MAPA := 0.03
 
 @onready var mano_derecha: XRController3D = get_node_or_null("../ManoDerecha")
 @onready var camara: XRCamera3D = get_node_or_null("../Camera3D")
+@onready var jugador: Jugador = get_node_or_null("../..")
 @onready var icono_reanudar: Node3D = $IconoReanudar
 @onready var icono_opciones: Node3D = $IconoOpciones
 @onready var etiqueta_opcion_actual: Label3D = $IconoOpciones/EtiquetaValor
@@ -128,7 +129,12 @@ func confirmar_seleccion() -> void:
 		GestorOpciones.ciclar_intensidad_teletransporte()
 		_actualizar_etiqueta_opcion()
 	elif icono == icono_salir:
-		get_tree().change_scene_to_file("res://views/main_menu.tscn")
+		# RNF-03: fundido a negro antes de volver al menu (en vez de un
+		# corte duro de escena).
+		if jugador:
+			jugador.fundido_salida("res://views/main_menu.tscn")
+		else:
+			get_tree().change_scene_to_file("res://views/main_menu.tscn")
 
 func _actualizar_etiqueta_opcion() -> void:
 	if etiqueta_opcion_actual:
