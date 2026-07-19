@@ -20,6 +20,8 @@ class_name Pistola
 @onready var modelo: Node3D = $PH_Pistola
 @onready var etiqueta_cargador: Label3D = $EtiquetaCargador
 @onready var raycast: RayCast3D = $RayCast3D
+@onready var sonido_disparo: AudioStreamPlayer3D = $SonidoDisparo
+@onready var sonido_recarga: AudioStreamPlayer3D = $SonidoRecarga
 
 var en_mano: bool = false
 var municion_actual: int
@@ -60,6 +62,8 @@ func intentar_disparar() -> RayCast3D:
 		return null
 	municion_actual -= 1
 	raycast.force_raycast_update()
+	if sonido_disparo:
+		sonido_disparo.play()
 	_actualizar_visual()
 	return raycast
 
@@ -69,6 +73,8 @@ func recargar() -> void:
 		return
 	cargadores_restantes -= 1
 	municion_actual = balas_por_cargador
+	if sonido_recarga:
+		sonido_recarga.play()
 	_actualizar_visual()
 	print("Cargador recargado. Cargadores restantes: %s" % cargadores_restantes)
 

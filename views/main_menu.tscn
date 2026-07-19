@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://dt4bc8a4me66x" path="res://scripts/MainMenu/btn_options.gd" id="12_06hvf"]
 [ext_resource type="Script" uid="uid://cl32cywrw8lo3" path="res://scripts/MainMenu/btn_exit.gd" id="13_06hvf"]
 [ext_resource type="Texture2D" uid="uid://dld10yoe1swvy" path="res://assets/Fondos/Pared_Con_Agujero.png" id="14_lgncj"]
+[ext_resource type="Script" path="res://scripts/Menus/menu_principal.gd" id="16_menu_s8"]
 [ext_resource type="Texture2D" uid="uid://bhhtohbvhw4y7" path="res://assets/Fondos/Pared_Con_Ventana.png" id="15_twxu1"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cafmx"]
@@ -43,6 +44,7 @@ size = Vector3(2.3540192, 0.38720703, 2.2057495)
 size = Vector3(1.871582, 0.35681152, 1.8955078)
 
 [node name="MainMenu" type="Node3D" unique_id=1011262876]
+script = ExtResource("16_menu_s8")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1808967152]
 environment = SubResource("Environment_mmlvu")

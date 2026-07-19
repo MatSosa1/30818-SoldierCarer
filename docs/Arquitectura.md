@@ -95,7 +95,7 @@ res://
 |---|---|---|
 | `EventBus` | Señales globales desacopladas entre sistemas. | **Creado en S2** (`scripts/Autoloads/event_bus.gd`, registrado en `project.godot`) con `solicitar_teletransporte(punto_destino, escenario)` y `escenario_activado(escenario)`. **S4** sumó `herido_estabilizado(herido: Node)` (payload es el nodo, no un `id` dedicado). `herido_muerto(id)` y `mision_terminada(resultado)` se agregan cuando tengan consumidor real (S10). |
 | `GestorJuego` | Estado de partida: score, tiempo restante, condición de fin, escenario activo. | Fuente única de verdad del game loop. |
-| `GestorAudio` | Buses, música por estado (menú/combate/crítico), disparo de SFX. | Aísla la reproducción del resto de sistemas. |
+| `GestorAudio` | Buses, música por estado (menú/combate/crítico), disparo de SFX. | **Creado en S8** (`scripts/Autoloads/gestor_audio.gd`) con `cambiar_estado(EstadoMusica)` y un único `AudioStreamPlayer`. Solo centraliza la **música** (única/global por naturaleza); los SFX puntuales (disparos, pasos, kit, heridos) usan su propio `AudioStreamPlayer3D` cableado localmente en cada escena para conservar su posición 3D — no pasan por este autoload. Sin buses de audio personalizados todavía (usa el bus `Master` por defecto). |
 
 ## 5. Inventario del código existente (demo) y cómo integrarse
 
@@ -217,6 +217,17 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 - **`mapa_muneca.gd`** deja de usar el color gris placeholder: ahora hace `preload("res://scripts/Herido/herido.gd")` para leer `HeridoScript.EstadoSalud` por reflexión (`herido.get("estado_salud")`, mismo patrón duck-typed que ya usaba para `curado_completo`) y pinta verde/amarillo/rojo real; oculta el icono si `estado_salud == MUERTO` (RF-10).
 - Puntuación/pantalla de resultados por rescates (RF-16 parte "S10", RF-44) sigue **fuera de alcance**: no se creó `GestorJuego` todavía, es territorio de S10.
 - **Sin verificar en editor/headset real** (mismo motivo que S1/S2/S3).
+
+## 9.1 Sistema de audio (resumen técnico)
+
+**Implementado en S8** (rama `feature/audio`, pendiente de commit manual) — RF-33, RF-45, RF-46, RF-47 · RNF-15, RNF-16:
+- **Música por estado (RF-46):** `GestorAudio.cambiar_estado(EstadoMusica.MENU/COMBATE/CRITICO)`. `jugador.gd` llama `COMBATE` al entrar a `Mision.tscn` y alterna a `CRITICO`/`COMBATE` según `salud <= salud_maxima * umbral_salud_critica` (nuevo `@export`, default 30%) en cada `recibir_dano()`. `scripts/Menus/menu_principal.gd` (nuevo, adjunto al root de `views/main_menu.tscn`) llama `MENU` en `_ready()` — único cambio en ese archivo, que ya tenía props 3D reales integradas por el equipo de arte; no se tocó nada más de su contenido.
+- **Audio espacial de enemigos (RF-33/RF-45):** `enemigo_base.gd` suma `SonidoPasos` (`AudioStreamPlayer3D`) con helpers `_reproducir_pasos()`/`_detener_pasos()` (evita reiniciar el loop si ya está sonando); cada subclase los llama en su rama `AVANCE`/no-`AVANCE`. `enemigo_arma.gd` suma `SonidoDisparo` (en `_disparar_rafaga()`), `enemigo_cuchillo.gd` suma `SonidoEmbestida` (en `_atacar_cuerpo_a_cuerpo()`).
+- **Disparo/recarga del jugador:** `pistola.gd` suma `SonidoDisparo`/`SonidoRecarga`, reproducidos en `intentar_disparar()`/`recargar()`.
+- **Ambiente (RF-47):** `SonidoAmbiente` (`AudioStreamPlayer3D`, `autoplay=true`) en cada contenedor de escenario (`Escenario_E1_Calle`, `Escenario_E2_Edificio`) — no necesita script propio, cubre genéricamente "ambiente urbano"/"explosiones lejanas" hasta que un sprint de pulido (S11) agregue disparo aleatorio de eventos puntuales.
+- **RNF-16 (`AudioListener3D`):** no se agregó un nodo `AudioListener3D` explícito. `XRCamera3D` (`Jugador.tscn`) ya tiene `current = true`, y en Godot 4 la cámara 3D activa actúa como listener de audio por defecto — cumple el requisito sin duplicar responsabilidad; agregar un `AudioListener3D` aparte solo tendría sentido si se quisiera desacoplar la posición de escucha de la cabeza del jugador, lo cual no aplica aquí.
+- **Sin streams reales todavía** (PH-012/PH-013): todo `AudioStreamPlayer`/`AudioStreamPlayer3D` queda cableado y disparado en el momento correcto, pero sin asset de audio asignado — `.play()` sobre un stream nulo es un no-op seguro (mismo patrón ya usado desde S3).
+- **Sin verificar en editor/headset real** (mismo motivo que sprints anteriores).
 
 ## 10. Rendimiento (guías para cumplir RNF-01/02)
 
