@@ -12,11 +12,13 @@ extends Node3D
 
 @export var duracion_maxima: float = 8.0
 @export var caracteres_por_segundo: float = 35.0
+@export var duracion_fundido: float = 0.5 # RNF-03: fundido a negro entre menu y mision
 
 @onready var area_continuar: Area3D = $AreaContinuar
 @onready var texto_briefing: Label3D = $Documento/TextoBriefing
 @onready var etiqueta_continuar: Label3D = $EtiquetaContinuar
 @onready var sonido_tecleo: AudioStreamPlayer = $SonidoTecleo
+@onready var desvanecido: ColorRect = $UI/Desvanecido
 
 var _texto_completo: String
 var _caracteres_visibles: float = 0.0
@@ -29,6 +31,8 @@ func _ready() -> void:
 	texto_briefing.text = ""
 	if area_continuar:
 		area_continuar.input_event.connect(_on_area_input_event)
+	if desvanecido:
+		create_tween().tween_property(desvanecido, "color:a", 0.0, duracion_fundido)
 
 func _process(delta: float) -> void:
 	if _continuado:
@@ -64,4 +68,9 @@ func _continuar() -> void:
 	if _continuado:
 		return
 	_continuado = true
-	get_tree().change_scene_to_file("res://views/Mision.tscn")
+	if desvanecido:
+		var tween := create_tween()
+		tween.tween_property(desvanecido, "color:a", 1.0, duracion_fundido)
+		tween.tween_callback(func(): get_tree().change_scene_to_file("res://views/Mision.tscn"))
+	else:
+		get_tree().change_scene_to_file("res://views/Mision.tscn")

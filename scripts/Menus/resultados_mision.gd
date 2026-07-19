@@ -16,6 +16,7 @@ class_name ResultadosMision
 
 @onready var camara: XRCamera3D = get_node_or_null("../Camera3D")
 @onready var mano_derecha: XRController3D = get_node_or_null("../ManoDerecha")
+@onready var jugador: Jugador = get_node_or_null("../..")
 @onready var menu_pausa: MenuPausa = get_node_or_null("../MenuPausa")
 @onready var mapa_muneca: MapaMuneca = get_node_or_null("../ManoIzquierda/MapaMuneca")
 @onready var kit_medico: KitMedico = get_node_or_null("../KitMedico")
@@ -57,4 +58,8 @@ func confirmar_seleccion() -> void:
 		return
 	if mano_derecha.global_position.distance_to(icono_volver.global_position) <= radio_seleccion:
 		mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.1, 0.0)
-		get_tree().change_scene_to_file("res://views/main_menu.tscn")
+		# RNF-03: fundido a negro antes de volver al menu.
+		if jugador:
+			jugador.fundido_salida("res://views/main_menu.tscn")
+		else:
+			get_tree().change_scene_to_file("res://views/main_menu.tscn")
