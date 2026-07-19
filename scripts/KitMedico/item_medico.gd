@@ -15,8 +15,14 @@ enum TipoItem {VENDAS, MORFINA, ALCOHOL, SUTURAS, ANALGESICOS}
 func requiere_confirmacion_manual() -> bool:
 	return false
 
-func procesar_gesto(_delta: float, _mano_derecha: XRController3D, _herido: Node) -> bool:
+# objetivo es la Herida concreta sobre la que se ejecuta el gesto (los items
+# de confirmacion manual reciben al Herido completo).
+func procesar_gesto(_delta: float, _mano_derecha: XRController3D, _objetivo: Node) -> bool:
 	return false
+
+# Avance del gesto en curso (0..1), para la etiqueta del kit y de la herida.
+func progreso() -> float:
+	return 0.0
 
 func reiniciar() -> void:
 	pass
