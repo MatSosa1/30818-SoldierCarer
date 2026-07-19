@@ -208,7 +208,7 @@ mesh = SubResource("BoxMesh_mesa_mapa")
 surface_material_override/0 = SubResource("StandardMaterial3D_mesa_mapa")
 
 [node name="PanelMapa" type="Node3D" parent="PuestoDeMando"]
-transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0.93, 0.9)
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 1.32, 0.7)
 script = ExtResource("6")
 
 [node name="Fondo" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa"]
