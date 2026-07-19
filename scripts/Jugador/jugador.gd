@@ -13,7 +13,7 @@ signal disparo_realizado(rayo: RayCast3D)
 @export var trazador_disparo_path: NodePath
 
 @onready var mano_derecha: XRController3D = $XROrigin3D/ManoDerecha
-@onready var arma_raycast: RayCast3D = $XROrigin3D/ManoDerecha/Arma/RayCast3D
+@onready var pistola: Node3D = $XROrigin3D/ManoDerecha/Pistola
 @onready var mapa_muneca: Node3D = $XROrigin3D/ManoIzquierda/MapaMuneca
 @onready var kit_medico: Node3D = $XROrigin3D/KitMedico
 @onready var pantalla_danio: ColorRect = $UI/PantallaDanio
@@ -58,20 +58,26 @@ func _al_presionar_boton_mano(nombre_boton: String) -> void:
 	else:
 		disparar()
 
+# RF-25/RF-26: solo dispara si la pistola esta desenfundada y con balas;
+# pistola.gd decide eso y devuelve el RayCast3D usado, o null si no disparo
+# (sin funda, sin balas). Sin tiro real no hay disparo_realizado: la esquiva
+# reactiva del enemigo cuchillo solo debe reaccionar a balas de verdad.
 func disparar() -> void:
-	arma_raycast.force_raycast_update()
-	disparo_realizado.emit(arma_raycast)
+	var rayo: RayCast3D = pistola.intentar_disparar()
+	if not rayo:
+		return
+	disparo_realizado.emit(rayo)
 
-	var origen := arma_raycast.global_position
+	var origen := rayo.global_position
 	var destino := origen
-	if arma_raycast.is_colliding():
-		destino = arma_raycast.get_collision_point()
+	if rayo.is_colliding():
+		destino = rayo.get_collision_point()
 	else:
-		destino = arma_raycast.global_transform * arma_raycast.target_position
+		destino = rayo.global_transform * rayo.target_position
 	_mostrar_trazador(origen, destino)
 
-	if arma_raycast.is_colliding():
-		var objetivo := arma_raycast.get_collider()
+	if rayo.is_colliding():
+		var objetivo := rayo.get_collider()
 		if objetivo and objetivo.has_method("recibir_dano"):
 			objetivo.recibir_dano(dano_disparo)
 
