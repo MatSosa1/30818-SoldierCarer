@@ -1,10 +1,11 @@
-[gd_scene load_steps=53 format=3]
+[gd_scene format=3 uid="uid://tpe1w4ybkpma"]
 
 [ext_resource type="PackedScene" path="res://views/Jugador.tscn" id="1"]
-[ext_resource type="Script" path="res://scripts/DirectorDeOleadas/director_de_oleadas.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/Escenarios/gestor_escenarios.gd" id="4"]
+[ext_resource type="Script" uid="uid://b4tslni6citf3" path="res://scripts/DirectorDeOleadas/director_de_oleadas.gd" id="2"]
+[ext_resource type="Script" uid="uid://klnc5rvj33k4" path="res://scripts/Escenarios/gestor_escenarios.gd" id="4"]
 [ext_resource type="PackedScene" path="res://views/SoldadoHerido.tscn" id="5"]
-[ext_resource type="Script" path="res://scripts/Navegacion/mapa_despliegue.gd" id="6"]
+[ext_resource type="Script" uid="uid://cboooi8w0smx4" path="res://scripts/Navegacion/mapa_despliegue.gd" id="6"]
+[ext_resource type="PackedScene" uid="uid://bhkjj8skt3cmn" path="res://assets/2D/2D_neon_map/map.blend" id="6_msle2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_horizon_color = Color(0.65, 0.68, 0.7, 1)
@@ -18,17 +19,60 @@ background_mode = 2
 sky = SubResource("Sky_1")
 tonemap_mode = 2
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_piso"]
-size = Vector2(40, 40)
-
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_trazador"]
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trazador"]
 shading_mode = 0
 albedo_color = Color(1, 0.9, 0.2, 1)
-emission_enabled = true
-emission = Color(1, 0.9, 0.2, 1)
-emission_energy_multiplier = 3.0
+
+[sub_resource type="ImmediateMesh" id="ImmediateMesh_trazador"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_piso_puesto"]
+size = Vector2(10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso_puesto"]
+albedo_color = Color(0.22, 0.22, 0.23, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mesa_mapa"]
+size = Vector3(1.6, 0.9, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mesa_mapa"]
+albedo_color = Color(0.2, 0.24, 0.18, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_mapa_fondo"]
+size = Vector2(1.4, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mapa_fondo"]
+shading_mode = 0
+albedo_color = Color(0.07, 0.157, 0.235, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_e1"]
+shading_mode = 0
+albedo_color = Color(0.137, 0.545, 0.137, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_icono_despliegue"]
+radius = 0.045
+height = 0.026
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_icono_despliegue"]
+radius = 0.07
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_e2"]
+shading_mode = 0
+albedo_color = Color(0.137, 0.545, 0.137, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_radio_campana"]
+size = Vector3(0.35, 0.16, 0.22)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_radio_campana"]
+albedo_color = Color(0.13, 0.15, 0.13, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_saco_arena"]
+size = Vector3(0.7, 0.3, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_saco_arena"]
+albedo_color = Color(0.45, 0.4, 0.3, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_piso"]
+size = Vector2(40, 40)
 
 [sub_resource type="BoxMesh" id="BoxMesh_vehiculo"]
 size = Vector3(4.2, 1.5, 1.9)
@@ -36,11 +80,25 @@ size = Vector3(4.2, 1.5, 1.9)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vehiculo"]
 albedo_color = Color(0.35, 0.32, 0.3, 1)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_vehiculo"]
+size = Vector3(4.2, 1.5, 1.9)
+
 [sub_resource type="BoxMesh" id="BoxMesh_edificio"]
 size = Vector3(6, 8, 6)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_edificio"]
 albedo_color = Color(0.353, 0.353, 0.353, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edificio"]
+size = Vector3(6, 8, 6)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_grafiti"]
+size = Vector2(2.5, 1.5)
+orientation = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grafiti"]
+cull_mode = 2
+albedo_color = Color(0.588, 0.196, 0.196, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_tronco"]
 top_radius = 0.12
@@ -63,19 +121,17 @@ size = Vector3(0.3, 0.15, 0.3)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_escombro"]
 albedo_color = Color(0.45, 0.45, 0.45, 1)
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_grafiti"]
-size = Vector2(2.5, 1.5)
-orientation = 2
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grafiti"]
-albedo_color = Color(0.588, 0.196, 0.196, 1)
-cull_mode = 2
-
 [sub_resource type="BoxMesh" id="BoxMesh_pared"]
 size = Vector3(20, 3.5, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pared"]
 albedo_color = Color(0.235, 0.235, 0.235, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pared"]
+size = Vector3(20, 3.5, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_techo"]
+size = Vector3(20, 0.3, 20)
 
 [sub_resource type="BoxMesh" id="BoxMesh_mueble"]
 size = Vector3(1.6, 0.7, 0.8)
@@ -84,7 +140,7 @@ size = Vector3(1.6, 0.7, 0.8)
 albedo_color = Color(0.3, 0.24, 0.2, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_puerta"]
-size = Vector3(1.0, 2.1, 0.08)
+size = Vector3(1, 2.1, 0.08)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puerta"]
 albedo_color = Color(0.239, 0.169, 0.106, 1)
@@ -95,492 +151,413 @@ size = Vector3(1.2, 0.2, 0.6)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_escalon"]
 albedo_color = Color(0.4, 0.4, 0.4, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_techo"]
-size = Vector3(20, 0.3, 20)
+[node name="Mision" type="Node3D" unique_id=118189621]
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_piso_puesto"]
-size = Vector2(10, 10)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso_puesto"]
-albedo_color = Color(0.22, 0.22, 0.23, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_mesa_mapa"]
-size = Vector3(1.6, 0.9, 0.9)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mesa_mapa"]
-albedo_color = Color(0.2, 0.24, 0.18, 1)
-
-[sub_resource type="QuadMesh" id="QuadMesh_mapa_fondo"]
-size = Vector2(1.4, 0.8)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mapa_fondo"]
-shading_mode = 0
-albedo_color = Color(0.07, 0.157, 0.235, 1)
-emission_enabled = true
-emission = Color(0.07, 0.157, 0.235, 1)
-emission_energy_multiplier = 0.6
-
-[sub_resource type="QuadMesh" id="QuadMesh_calle_horizontal"]
-size = Vector2(1.3, 0.06)
-
-[sub_resource type="QuadMesh" id="QuadMesh_calle_vertical"]
-size = Vector2(0.06, 0.7)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_calle_mapa"]
-shading_mode = 0
-albedo_color = Color(0.55, 0.6, 0.65, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_icono_despliegue"]
-radius = 0.045
-height = 0.026
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_e1"]
-shading_mode = 0
-albedo_color = Color(0.137, 0.545, 0.137, 1)
-emission_enabled = true
-emission = Color(0.137, 0.545, 0.137, 1)
-emission_energy_multiplier = 1.5
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_e2"]
-shading_mode = 0
-albedo_color = Color(0.137, 0.545, 0.137, 1)
-emission_enabled = true
-emission = Color(0.137, 0.545, 0.137, 1)
-emission_energy_multiplier = 1.5
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_icono_despliegue"]
-radius = 0.07
-
-[sub_resource type="BoxMesh" id="BoxMesh_radio_campana"]
-size = Vector3(0.35, 0.16, 0.22)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_radio_campana"]
-albedo_color = Color(0.13, 0.15, 0.13, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_saco_arena"]
-size = Vector3(0.7, 0.3, 0.4)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_saco_arena"]
-albedo_color = Color(0.45, 0.4, 0.3, 1)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_pared"]
-size = Vector3(20, 3.5, 0.3)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_vehiculo"]
-size = Vector3(4.2, 1.5, 1.9)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_edificio"]
-size = Vector3(6, 8, 6)
-
-[node name="Mision" type="Node3D"]
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1699842669]
 environment = SubResource("Environment_1")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=448106285]
 transform = Transform3D(0.7071068, -0.5, 0.5, 0, 0.7071068, 0.7071068, -0.7071068, -0.5, 0.5, 0, 5, 0)
 shadow_enabled = true
 
-[node name="TrazadorDisparo" type="MeshInstance3D" parent="."]
+[node name="TrazadorDisparo" type="MeshInstance3D" parent="." unique_id=1572668896]
 visible = false
-mesh = SubResource("ImmediateMesh_trazador")
 material_override = SubResource("StandardMaterial3D_trazador")
+mesh = SubResource("ImmediateMesh_trazador")
 
-[node name="Jugador" parent="." instance=ExtResource("1")]
+[node name="Jugador" parent="." unique_id=2021962887 instance=ExtResource("1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -78.5)
 trazador_disparo_path = NodePath("../TrazadorDisparo")
 
-[node name="GestorEscenarios" type="Node3D" parent="."]
+[node name="GestorEscenarios" type="Node3D" parent="." unique_id=547683573]
 script = ExtResource("4")
 contenedor_e1_path = NodePath("../Escenario_E1_Calle")
 contenedor_e2_path = NodePath("../Escenario_E2_Edificio")
 
-[node name="PuestoDeMando" type="Node3D" parent="."]
+[node name="PuestoDeMando" type="Node3D" parent="." unique_id=956628534]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -80)
 
-[node name="PisoPuesto" type="MeshInstance3D" parent="PuestoDeMando"]
+[node name="PisoPuesto" type="MeshInstance3D" parent="PuestoDeMando" unique_id=669842268]
 mesh = SubResource("PlaneMesh_piso_puesto")
 surface_material_override/0 = SubResource("StandardMaterial3D_piso_puesto")
 
-[node name="MesaMapa" type="MeshInstance3D" parent="PuestoDeMando"]
+[node name="MesaMapa" type="MeshInstance3D" parent="PuestoDeMando" unique_id=1485274680]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.9)
 mesh = SubResource("BoxMesh_mesa_mapa")
 surface_material_override/0 = SubResource("StandardMaterial3D_mesa_mapa")
 
-[node name="PanelMapa" type="Node3D" parent="PuestoDeMando"]
+[node name="PanelMapa" type="Node3D" parent="PuestoDeMando" unique_id=519653102]
 transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 1.32, 0.7)
 script = ExtResource("6")
 
-[node name="Fondo" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa"]
+[node name="map" parent="PuestoDeMando/PanelMapa" unique_id=508573465 instance=ExtResource("6_msle2")]
+transform = Transform3D(0.05, 0, 0, 0, -0.0048227333, -0.04904277, 0, 0.03074343, -0.007693358, -0.2031058, -0.11981869, -0.21704102)
+
+[node name="Plane" parent="PuestoDeMando/PanelMapa/map" index="14" unique_id=1656481372]
+visible = false
+
+[node name="Fondo" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa" unique_id=160722886]
+transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0, 0.049258232, -0.2793579)
 mesh = SubResource("QuadMesh_mapa_fondo")
 surface_material_override/0 = SubResource("StandardMaterial3D_mapa_fondo")
 
-[node name="CallePrincipal" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0.005)
-mesh = SubResource("QuadMesh_calle_horizontal")
-surface_material_override/0 = SubResource("StandardMaterial3D_calle_mapa")
-
-[node name="CalleSecundaria" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.05, 0.005)
-mesh = SubResource("QuadMesh_calle_vertical")
-surface_material_override/0 = SubResource("StandardMaterial3D_calle_mapa")
-
-[node name="EtiquetaTitulo" type="Label3D" parent="PuestoDeMando/PanelMapa"]
+[node name="EtiquetaTitulo" type="Label3D" parent="PuestoDeMando/PanelMapa" unique_id=1175163962]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0.02)
 pixel_size = 0.0006
-outline_size = 8
-font_size = 48
 text = "SELECCIONA PUNTO DE DESPLIEGUE"
+font_size = 48
+outline_size = 8
 
-[node name="IconoE1" type="Node3D" parent="PuestoDeMando/PanelMapa"]
+[node name="IconoE1" type="Node3D" parent="PuestoDeMando/PanelMapa" unique_id=1825393176]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.08, 0.01)
 
-[node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE1"]
-mesh = SubResource("SphereMesh_icono_despliegue")
+[node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE1" unique_id=1379177111]
 material_override = SubResource("StandardMaterial3D_icono_e1")
+mesh = SubResource("SphereMesh_icono_despliegue")
 
-[node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE1"]
+[node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE1" unique_id=1458791699]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.085, 0.01)
 pixel_size = 0.0006
-outline_size = 6
-font_size = 36
 text = "E1 — CALLE"
+font_size = 36
+outline_size = 6
 
-[node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE1"]
+[node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE1" unique_id=1764641948]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE1/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE1/Area3D" unique_id=1697794953]
 shape = SubResource("SphereShape3D_icono_despliegue")
 
-[node name="IconoE2" type="Node3D" parent="PuestoDeMando/PanelMapa"]
+[node name="IconoE2" type="Node3D" parent="PuestoDeMando/PanelMapa" unique_id=836923499]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.1, 0.01)
 
-[node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE2"]
-mesh = SubResource("SphereMesh_icono_despliegue")
+[node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE2" unique_id=529366927]
 material_override = SubResource("StandardMaterial3D_icono_e2")
+mesh = SubResource("SphereMesh_icono_despliegue")
 
-[node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE2"]
+[node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE2" unique_id=574351143]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.085, 0.01)
 pixel_size = 0.0006
-outline_size = 6
-font_size = 36
 text = "E2 — EDIFICIO"
+font_size = 36
+outline_size = 6
 
-[node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE2"]
+[node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE2" unique_id=1046949686]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE2/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE2/Area3D" unique_id=1824186556]
 shape = SubResource("SphereShape3D_icono_despliegue")
 
-[node name="LamparaPuesto" type="OmniLight3D" parent="PuestoDeMando"]
+[node name="LamparaPuesto" type="OmniLight3D" parent="PuestoDeMando" unique_id=57330077]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0.6)
 light_color = Color(1, 0.95, 0.85, 1)
 light_energy = 1.2
 omni_range = 7.0
 
-[node name="RadioCampana" type="MeshInstance3D" parent="PuestoDeMando"]
+[node name="RadioCampana" type="MeshInstance3D" parent="PuestoDeMando" unique_id=459213483]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.99, 1.15)
 mesh = SubResource("BoxMesh_radio_campana")
 surface_material_override/0 = SubResource("StandardMaterial3D_radio_campana")
 
-[node name="SacoArena1" type="MeshInstance3D" parent="PuestoDeMando"]
+[node name="SacoArena1" type="MeshInstance3D" parent="PuestoDeMando" unique_id=1122600533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.15, 0.3)
 mesh = SubResource("BoxMesh_saco_arena")
 surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
 
-[node name="SacoArena2" type="MeshInstance3D" parent="PuestoDeMando"]
+[node name="SacoArena2" type="MeshInstance3D" parent="PuestoDeMando" unique_id=111362145]
 transform = Transform3D(0.866, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866, -2.1, 0.45, 0.4)
 mesh = SubResource("BoxMesh_saco_arena")
 surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
 
-[node name="Escenario_E1_Calle" type="Node3D" parent="."]
+[node name="Escenario_E1_Calle" type="Node3D" parent="." unique_id=92539341]
 
-[node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E1_Calle"]
+[node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E1_Calle" unique_id=1078687546]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
 
-[node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E1_Calle"]
-autoplay = true
+[node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E1_Calle" unique_id=107596350]
 unit_size = 20.0
+autoplay = true
 
-[node name="Piso" type="MeshInstance3D" parent="Escenario_E1_Calle"]
+[node name="Piso" type="MeshInstance3D" parent="Escenario_E1_Calle" unique_id=1338220353]
 mesh = SubResource("PlaneMesh_piso")
 
-[node name="Herido" parent="Escenario_E1_Calle" instance=ExtResource("5")]
+[node name="Herido" parent="Escenario_E1_Calle" unique_id=1039361856 instance=ExtResource("5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
 
-[node name="Ambientacion" type="Node3D" parent="Escenario_E1_Calle"]
+[node name="Ambientacion" type="Node3D" parent="Escenario_E1_Calle" unique_id=1325504989]
 
-[node name="VehiculoAbandonado1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="VehiculoAbandonado1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1810743044]
 transform = Transform3D(0.906, 0, 0.423, -0.386, 0.454, 0.827, -0.192, -0.891, 0.411, 9, 0.9, 9)
 mesh = SubResource("BoxMesh_vehiculo")
 surface_material_override/0 = SubResource("StandardMaterial3D_vehiculo")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1" unique_id=185498731]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1/Colision" unique_id=1728154442]
 shape = SubResource("BoxShape3D_vehiculo")
 
-[node name="VehiculoAbandonado2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="VehiculoAbandonado2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=321676661]
 transform = Transform3D(0.643, 0, -0.766, 0.766, 0, 0.643, 0, -1, 0, -11, 0.75, 7)
 mesh = SubResource("BoxMesh_vehiculo")
 surface_material_override/0 = SubResource("StandardMaterial3D_vehiculo")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2" unique_id=511935329]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2/Colision" unique_id=144387468]
 shape = SubResource("BoxShape3D_vehiculo")
 
-[node name="EdificioLateralIzq" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="EdificioLateralIzq" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=270259558]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 4, 0)
 mesh = SubResource("BoxMesh_edificio")
 surface_material_override/0 = SubResource("StandardMaterial3D_edificio")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq" unique_id=916759623]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq/Colision" unique_id=1757245545]
 shape = SubResource("BoxShape3D_edificio")
 
-[node name="EdificioLateralDer" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="EdificioLateralDer" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1899975469]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 4, 0)
 mesh = SubResource("BoxMesh_edificio")
 surface_material_override/0 = SubResource("StandardMaterial3D_edificio")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer" unique_id=571353790]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer/Colision" unique_id=767757320]
 shape = SubResource("BoxShape3D_edificio")
 
-[node name="Grafiti" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Grafiti" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1942776892]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16.8, 2, 5)
 mesh = SubResource("PlaneMesh_grafiti")
 surface_material_override/0 = SubResource("StandardMaterial3D_grafiti")
 
-[node name="Arbol1" type="Node3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Arbol1" type="Node3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1284876898]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 13)
 
-[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol1"]
+[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol1" unique_id=57127930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 mesh = SubResource("CylinderMesh_tronco")
 surface_material_override/0 = SubResource("StandardMaterial3D_tronco")
 
-[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol1"]
+[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol1" unique_id=60927081]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
 mesh = SubResource("SphereMesh_copa")
 surface_material_override/0 = SubResource("StandardMaterial3D_copa")
 
-[node name="Arbol2" type="Node3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Arbol2" type="Node3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=200167944]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 0, 10)
 
-[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol2"]
+[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol2" unique_id=1636089866]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 mesh = SubResource("CylinderMesh_tronco")
 surface_material_override/0 = SubResource("StandardMaterial3D_tronco")
 
-[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol2"]
+[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol2" unique_id=1196615417]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
 mesh = SubResource("SphereMesh_copa")
 surface_material_override/0 = SubResource("StandardMaterial3D_copa")
 
-[node name="Arbol3" type="Node3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Arbol3" type="Node3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=650041318]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 15.5)
 
-[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol3"]
+[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol3" unique_id=1490977520]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 mesh = SubResource("CylinderMesh_tronco")
 surface_material_override/0 = SubResource("StandardMaterial3D_tronco")
 
-[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol3"]
+[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol3" unique_id=1858187131]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
 mesh = SubResource("SphereMesh_copa")
 surface_material_override/0 = SubResource("StandardMaterial3D_copa")
 
-[node name="Escombro1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Escombro1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=752603817]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.08, 9)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-cast_shadow = 0
 
-[node name="Escombro2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Escombro2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=694184667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.08, 6)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-cast_shadow = 0
 
-[node name="Escombro3" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Escombro3" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1296767059]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.08, -7)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-cast_shadow = 0
 
-[node name="Escombro4" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion"]
+[node name="Escombro4" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=95241350]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.08, -9)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-cast_shadow = 0
 
-[node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E1_Calle"]
+[node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E1_Calle" unique_id=893093468]
 script = ExtResource("2")
-escenario = "E1_Calle"
 contenedor_enemigos_path = NodePath("../Enemigos")
 
-[node name="Entradas" type="Node3D" parent="Escenario_E1_Calle/DirectorDeOleadas"]
+[node name="Entradas" type="Node3D" parent="Escenario_E1_Calle/DirectorDeOleadas" unique_id=1963728542]
 
-[node name="ExtremoNorte" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+[node name="ExtremoNorte" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=622888018]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19)
 
-[node name="ExtremoSur" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+[node name="ExtremoSur" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=1534749111]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 19)
 
-[node name="CallejonOeste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+[node name="CallejonOeste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=418514066]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -8)
 
-[node name="CallejonEste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas"]
+[node name="CallejonEste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=1484585332]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 8)
 
-[node name="Enemigos" type="Node3D" parent="Escenario_E1_Calle"]
+[node name="Enemigos" type="Node3D" parent="Escenario_E1_Calle" unique_id=927374184]
 
-[node name="Escenario_E2_Edificio" type="Node3D" parent="."]
+[node name="Escenario_E2_Edificio" type="Node3D" parent="." unique_id=1105423857]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 0)
 
-[node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E2_Edificio"]
+[node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E2_Edificio" unique_id=1958645332]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
-[node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E2_Edificio"]
-autoplay = true
+[node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E2_Edificio" unique_id=918279331]
 unit_size = 15.0
+autoplay = true
 
-[node name="Piso" type="MeshInstance3D" parent="Escenario_E2_Edificio"]
+[node name="Piso" type="MeshInstance3D" parent="Escenario_E2_Edificio" unique_id=805294515]
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 0, 0, 0)
 mesh = SubResource("PlaneMesh_piso")
 
-[node name="Herido" parent="Escenario_E2_Edificio" instance=ExtResource("5")]
+[node name="Herido" parent="Escenario_E2_Edificio" unique_id=1068605195 instance=ExtResource("5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -5)
 escenario = "E2_Edificio"
 
-[node name="Estructura" type="Node3D" parent="Escenario_E2_Edificio"]
+[node name="Estructura" type="Node3D" parent="Escenario_E2_Edificio" unique_id=904821398]
 
-[node name="ParedNorte" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
+[node name="ParedNorte" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=1526618024]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -10)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedNorte"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedNorte" unique_id=244815039]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedNorte/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedNorte/Colision" unique_id=68792957]
 shape = SubResource("BoxShape3D_pared")
 
-[node name="ParedSur" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
+[node name="ParedSur" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=143007377]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 10)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedSur"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedSur" unique_id=1206774290]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedSur/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedSur/Colision" unique_id=245245632]
 shape = SubResource("BoxShape3D_pared")
 
-[node name="ParedEste" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
+[node name="ParedEste" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=578371343]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 1.75, 0)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedEste"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedEste" unique_id=1408242979]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedEste/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedEste/Colision" unique_id=2066085012]
 shape = SubResource("BoxShape3D_pared")
 
-[node name="ParedOeste" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
+[node name="ParedOeste" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=984769138]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 1.75, 0)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
-[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste"]
+[node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste" unique_id=130441011]
 
-[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste/Colision"]
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste/Colision" unique_id=1643428270]
 shape = SubResource("BoxShape3D_pared")
 
-[node name="Techo" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura"]
+[node name="Techo" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=1131581522]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
 mesh = SubResource("BoxMesh_techo")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
-[node name="Mobiliario" type="Node3D" parent="Escenario_E2_Edificio"]
+[node name="Mobiliario" type="Node3D" parent="Escenario_E2_Edificio" unique_id=489011061]
 
-[node name="SofaVolcado" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario"]
+[node name="SofaVolcado" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=485771070]
 transform = Transform3D(1, 0, 0, 0, 0.342, 0.94, 0, -0.94, 0.342, -5, 0.55, -3)
 mesh = SubResource("BoxMesh_mueble")
 surface_material_override/0 = SubResource("StandardMaterial3D_mueble")
 
-[node name="Mesa" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario"]
+[node name="Mesa" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=434956045]
 transform = Transform3D(0.985, 0, -0.174, 0, 1, 0, 0.174, 0, 0.985, 4, 0.35, -6)
 mesh = SubResource("BoxMesh_mueble")
 surface_material_override/0 = SubResource("StandardMaterial3D_mueble")
 
-[node name="PuertaEntreabierta" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario"]
+[node name="PuertaEntreabierta" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=612917518]
 transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, 2, 1.05, 9.8)
 mesh = SubResource("BoxMesh_puerta")
 surface_material_override/0 = SubResource("StandardMaterial3D_puerta")
 
-[node name="PuertaCaida" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario"]
+[node name="PuertaCaida" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=1294727809]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -2, 0.04, 9)
 mesh = SubResource("BoxMesh_puerta")
 surface_material_override/0 = SubResource("StandardMaterial3D_puerta")
 
-[node name="Escalera" type="Node3D" parent="Escenario_E2_Edificio"]
+[node name="Escalera" type="Node3D" parent="Escenario_E2_Edificio" unique_id=726439679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 6)
 
-[node name="Escalon1" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera"]
+[node name="Escalon1" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=2118382150]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
-[node name="Escalon2" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera"]
+[node name="Escalon2" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=939390225]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.6)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
-[node name="Escalon3" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera"]
+[node name="Escalon3" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=826582731]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1.2)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
-[node name="Escalon4" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera"]
+[node name="Escalon4" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=991129550]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, -1.8)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
-[node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E2_Edificio"]
+[node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E2_Edificio" unique_id=351200184]
 script = ExtResource("2")
 escenario = "E2_Edificio"
 contenedor_enemigos_path = NodePath("../Enemigos")
 
-[node name="Entradas" type="Node3D" parent="Escenario_E2_Edificio/DirectorDeOleadas"]
+[node name="Entradas" type="Node3D" parent="Escenario_E2_Edificio/DirectorDeOleadas" unique_id=1140283376]
 
-[node name="PuertaEntreabierta" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas"]
+[node name="PuertaEntreabierta" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas" unique_id=1922783454]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 9.3)
 
-[node name="PuertaCaida" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas"]
+[node name="PuertaCaida" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas" unique_id=1337642902]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 9.3)
 
-[node name="Escalera" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas"]
+[node name="Escalera" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas" unique_id=23981747]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 4)
 
-[node name="Enemigos" type="Node3D" parent="Escenario_E2_Edificio"]
+[node name="Enemigos" type="Node3D" parent="Escenario_E2_Edificio" unique_id=1780206967]
 
-[node name="Escombros" type="Node3D" parent="Escenario_E2_Edificio"]
+[node name="Escombros" type="Node3D" parent="Escenario_E2_Edificio" unique_id=1341949345]
 
-[node name="Escombro1" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros"]
+[node name="Escombro1" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros" unique_id=409314063]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.08, 2)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-cast_shadow = 0
 
-[node name="Escombro2" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros"]
+[node name="Escombro2" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros" unique_id=1116356198]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.08, -2)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-cast_shadow = 0
 
-[node name="Escombro3" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros"]
+[node name="Escombro3" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros" unique_id=1241784901]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.08, -4)
+cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-cast_shadow = 0
+
+[editable path="PuestoDeMando/PanelMapa/map"]

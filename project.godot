@@ -26,9 +26,9 @@ GestorJuego="*res://scripts/Autoloads/gestor_juego.gd"
 
 project/assembly_name="SoldierCarer"
 
-[filesystem]
+[editor_plugins]
 
-import/blender/enabled=true
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [physics]
 
