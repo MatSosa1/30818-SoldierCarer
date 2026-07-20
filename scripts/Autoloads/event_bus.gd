@@ -8,6 +8,9 @@ extends Node
 signal solicitar_teletransporte(punto_destino: Vector3, escenario: String)
 signal escenario_activado(escenario: String)
 signal herido_estabilizado(herido: Node)
+# Emitida por herido.gd al morir sin estabilizacion (RF-14). GestorJuego la
+# usa para cerrar la mision cuando ya no queda ningun herido pendiente.
+signal herido_muerto(herido: Node)
 # Emitida por GestorJuego al confirmar el punto de despliegue en el mapa del
 # puesto de mando (RF-39/RF-08): arranca el reloj de mision y arma al
 # DirectorDeOleadas del escenario elegido.
