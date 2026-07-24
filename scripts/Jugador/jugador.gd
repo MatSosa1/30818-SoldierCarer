@@ -267,6 +267,11 @@ func fundido_teletransporte() -> void:
 # fundido_teletransporte() (que se autodesvanece), este queda en negro
 # hasta que la escena cambia, para no mostrar el "salto" de vuelta al menu.
 func fundido_salida(escena_destino: String, duracion: float = 0.4) -> void:
+	# El menu principal usa el mouse visible (picking normal dentro de su
+	# SubViewport, ver main_menu.tscn); si se sale de la mision con el mouse
+	# todavia MOUSE_MODE_CAPTURED (modo escritorio), el cursor queda oculto y
+	# los botones del menu no responden a nada - el juego "se queda pasmado".
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var material: StandardMaterial3D = desvanecido.material_override if desvanecido else null
 	if not material:
 		get_tree().change_scene_to_file(escena_destino)
