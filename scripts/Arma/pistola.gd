@@ -37,6 +37,14 @@ func _ready() -> void:
 		mano_izquierda.button_pressed.connect(_al_presionar_boton_mano_izquierda)
 
 func _process(_delta: float) -> void:
+	# Modo escritorio (sin headset, ver jugador.gd._modo_vr): no hay mano
+	# real que gesticular contra la funda, asi que la pistola queda
+	# desenfundada de forma permanente en vez de quedar inutilizable.
+	if not get_viewport().use_xr:
+		if not en_mano:
+			en_mano = true
+			_actualizar_visual()
+		return
 	if not mano_derecha or not punto_funda:
 		return
 	var dentro: bool = mano_derecha.position.distance_to(punto_funda.position) <= radio_funda

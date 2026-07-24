@@ -23,6 +23,11 @@ signal disparo_realizado(rayo: RayCast3D)
 # como numero, es diegetica via el tinte de pantalla). Apagada por defecto.
 @export var mostrar_debug_salud: bool = false
 
+# Modo escritorio (sin headset): solo se usan si no hay OpenXR activo.
+@export var sensibilidad_mouse: float = 0.0035
+@export var limite_pitch_grados: float = 80.0
+
+@onready var camara: XRCamera3D = $XROrigin3D/Camera3D
 @onready var mano_derecha: XRController3D = $XROrigin3D/ManoDerecha
 @onready var mano_izquierda: XRController3D = $XROrigin3D/ManoIzquierda
 @onready var pistola: Pistola = $XROrigin3D/ManoDerecha/Pistola
@@ -41,6 +46,7 @@ signal disparo_realizado(rayo: RayCast3D)
 var salud: float
 
 var _tiempo_desde_dano: float = 999.0
+var _modo_vr: bool = false
 
 func _process(delta: float) -> void:
 	if GestorJuego.en_pausa or salud <= 0.0:
@@ -69,15 +75,45 @@ func _ready() -> void:
 	)
 
 # RF-01: inicializa OpenXR y activa el viewport en modo XR si detecta headset
-# y controladores. Si no hay runtime/headset disponible, el juego sigue
-# funcionando sin XR activo (util para revisar la escena en el editor).
+# y controladores. Si no hay runtime/headset disponible, el juego cae a modo
+# escritorio (mouse-look + clic + ESC, ver _unhandled_input) en vez de
+# quedar sin forma de controlar la camara: los XRController3D nunca emiten
+# button_pressed sin hardware real, asi que sin este fallback el jugador
+# queda completamente trabado.
 func _inicializar_openxr() -> void:
 	var interfaz := XRServer.find_interface("OpenXR")
-	if interfaz and interfaz.is_initialized():
+	_modo_vr = interfaz != null and interfaz.is_initialized()
+	if _modo_vr:
 		get_viewport().use_xr = true
 		print("OpenXR inicializado: headset y controladores detectados.")
 	else:
-		print("OpenXR no disponible: ejecutando sin XR activo (revisa el runtime/headset).")
+		print("OpenXR no disponible: modo escritorio activo (mouse-look, clic dispara, ESC pausa).")
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+# Fallback sin headset (RF-01/RF-03): el jugador sigue fijo en posicion
+# (nunca se traslada, solo "mira"), asi que el mouse reemplaza el tracking
+# de cabeza -yaw en el rig completo (XROrigin3D y todo lo que cuelga de el
+# rota junto con la vista, igual que en VR), pitch solo en la camara- y el
+# clic izquierdo reemplaza el gatillo derecho, reutilizando el mismo
+# despachador que trigger_click (dispara, o confirma pausa/mapa/kit/
+# despliegue si ya estan visibles). El kit medico y el mapa de muneca, al
+# abrirse por gesto de la mano (altura/proximidad), no tienen equivalente de
+# escritorio todavia -limitacion conocida de este fallback, no de la
+# mecanica VR original.
+func _unhandled_input(event: InputEvent) -> void:
+	if _modo_vr:
+		return
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		rotate_y(-event.relative.x * sensibilidad_mouse)
+		var pitch := camara.rotation.x - event.relative.y * sensibilidad_mouse
+		var tope_pitch := deg_to_rad(limite_pitch_grados)
+		camara.rotation.x = clamp(pitch, -tope_pitch, tope_pitch)
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_al_presionar_boton_mano("trigger_click")
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+		if menu_pausa:
+			menu_pausa.alternar()
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if menu_pausa.visible else Input.MOUSE_MODE_CAPTURED
 
 # El gatillo derecho dispara el arma por defecto. La pantalla de resultados
 # (RF-44) tiene la maxima prioridad -si la mision termino, nada mas importa-,
