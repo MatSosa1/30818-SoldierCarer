@@ -1,6 +1,6 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://dtugb2vr05jq1"]
 
-[ext_resource type="Script" path="res://scripts/Menus/estado_inicial.gd" id="1"]
+[ext_resource type="Script" uid="uid://dr523nusen33k" path="res://scripts/Menus/estado_inicial.gd" id="1"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.05, 0.05, 0.07, 1)
@@ -18,7 +18,7 @@ ambient_light_color = Color(0.3, 0.3, 0.32, 1)
 tonemap_mode = 2
 
 [sub_resource type="BoxMesh" id="BoxMesh_documento"]
-size = Vector3(1.0, 0.02, 1.4)
+size = Vector3(1.2338867, 0.02, 1.4)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_documento"]
 albedo_color = Color(0.961, 0.949, 0.922, 1)
@@ -26,33 +26,31 @@ albedo_color = Color(0.961, 0.949, 0.922, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_continuar"]
 size = Vector3(1.4, 0.5, 1.8)
 
-[node name="EstadoInicial" type="Node3D"]
+[node name="EstadoInicial" type="Node3D" unique_id=1440590787]
 script = ExtResource("1")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1942280177]
 environment = SubResource("Environment_1")
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=634908843]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 1.8, 0.85)
 current = true
+fov = 60.2657
 
-[node name="LamparaEscritorio" type="OmniLight3D" parent="."]
+[node name="LamparaEscritorio" type="OmniLight3D" parent="." unique_id=568696123]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0.2)
 light_color = Color(1, 0.93, 0.8, 1)
 light_energy = 1.3
-omni_range = 5.0
 
-[node name="Documento" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+[node name="Documento" type="MeshInstance3D" parent="." unique_id=484915007]
+transform = Transform3D(1, 0, 0, 0, 0.8259917, -0.5636823, 0, 0.5636823, 0.8259917, -0.03881836, 0.9, 0)
 mesh = SubResource("BoxMesh_documento")
 surface_material_override/0 = SubResource("StandardMaterial3D_documento")
 
-[node name="TextoBriefing" type="Label3D" parent="Documento"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.42, 0.02, 0)
-modulate = Color(0.1, 0.1, 0.1, 1)
+[node name="TextoBriefing" type="Label3D" parent="Documento" unique_id=1836673462]
+transform = Transform3D(1, 0, 0, 0, -5.9604645e-08, 1, 0, -1, -5.9604645e-08, -0.5049546, 0.01999998, 0)
 pixel_size = 0.0012
-font_size = 34
-horizontal_alignment = 0
+modulate = Color(0.1, 0.1, 0.1, 1)
 text = "DESPLIEGUE INMINENTE
 
 Localiza a los heridos y estabilizalos
@@ -62,25 +60,28 @@ tiempo se agote.
 Defiendete solo si es estrictamente
 necesario: la medicina es la mision,
 no el combate."
+font_size = 50
+horizontal_alignment = 0
 
-[node name="AreaContinuar" type="Area3D" parent="."]
+[node name="AreaContinuar" type="Area3D" parent="." unique_id=1258254916]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="AreaContinuar"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AreaContinuar" unique_id=226024560]
+transform = Transform3D(1, 0, 0, 0, 0.86182183, -0.5072111, 0, 0.5072111, 0.86182183, 0, 0, 0)
 shape = SubResource("BoxShape3D_continuar")
 
-[node name="EtiquetaContinuar" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.925, 0.62)
-modulate = Color(0.35, 0.32, 0.28, 1)
+[node name="EtiquetaContinuar" type="Label3D" parent="." unique_id=772997207]
+transform = Transform3D(1, 0, 0, 0, 0.64087576, 0.76764464, 0, -0.76764464, 0.64087576, 0, 0.65269643, 0.44060862)
 pixel_size = 0.0012
-font_size = 24
+modulate = Color(0.35, 0.32, 0.28, 1)
 text = "(clic para continuar)"
+font_size = 40
 
-[node name="SonidoTecleo" type="AudioStreamPlayer" parent="."]
+[node name="SonidoTecleo" type="AudioStreamPlayer" parent="." unique_id=398624024]
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=715524828]
 
-[node name="Desvanecido" type="ColorRect" parent="UI"]
+[node name="Desvanecido" type="ColorRect" parent="UI" unique_id=1358609632]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

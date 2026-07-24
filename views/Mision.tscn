@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://views/SoldadoHerido.tscn" id="5"]
 [ext_resource type="Script" uid="uid://cboooi8w0smx4" path="res://scripts/Navegacion/mapa_despliegue.gd" id="6"]
 [ext_resource type="PackedScene" uid="uid://bhkjj8skt3cmn" path="res://assets/2D/2D_neon_map/map.blend" id="6_msle2"]
+[ext_resource type="Texture2D" uid="uid://b0b6ryh7uvqrm" path="res://assets/Fondos/Panel_Inicio_Mision.png" id="7_4dleu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_horizon_color = Color(0.65, 0.68, 0.7, 1)
@@ -32,7 +33,7 @@ size = Vector2(10, 10)
 albedo_color = Color(0.22, 0.22, 0.23, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_mesa_mapa"]
-size = Vector3(1.6, 0.9, 0.9)
+size = Vector3(2.9416993, 0.9, 0.9)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mesa_mapa"]
 albedo_color = Color(0.2, 0.24, 0.18, 1)
@@ -166,8 +167,21 @@ material_override = SubResource("StandardMaterial3D_trazador")
 mesh = SubResource("ImmediateMesh_trazador")
 
 [node name="Jugador" parent="." unique_id=2021962887 instance=ExtResource("1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -78.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -78.19062)
 trazador_disparo_path = NodePath("../TrazadorDisparo")
+
+[node name="Camera3D" parent="Jugador/XROrigin3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.9973883, 0.07222603, 0, -0.07222603, 0.9973883, 0, 1.6, 0)
+fov = 57.058956
+
+[node name="EtiquetaRescate" parent="Jugador/XROrigin3D/Camera3D/HudMision" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -1)
+
+[node name="PH_Manga" parent="Jugador/XROrigin3D/ManoDerecha" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15000153)
+
+[node name="EtiquetaCargador" parent="Jugador/XROrigin3D/ManoDerecha/Pistola" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 
 [node name="GestorEscenarios" type="Node3D" parent="." unique_id=547683573]
 script = ExtResource("4")
@@ -178,11 +192,12 @@ contenedor_e2_path = NodePath("../Escenario_E2_Edificio")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -80)
 
 [node name="PisoPuesto" type="MeshInstance3D" parent="PuestoDeMando" unique_id=669842268]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.000541687)
 mesh = SubResource("PlaneMesh_piso_puesto")
 surface_material_override/0 = SubResource("StandardMaterial3D_piso_puesto")
 
 [node name="MesaMapa" type="MeshInstance3D" parent="PuestoDeMando" unique_id=1485274680]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.010785431, 0.45, 0.9000015)
 mesh = SubResource("BoxMesh_mesa_mapa")
 surface_material_override/0 = SubResource("StandardMaterial3D_mesa_mapa")
 
@@ -191,18 +206,18 @@ transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 
 script = ExtResource("6")
 
 [node name="map" parent="PuestoDeMando/PanelMapa" unique_id=508573465 instance=ExtResource("6_msle2")]
-transform = Transform3D(0.05, 0, 0, 0, -0.0048227333, -0.04904277, 0, 0.03074343, -0.007693358, -0.2031058, -0.11981869, -0.21704102)
+transform = Transform3D(0.073240206, 0, 0, 0, -0.002633756, -0.065962985, 0, 0.025711106, -0.0067570214, -0.73458993, 0.0014457703, -0.44467163)
 
-[node name="Plane" parent="PuestoDeMando/PanelMapa/map" index="14" unique_id=1656481372]
+[node name="Plane" parent="PuestoDeMando/PanelMapa/map" index="14" unique_id=1544585595]
 visible = false
 
 [node name="Fondo" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa" unique_id=160722886]
-transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0, 0.049258232, -0.2793579)
+transform = Transform3D(1.2037951, -0.0054670917, -0.00042908802, 0.0058366167, 1.1102847, -0.08888727, 0.0010291511, 0.0980983, 1.0060096, 0, 0.3350029, -0.40872192)
 mesh = SubResource("QuadMesh_mapa_fondo")
 surface_material_override/0 = SubResource("StandardMaterial3D_mapa_fondo")
 
 [node name="EtiquetaTitulo" type="Label3D" parent="PuestoDeMando/PanelMapa" unique_id=1175163962]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, 0.02)
+transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.01914674, 0.48327637, 0.05055237)
 pixel_size = 0.0006
 text = "SELECCIONA PUNTO DE DESPLIEGUE"
 font_size = 48
@@ -212,38 +227,42 @@ outline_size = 8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.08, 0.01)
 
 [node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE1" unique_id=1379177111]
+transform = Transform3D(1, 0, 0, 0, -0.009838194, -0.9999516, 0, 0.9999516, -0.009838194, 0.23207524, 0.26964092, -0.33856964)
 material_override = SubResource("StandardMaterial3D_icono_e1")
 mesh = SubResource("SphereMesh_icono_despliegue")
 
 [node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE1" unique_id=1458791699]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.085, 0.01)
+transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.25095218, 0.122605324, -0.17046356)
 pixel_size = 0.0006
 text = "E1 — CALLE"
-font_size = 36
+font_size = 51
 outline_size = 6
 
 [node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE1" unique_id=1764641948]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE1/Area3D" unique_id=1697794953]
+transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.23078725, 0.26140022, -0.310997)
 shape = SubResource("SphereShape3D_icono_despliegue")
 
 [node name="IconoE2" type="Node3D" parent="PuestoDeMando/PanelMapa" unique_id=836923499]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.1, 0.01)
 
 [node name="Malla" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa/IconoE2" unique_id=529366927]
+transform = Transform3D(1, 0, 0, 0, -0.011481389, -0.9999341, 0, 0.9999341, -0.011481389, 0.08696514, 0.49294186, -0.33148193)
 material_override = SubResource("StandardMaterial3D_icono_e2")
 mesh = SubResource("SphereMesh_icono_despliegue")
 
 [node name="Etiqueta" type="Label3D" parent="PuestoDeMando/PanelMapa/IconoE2" unique_id=574351143]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.085, 0.01)
+transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.09324038, 0.35057068, -0.1949234)
 pixel_size = 0.0006
 text = "E2 — EDIFICIO"
-font_size = 36
+font_size = 51
 outline_size = 6
 
 [node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE2" unique_id=1046949686]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE2/Area3D" unique_id=1824186556]
+transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.08674717, 0.49631023, -0.32654572)
 shape = SubResource("SphereShape3D_icono_despliegue")
 
 [node name="LamparaPuesto" type="OmniLight3D" parent="PuestoDeMando" unique_id=57330077]
@@ -253,24 +272,34 @@ light_energy = 1.2
 omni_range = 7.0
 
 [node name="RadioCampana" type="MeshInstance3D" parent="PuestoDeMando" unique_id=459213483]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.99, 1.15)
+transform = Transform3D(0.9401164, 0, 0.34085348, 0, 1, 0, -0.34085348, 0, 0.9401164, 1.1851429, 0.9776139, 0.50068665)
+mesh = SubResource("BoxMesh_radio_campana")
+surface_material_override/0 = SubResource("StandardMaterial3D_radio_campana")
+
+[node name="RadioCampana" type="MeshInstance3D" parent="PuestoDeMando/RadioCampana" unique_id=925340245]
+transform = Transform3D(0.940117, 0, 0.34085402, 0, 1, 0, -0.34085402, 0, 0.940117, -0.08064079, 0.0012066364, 0.25756073)
 mesh = SubResource("BoxMesh_radio_campana")
 surface_material_override/0 = SubResource("StandardMaterial3D_radio_campana")
 
 [node name="SacoArena1" type="MeshInstance3D" parent="PuestoDeMando" unique_id=1122600533]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.15, 0.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1376472, 0.15, 0.8809662)
+mesh = SubResource("BoxMesh_saco_arena")
+surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
+
+[node name="SacoArena1" type="MeshInstance3D" parent="PuestoDeMando/SacoArena1" unique_id=2035240658]
+transform = Transform3D(0.67841417, 0, 0.73467964, 0, 1, 0, -0.73467964, 0, 0.67841417, 0.5813712, 0.020847231, 0.30000305)
 mesh = SubResource("BoxMesh_saco_arena")
 surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
 
 [node name="SacoArena2" type="MeshInstance3D" parent="PuestoDeMando" unique_id=111362145]
-transform = Transform3D(0.866, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866, -2.1, 0.45, 0.4)
+transform = Transform3D(0.866, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866, -2.0376468, 0.45, 0.98096466)
 mesh = SubResource("BoxMesh_saco_arena")
 surface_material_override/0 = SubResource("StandardMaterial3D_saco_arena")
 
 [node name="Escenario_E1_Calle" type="Node3D" parent="." unique_id=92539341]
 
 [node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E1_Calle" unique_id=1078687546]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.98751116)
 
 [node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E1_Calle" unique_id=107596350]
 unit_size = 20.0
@@ -416,7 +445,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 8)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 0)
 
 [node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E2_Edificio" unique_id=1958645332]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.222412, 0, -4.700536)
 
 [node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E2_Edificio" unique_id=918279331]
 unit_size = 15.0
@@ -560,4 +589,9 @@ cast_shadow = 0
 mesh = SubResource("BoxMesh_escombro")
 surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
 
+[node name="Pared_Con_Ventana" type="Sprite3D" parent="." unique_id=898487716]
+transform = Transform3D(0.1116261, 0, 0, 0, 0.114223376, 0.004474424, 0, -0.008048622, 0.06349954, -0.031360507, 1.519461, -79.77636)
+texture = ExtResource("7_4dleu")
+
+[editable path="Jugador"]
 [editable path="PuestoDeMando/PanelMapa/map"]

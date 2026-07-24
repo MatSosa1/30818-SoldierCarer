@@ -4,7 +4,7 @@ class_name Herido
 ## temporizador (RF-12): ESTABLE -> CRITICO -> AGONIZANTE -> MUERTO, con
 ## color semaforico en el foco y en los mapas (RF-13).
 ##
-## Desde el sistema de heridas procedurales, cada herido tiene 1..3 heridas
+## Desde el sistema de heridas procedurales, cada herido tiene 2..3 heridas
 ## generadas al azar (GeneradorHeridas) sobre puntos anatomicos del cuerpo
 ## ($PuntosDeHerida): tratarlo no es repetir una secuencia fija, sino leer
 ## cada herida, aplicar SU secuencia de items sobre SU posicion, y manejar
@@ -25,6 +25,14 @@ enum EstadoSalud {ESTABLE, CRITICO, AGONIZANTE, MUERTO, ESTABILIZADO}
 @export var umbral_dolor_bloqueo: float = 0.65
 # Cuanto alivio pierde por segundo (la morfina "se pasa" con el tiempo).
 @export var decaimiento_alivio: float = 0.015
+# RF-12/RF-31: ademas de FRENAR el decaimiento (_factor_decaimiento, via la
+# gravedad de heridas sin tratar), cada avance real le devuelve tiempo al
+# reloj de muerte del estado actual - un respiro concreto en vez de solo
+# demorar lo inevitable. tiempo_bonus_por_alivio se escala por la cantidad
+# de alivio aplicado (morfina 0.8 > analgesicos 0.4: la mas fuerte da mas
+# tiempo, mismo criterio que ya usan para el dolor).
+@export var tiempo_bonus_por_paso: float = 6.0
+@export var tiempo_bonus_por_alivio: float = 10.0
 
 # Nombre del escenario donde vive este herido (clave que usa GestorEscenarios,
 # "E1_Calle"/"E2_Edificio"). MapaMuneca y DirectorDeOleadas lo usan.
@@ -124,6 +132,33 @@ func herida_mas_cercana(pos_global: Vector3, radio_maximo: float = 1.5) -> Herid
 			mas_cercana = herida
 	return mas_cercana
 
+# Modo escritorio: sin mano que acercar a una herida puntual, herida_mas_
+# cercana() con un punto de mano fantasma fijo (ver kit_medico.gd) siempre
+# elegia la geometricamente mas cercana a ESE punto, sin que el jugador
+# pudiera elegir cual tratar cuando hay mas de una pendiente (desde que
+# el minimo paso a ser 2 heridas por herido, esto era casi siempre). En
+# su lugar, se elige la herida mas centrada bajo la mira de la camara
+# (mismo punto de referencia que ya usa la pistola para apuntar). Si
+# ninguna cae dentro del cono, cae a la mas cercana por distancia para no
+# exigir punteria perfecta en heridas casi centradas.
+func herida_bajo_mira(camara: Camera3D, angulo_maximo_grados: float = 35.0) -> Herida:
+	var adelante: Vector3 = -camara.global_transform.basis.z
+	var mejor: Herida = null
+	var mejor_angulo := deg_to_rad(angulo_maximo_grados)
+	for herida in heridas:
+		if herida.tratada:
+			continue
+		var direccion := herida.global_position - camara.global_position
+		if direccion.length_squared() < 0.0001:
+			continue
+		var angulo := adelante.angle_to(direccion.normalized())
+		if angulo <= mejor_angulo:
+			mejor_angulo = angulo
+			mejor = herida
+	if mejor:
+		return mejor
+	return herida_mas_cercana(camara.global_position)
+
 # Aplica un item del kit. Para morfina/analgesicos la herida puede ser null
 # (actuan sobre el paciente completo); el resto exige una herida concreta.
 # Devuelve {"exito": bool, "mensaje": String} para el feedback (RF-24).
@@ -147,12 +182,32 @@ func aplicar_tratamiento_en(herida: Herida, tipo: int) -> Dictionary:
 
 func _aplicar_alivio(cantidad: float) -> void:
 	_alivio = clampf(_alivio + cantidad, 0.0, 1.0)
+	_otorgar_tiempo(tiempo_bonus_por_alivio * cantidad)
 
 func _al_progresar_herida(_herida: Herida) -> void:
+	_otorgar_tiempo(tiempo_bonus_por_paso)
 	# El director de oleadas escala con este avance (curar atrae enemigos).
 	EventBus.tratamiento_progresado.emit(self, fraccion_tratamiento())
 	if heridas.all(func(h: Herida) -> bool: return h.tratada):
 		_al_estabilizar()
+
+# Extiende _tiempo_restante sin pasarse de la duracion total del estado
+# actual (no hace que el herido "aguante para siempre" a fuerza de pasos
+# chicos, ni lo hace retroceder de CRITICO a ESTABLE - solo compra tiempo
+# dentro del estado en el que ya esta).
+func _otorgar_tiempo(cantidad: float) -> void:
+	if estado_salud == EstadoSalud.MUERTO or estado_salud == EstadoSalud.ESTABILIZADO:
+		return
+	_tiempo_restante = minf(_tiempo_restante + cantidad, _duracion_maxima_estado_actual())
+
+func _duracion_maxima_estado_actual() -> float:
+	match estado_salud:
+		EstadoSalud.CRITICO:
+			return duracion_critico
+		EstadoSalud.AGONIZANTE:
+			return duracion_agonizante
+		_:
+			return duracion_estable
 
 func fraccion_tratamiento() -> float:
 	var total := 0

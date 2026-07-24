@@ -13,6 +13,7 @@ class_name ResultadosMision
 
 @export var distancia_apertura: float = 0.5
 @export var radio_seleccion: float = 0.07
+@export var demora_confirmacion_escritorio: float = 0.5
 
 @onready var camara: XRCamera3D = get_node_or_null("../Camera3D")
 @onready var mano_derecha: XRController3D = get_node_or_null("../ManoDerecha")
@@ -23,6 +24,8 @@ class_name ResultadosMision
 @onready var etiqueta_resultado: Label3D = $EtiquetaResultado
 @onready var etiqueta_rescates: Label3D = $EtiquetaRescates
 @onready var icono_volver: Node3D = $IconoVolver
+
+var _ms_visible_desde: int = 0
 
 func _ready() -> void:
 	visible = false
@@ -44,6 +47,7 @@ func _al_finalizar_mision(resultado: String, rescates: int) -> void:
 	if kit_medico:
 		kit_medico.visible = false
 	visible = true
+	_ms_visible_desde = Time.get_ticks_msec()
 	_posicionar_frente_a_la_vista()
 
 func _posicionar_frente_a_la_vista() -> void:
@@ -59,12 +63,27 @@ func _posicionar_frente_a_la_vista() -> void:
 	rotate_object_local(Vector3.UP, PI) # el QuadMesh mira hacia +Z; girarlo hacia el jugador
 
 func confirmar_seleccion() -> void:
-	if not visible or not mano_derecha:
+	if not visible:
 		return
-	if mano_derecha.global_position.distance_to(icono_volver.global_position) <= radio_seleccion:
+	if get_viewport().use_xr:
+		if not mano_derecha:
+			return
+		var d := mano_derecha.global_position.distance_to(icono_volver.global_position)
+		if d > radio_seleccion:
+			return
 		mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.1, 0.0)
-		# RNF-03: fundido a negro antes de volver al menu.
-		if jugador:
-			jugador.fundido_salida("res://views/main_menu.tscn")
-		else:
-			get_tree().change_scene_to_file("res://views/main_menu.tscn")
+	else:
+		# Modo escritorio: un solo boton, sin mano que acercar - el clic ya
+		# implica la eleccion. Pero el clic/gatillo que mato al jugador puede
+		# seguir "activo" (mantenido, o un evento en vuelo) justo cuando esta
+		# pantalla aparece; sin esta demora, ese mismo clic la confirmaba de
+		# inmediato y volvia al menu antes de que se llegara a ver (RF-44
+		# roto: "paso directo al menu" reportado en pruebas).
+		var ms_transcurridos := Time.get_ticks_msec() - _ms_visible_desde
+		if ms_transcurridos < demora_confirmacion_escritorio * 1000.0:
+			return
+	# RNF-03: fundido a negro antes de volver al menu.
+	if jugador:
+		jugador.fundido_salida("res://views/main_menu.tscn")
+	else:
+		get_tree().change_scene_to_file("res://views/main_menu.tscn")

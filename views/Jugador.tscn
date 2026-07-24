@@ -1,27 +1,47 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene format=3 uid="uid://dia8c0cvasy8c"]
 
-[ext_resource type="Script" path="res://scripts/Jugador/jugador.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/Jugador/manos_vr.gd" id="2"]
+[ext_resource type="Script" uid="uid://u1lqfab6ce7a" path="res://scripts/Jugador/jugador.gd" id="1"]
+[ext_resource type="Script" uid="uid://dol5t03w57cpo" path="res://scripts/Jugador/manos_vr.gd" id="2"]
 [ext_resource type="PackedScene" path="res://views/MapaMuneca.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://views/KitMedico.tscn" id="4"]
-[ext_resource type="Script" path="res://scripts/Arma/pistola.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/HUD/pantalla_dano.gd" id="6"]
-[ext_resource type="Script" path="res://scripts/HUD/hud_mision.gd" id="7"]
-[ext_resource type="PackedScene" path="res://views/MenuPausa.tscn" id="8"]
-[ext_resource type="PackedScene" path="res://views/ResultadosMision.tscn" id="9"]
+[ext_resource type="Script" uid="uid://ie1vufpdw7br" path="res://scripts/Arma/pistola.gd" id="5"]
+[ext_resource type="Script" uid="uid://cwrt43w08mdkx" path="res://scripts/HUD/pantalla_dano.gd" id="6"]
+[ext_resource type="Script" uid="uid://umxk5lgsl863" path="res://scripts/HUD/hud_mision.gd" id="7"]
+[ext_resource type="PackedScene" uid="uid://bmhmc0tak81ob" path="res://views/MenuPausa.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://dwrcqu1ewwlem" path="res://views/ResultadosMision.tscn" id="9"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jugador"]
 radius = 0.4
 height = 1.8
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vignette"]
+render_priority = 100
+transparency = 1
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0.8, 0, 0, 0)
+
+[sub_resource type="QuadMesh" id="QuadMesh_vignette"]
+size = Vector2(1.6, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_desvanecido"]
+render_priority = 110
+transparency = 1
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 0)
+
+[sub_resource type="QuadMesh" id="QuadMesh_desvanecido"]
+size = Vector2(2, 2)
+
 [sub_resource type="BoxMesh" id="BoxMesh_mano"]
 size = Vector3(0.08, 0.06, 0.16)
 
-[sub_resource type="BoxMesh" id="BoxMesh_manga"]
-size = Vector3(0.1, 0.1, 0.2)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mano"]
 albedo_color = Color(0.75, 0.65, 0.55, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_manga"]
+size = Vector3(0.1, 0.1, 0.33594972)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_manga"]
 albedo_color = Color(0.294, 0.325, 0.125, 1)
@@ -32,149 +52,139 @@ size = Vector3(0.04, 0.09, 0.18)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pistola"]
 albedo_color = Color(0.15, 0.15, 0.15, 1)
 
-[sub_resource type="QuadMesh" id="QuadMesh_vignette"]
-size = Vector2(1.6, 1.6)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vignette"]
-transparency = 1
-shading_mode = 0
-no_depth_test = true
-albedo_color = Color(0.8, 0, 0, 0)
-render_priority = 100
-
-[sub_resource type="QuadMesh" id="QuadMesh_desvanecido"]
-size = Vector2(2, 2)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_desvanecido"]
-transparency = 1
-shading_mode = 0
-no_depth_test = true
-albedo_color = Color(0, 0, 0, 0)
-render_priority = 110
-
-[node name="Jugador" type="CharacterBody3D"]
-collision_layer = 1
+[node name="Jugador" type="CharacterBody3D" unique_id=1236902120]
 collision_mask = 0
 script = ExtResource("1")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1510987285]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_jugador")
 
-[node name="XROrigin3D" type="XROrigin3D" parent="."]
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1361717599]
 
-[node name="Camera3D" type="XRCamera3D" parent="XROrigin3D"]
+[node name="Camera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1992525326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 current = true
 
-[node name="VignetteDanio" type="MeshInstance3D" parent="XROrigin3D/Camera3D"]
+[node name="VignetteDanio" type="MeshInstance3D" parent="XROrigin3D/Camera3D" unique_id=1741409278]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.35)
+material_override = SubResource("StandardMaterial3D_vignette")
 cast_shadow = 0
 mesh = SubResource("QuadMesh_vignette")
-material_override = SubResource("StandardMaterial3D_vignette")
 script = ExtResource("6")
 
-[node name="Desvanecido3D" type="MeshInstance3D" parent="XROrigin3D/Camera3D"]
+[node name="Desvanecido3D" type="MeshInstance3D" parent="XROrigin3D/Camera3D" unique_id=1081583962]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
+material_override = SubResource("StandardMaterial3D_desvanecido")
 cast_shadow = 0
 mesh = SubResource("QuadMesh_desvanecido")
-material_override = SubResource("StandardMaterial3D_desvanecido")
 
-[node name="HudMision" type="Node3D" parent="XROrigin3D/Camera3D"]
+[node name="HudMision" type="Node3D" parent="XROrigin3D/Camera3D" unique_id=1084885912]
 script = ExtResource("7")
 
-[node name="EtiquetaRescate" type="Label3D" parent="XROrigin3D/Camera3D/HudMision"]
+[node name="EtiquetaRescate" type="Label3D" parent="XROrigin3D/Camera3D/HudMision" unique_id=1512402658]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -1)
 visible = false
-position = Vector3(0, -0.2, -1)
+pixel_size = 0.0012
 billboard = 1
 no_depth_test = true
-pixel_size = 0.0012
-font_size = 64
 modulate = Color(0.137, 0.545, 0.137, 1)
-outline_size = 12
 text = "+RESCATE"
+font_size = 64
 
-[node name="MenuPausa" parent="XROrigin3D" instance=ExtResource("8")]
+[node name="MenuPausa" parent="XROrigin3D" unique_id=1839665153 instance=ExtResource("8")]
 
-[node name="ResultadosMision" parent="XROrigin3D" instance=ExtResource("9")]
+[node name="ResultadosMision" parent="XROrigin3D" unique_id=1888211852 instance=ExtResource("9")]
 
-[node name="ManoIzquierda" type="XRController3D" parent="XROrigin3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.0, -0.3)
+[node name="ManoIzquierda" type="XRController3D" parent="XROrigin3D" unique_id=186687483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1, -0.3)
 tracker = &"left_hand"
 script = ExtResource("2")
 
-[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda"]
+[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda" unique_id=800012326]
 mesh = SubResource("BoxMesh_mano")
 surface_material_override/0 = SubResource("StandardMaterial3D_mano")
 
-[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
+[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda" unique_id=1267811169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.2112671)
 mesh = SubResource("BoxMesh_manga")
 surface_material_override/0 = SubResource("StandardMaterial3D_manga")
 
-[node name="MapaMuneca" parent="XROrigin3D/ManoIzquierda" instance=ExtResource("3")]
+[node name="MapaMuneca" parent="XROrigin3D/ManoIzquierda" unique_id=1730670309 instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.1)
 
-[node name="RelojMuneca" type="Label3D" parent="XROrigin3D/ManoIzquierda"]
+[node name="RelojMuneca" type="Label3D" parent="XROrigin3D/ManoIzquierda" unique_id=1922088050]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.12)
+pixel_size = 0.0008
 billboard = 1
 no_depth_test = true
-pixel_size = 0.0008
+text = "10:00"
 font_size = 40
 outline_size = 10
-text = "10:00"
 
-[node name="PuntoFunda" type="Marker3D" parent="XROrigin3D"]
+[node name="PuntoFunda" type="Marker3D" parent="XROrigin3D" unique_id=1513563406]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.9, -0.05)
 
-[node name="ManoDerecha" type="XRController3D" parent="XROrigin3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1.0, -0.3)
+[node name="ManoDerecha" type="XRController3D" parent="XROrigin3D" unique_id=1608596376]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1, -0.3)
 tracker = &"right_hand"
 script = ExtResource("2")
 
-[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha"]
+[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha" unique_id=72984843]
 mesh = SubResource("BoxMesh_mano")
 surface_material_override/0 = SubResource("StandardMaterial3D_mano")
 
-[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15)
+[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha" unique_id=131468843]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.19489022)
 mesh = SubResource("BoxMesh_manga")
 surface_material_override/0 = SubResource("StandardMaterial3D_manga")
 
-[node name="Pistola" type="Node3D" parent="XROrigin3D/ManoDerecha"]
+[node name="Pistola" type="Node3D" parent="XROrigin3D/ManoDerecha" unique_id=1974691436]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
 script = ExtResource("5")
 
-[node name="PH_Pistola" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha/Pistola"]
+[node name="PH_Pistola" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=1117527719]
 visible = false
 mesh = SubResource("BoxMesh_pistola")
 surface_material_override/0 = SubResource("StandardMaterial3D_pistola")
 
-[node name="EtiquetaCargador" type="Label3D" parent="XROrigin3D/ManoDerecha/Pistola"]
+[node name="EtiquetaCargador" type="Label3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=2002465021]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 visible = false
-position = Vector3(0, 0.06, 0)
+pixel_size = 0.001
 billboard = 1
 no_depth_test = true
-pixel_size = 0.001
-font_size = 32
 text = "7/7"
 
-[node name="RayCast3D" type="RayCast3D" parent="XROrigin3D/ManoDerecha/Pistola"]
+[node name="RayCast3D" type="RayCast3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=877531503]
 target_position = Vector3(0, 0, -100)
 collision_mask = 2
 
-[node name="SonidoDisparo" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola"]
+[node name="SonidoDisparo" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=1627370787]
 
-[node name="SonidoRecarga" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola"]
+[node name="SonidoRecarga" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=197379001]
 
-[node name="KitMedico" parent="XROrigin3D" instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.9, -0.05)
+[node name="KitMedico" parent="XROrigin3D" unique_id=1391889604 instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015823886, 0.9, -0.28010148)
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=1235799491]
 
-[node name="EtiquetaSalud" type="Label" parent="UI"]
+[node name="EtiquetaSalud" type="Label" parent="UI" unique_id=362045164]
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 220.0
 offset_bottom = 48.0
 text = "Salud: 100"
+
+[node name="Mira" type="ColorRect" parent="UI" unique_id=1386226903]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.9)

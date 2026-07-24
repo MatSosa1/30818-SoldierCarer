@@ -17,6 +17,7 @@ class_name Pistola
 @onready var mano_derecha: XRController3D = get_parent()
 @onready var punto_funda: Marker3D = get_node_or_null("../../PuntoFunda")
 @onready var mano_izquierda: XRController3D = get_node_or_null("../../ManoIzquierda")
+@onready var camara: XRCamera3D = get_node_or_null("../../Camera3D")
 @onready var modelo: Node3D = $PH_Pistola
 @onready var etiqueta_cargador: Label3D = $EtiquetaCargador
 @onready var raycast: RayCast3D = $RayCast3D
@@ -37,6 +38,14 @@ func _ready() -> void:
 		mano_izquierda.button_pressed.connect(_al_presionar_boton_mano_izquierda)
 
 func _process(_delta: float) -> void:
+	# Modo escritorio (sin headset, ver jugador.gd._modo_vr): no hay mano
+	# real que gesticular contra la funda, asi que la pistola queda
+	# desenfundada de forma permanente en vez de quedar inutilizable.
+	if not get_viewport().use_xr:
+		if not en_mano:
+			en_mano = true
+			_actualizar_visual()
+		return
 	if not mano_derecha or not punto_funda:
 		return
 	var dentro: bool = mano_derecha.position.distance_to(punto_funda.position) <= radio_funda
@@ -61,6 +70,8 @@ func intentar_disparar() -> RayCast3D:
 		print("Pistola sin balas: recargar (boton X/A en mano izquierda).")
 		return null
 	municion_actual -= 1
+	if not get_viewport().use_xr:
+		_apuntar_camara_escritorio()
 	raycast.force_raycast_update()
 	if sonido_disparo:
 		sonido_disparo.play()
@@ -68,6 +79,20 @@ func intentar_disparar() -> RayCast3D:
 	mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.7, 0.1, 0.0)
 	_actualizar_visual()
 	return raycast
+
+# Modo escritorio: el RayCast3D cuelga de la mano, que solo gira en yaw
+# junto con el resto del rig (jugador.gd rota TODO XROrigin3D con el mouse
+# X); el pitch del mouse-look solo se aplica a la camara (mouse Y), asi que
+# sin esto el disparo siempre salia nivelado al horizonte sin importar
+# hacia donde mirara la mira en pantalla. Se re-apunta el raycast a la
+# direccion exacta de la camara (mismo origen fisico, en la mano) justo
+# antes de cada tiro, para que "mira" y "disparo" coincidan.
+func _apuntar_camara_escritorio() -> void:
+	if not camara:
+		return
+	var t := raycast.global_transform
+	t.basis = camara.global_transform.basis
+	raycast.global_transform = t
 
 func recargar() -> void:
 	if cargadores_restantes <= 0:

@@ -3,6 +3,9 @@ extends "res://scripts/KitMedico/item_medico.gd"
 ## mas tecnico del kit). Cada ciclo apretar-y-soltar el grip cuenta como una
 ## grapa; se requieren grapas_requeridas seguidas para completar el gesto,
 ## exigiendo repeticion en vez de un solo apreton.
+##
+## Modo escritorio (sin headset): sin grip analogico, cada clic derecho
+## (abajo->arriba) cuenta como una grapa, mismo umbral grapas_requeridas.
 
 @export var grapas_requeridas: int = 3
 @export var umbral_presion: float = 0.8
@@ -12,11 +15,19 @@ var _grapas_aplicadas: int = 0
 var _presionado: bool = false
 
 func procesar_gesto(_delta: float, mano_derecha: XRController3D, _objetivo: Node) -> bool:
-	var presion := mano_derecha.get_float("grip")
-	if not _presionado and presion >= umbral_presion:
+	var presionado_ahora: bool
+	if not get_viewport().use_xr:
+		presionado_ahora = Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
+	else:
+		var presion := mano_derecha.get_float("grip")
+		if _presionado:
+			presionado_ahora = presion > umbral_liberado
+		else:
+			presionado_ahora = presion >= umbral_presion
+	if presionado_ahora and not _presionado:
 		_presionado = true
 		_grapas_aplicadas += 1
-	elif _presionado and presion <= umbral_liberado:
+	elif not presionado_ahora:
 		_presionado = false
 	if _grapas_aplicadas >= grapas_requeridas:
 		reiniciar()

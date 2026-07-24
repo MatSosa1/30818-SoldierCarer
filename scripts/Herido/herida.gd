@@ -1,7 +1,7 @@
 extends Node3D
 class_name Herida
 ## Una herida individual sobre el cuerpo de un soldado (RF-18..RF-24).
-## Sustituye a la secuencia fija unica: cada herido tiene 1..3 heridas
+## Sustituye a la secuencia fija unica: cada herido tiene 2..3 heridas
 ## procedurales (GeneradorHeridas) con tipo, severidad, dolor y SU PROPIA
 ## secuencia de pasos del kit medico, y el tratamiento se realiza sobre la
 ## herida concreta (los gestos se ejecutan en su posicion en el cuerpo).

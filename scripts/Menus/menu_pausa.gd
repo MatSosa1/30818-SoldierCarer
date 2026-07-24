@@ -47,6 +47,7 @@ const RADIO_MAPA := 0.03
 var _iconos_heridos_mapa: Dictionary = {} # herido -> MeshInstance3D
 var _malla_icono_herido := SphereMesh.new()
 var _icono_hover: Node3D = null
+var _indice_hover_escritorio: int = 0
 
 func _ready() -> void:
 	visible = false
@@ -102,6 +103,10 @@ func _actualizar_hover() -> void:
 			mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.2, 0.05, 0.0)
 
 func _icono_en_rango() -> Node3D:
+	if not get_viewport().use_xr:
+		var iconos := [icono_reanudar, icono_opciones, icono_salir]
+		_indice_hover_escritorio = clampi(_indice_hover_escritorio, 0, iconos.size() - 1)
+		return iconos[_indice_hover_escritorio]
 	if not mano_derecha:
 		return null
 	var mas_cercano: Node3D = null
@@ -112,6 +117,21 @@ func _icono_en_rango() -> Node3D:
 			distancia_min = d
 			mas_cercano = icono
 	return mas_cercano
+
+# Modo escritorio: la rueda del mouse o Tab/Shift+Tab ciclan cual opcion
+# esta resaltada (mismo _icono_en_rango que usan el hover y el gatillo); el
+# clic izquierdo confirma (jugador.gd -> confirmar_seleccion, sin cambios).
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible or get_viewport().use_xr:
+		return
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_indice_hover_escritorio = wrapi(_indice_hover_escritorio - 1, 0, 3)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_indice_hover_escritorio = wrapi(_indice_hover_escritorio + 1, 0, 3)
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_TAB:
+		var paso := -1 if event.shift_pressed else 1
+		_indice_hover_escritorio = wrapi(_indice_hover_escritorio + paso, 0, 3)
 
 # Llamado desde jugador.gd al presionar el gatillo derecho mientras el menu
 # esta abierto.

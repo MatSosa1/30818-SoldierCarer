@@ -23,6 +23,11 @@ signal disparo_realizado(rayo: RayCast3D)
 # como numero, es diegetica via el tinte de pantalla). Apagada por defecto.
 @export var mostrar_debug_salud: bool = false
 
+# Modo escritorio (sin headset): solo se usan si no hay OpenXR activo.
+@export var sensibilidad_mouse: float = 0.0035
+@export var limite_pitch_grados: float = 80.0
+
+@onready var camara: XRCamera3D = $XROrigin3D/Camera3D
 @onready var mano_derecha: XRController3D = $XROrigin3D/ManoDerecha
 @onready var mano_izquierda: XRController3D = $XROrigin3D/ManoIzquierda
 @onready var pistola: Pistola = $XROrigin3D/ManoDerecha/Pistola
@@ -36,11 +41,19 @@ signal disparo_realizado(rayo: RayCast3D)
 # Etiqueta 2D de debug: al vivir en CanvasLayer solo aparece en la ventana
 # espejo de escritorio, nunca en el headset - util como consola del encargado.
 @onready var etiqueta_salud: Label = $UI/EtiquetaSalud
+# Mira de escritorio: en VR se apunta con la mano (ver pistola.gd), no
+# tiene sentido un punto fijo al centro de la pantalla. Solo se muestra
+# sin headset, donde ademas el disparo se re-apunta a la camara para que
+# coincida con este punto (ver pistola.gd._apuntar_camara_escritorio).
+@onready var mira: ColorRect = $UI/Mira
 @onready var trazador_disparo: MeshInstance3D = get_node_or_null(trazador_disparo_path)
 
 var salud: float
 
 var _tiempo_desde_dano: float = 999.0
+var _modo_vr: bool = false
+var _yaw_escritorio: float = 0.0
+var _pitch_escritorio: float = 0.0
 
 func _process(delta: float) -> void:
 	if GestorJuego.en_pausa or salud <= 0.0:
@@ -60,6 +73,7 @@ func _ready() -> void:
 	mano_izquierda.button_pressed.connect(_al_presionar_boton_mano_izquierda)
 	salud = salud_maxima
 	etiqueta_salud.visible = mostrar_debug_salud
+	mira.visible = not _modo_vr
 	_actualizar_etiqueta_salud()
 	# En el puesto de mando (fase DESPLIEGUE) suena musica de menu; el combate
 	# recien empieza al confirmar el despliegue en el mapa de la ciudad.
@@ -69,15 +83,94 @@ func _ready() -> void:
 	)
 
 # RF-01: inicializa OpenXR y activa el viewport en modo XR si detecta headset
-# y controladores. Si no hay runtime/headset disponible, el juego sigue
-# funcionando sin XR activo (util para revisar la escena en el editor).
+# y controladores. Si no hay runtime/headset disponible, el juego cae a modo
+# escritorio (mouse-look + clic + ESC, ver _unhandled_input) en vez de
+# quedar sin forma de controlar la camara: los XRController3D nunca emiten
+# button_pressed sin hardware real, asi que sin este fallback el jugador
+# queda completamente trabado.
 func _inicializar_openxr() -> void:
 	var interfaz := XRServer.find_interface("OpenXR")
-	if interfaz and interfaz.is_initialized():
+	_modo_vr = interfaz != null and interfaz.is_initialized()
+	if _modo_vr:
 		get_viewport().use_xr = true
 		print("OpenXR inicializado: headset y controladores detectados.")
 	else:
-		print("OpenXR no disponible: ejecutando sin XR activo (revisa el runtime/headset).")
+		print("OpenXR no disponible: modo escritorio (mouse-look, clic dispara, R recarga, E/M, ESC).")
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		# Mision.tscn corre en el Viewport raiz (a diferencia de main_menu.tscn,
+		# que usa un SubViewport con esto activado en la escena). Sin esto,
+		# Area3D.input_event nunca dispara con el mouse -mapa_despliegue.gd
+		# depende de eso para el clic de escritorio- aunque la mira este bien
+		# apuntada: el picking de fisica esta apagado por defecto.
+		get_viewport().physics_object_picking = true
+
+# Fallback sin headset (RF-01/RF-03): el jugador sigue fijo en posicion
+# (nunca se traslada, solo "mira"), asi que el mouse reemplaza el tracking
+# de cabeza -yaw en el rig completo (XROrigin3D y todo lo que cuelga de el
+# rota junto con la vista, igual que en VR), pitch solo en la camara- y el
+# clic izquierdo reemplaza el gatillo derecho, reutilizando el mismo
+# despachador que trigger_click (dispara, o confirma pausa/mapa/kit/
+# despliegue si ya estan visibles). R recarga (pistola.gd, antes solo el
+# boton X/A de la mano izquierda). El kit medico (tecla E) y el mapa de
+# muneca (tecla M) se abren por tecla en vez del gesto de mano (altura/
+# proximidad), que no tiene equivalente sin tracking; adentro, kit_medico.gd
+# y mapa_muneca.gd resuelven la seleccion por teclado/mouse en vez de
+# proximidad de la mano derecha (ver sus propios _unhandled_input). El clic
+# derecho sostenido/repetido es el "gesto secundario" que usan alcohol.gd y
+# suturas.gd para sus pasos del tratamiento; vendas.gd usa el movimiento del
+# mouse. Q inyecta morfina directo en el herido cercano (kit_medico.gd.
+# administrar_morfina_rapida) sin pasar por equipar/apuntar/confirmar -
+# atajo para el aviso "DOLOR ALTO". Detalle completo en cada script.
+func _unhandled_input(event: InputEvent) -> void:
+	if _modo_vr:
+		return
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		# Con un item del kit equipado, el mismo movimiento de mouse tambien
+		# es el gesto de vendas (vendas.gd lee Input.get_last_mouse_velocity()
+		# por su cuenta, no depende de este evento). Si ademas rota cabeza y
+		# cuerpo, el jugador queda girando sin control mientras venda -la
+		# mecanica "tosca"/impredecible reportada en pruebas-. Igual que en
+		# VR (donde mirar a otro lado no interrumpe un gesto de mano), la
+		# vista queda fija mientras hay un item en mano.
+		if kit_medico and kit_medico.item_equipado:
+			return
+		var movimiento := event as InputEventMouseMotion
+		# rotate_y() repetido (uno por evento de mouse motion, decenas por
+		# segundo) multiplica sobre la base existente cada vez; el error de
+		# punto flotante se acumula con miles de llamadas y termina
+		# filtrando roll donde no deberia haber ninguno (bug reportado: la
+		# vista se ve "inclinada" tras jugar un rato). Se guarda el yaw/pitch
+		# como angulos propios y se asignan de cero cada vez, sin componer.
+		_yaw_escritorio -= movimiento.relative.x * sensibilidad_mouse
+		rotation.y = _yaw_escritorio
+		var tope_pitch := deg_to_rad(limite_pitch_grados)
+		_pitch_escritorio = clamp(
+			_pitch_escritorio - movimiento.relative.y * sensibilidad_mouse, -tope_pitch, tope_pitch
+		)
+		camara.rotation.x = _pitch_escritorio
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_al_presionar_boton_mano("trigger_click")
+	elif event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_ESCAPE:
+				if menu_pausa:
+					menu_pausa.alternar()
+					if menu_pausa.visible:
+						Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+					else:
+						Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			KEY_E:
+				if kit_medico:
+					kit_medico.alternar_manual()
+			KEY_M:
+				if mapa_muneca:
+					mapa_muneca.alternar_manual()
+			KEY_R:
+				if pistola:
+					pistola.recargar()
+			KEY_Q:
+				if kit_medico:
+					kit_medico.administrar_morfina_rapida()
 
 # El gatillo derecho dispara el arma por defecto. La pantalla de resultados
 # (RF-44) tiene la maxima prioridad -si la mision termino, nada mas importa-,
@@ -203,6 +296,11 @@ func fundido_teletransporte() -> void:
 # fundido_teletransporte() (que se autodesvanece), este queda en negro
 # hasta que la escena cambia, para no mostrar el "salto" de vuelta al menu.
 func fundido_salida(escena_destino: String, duracion: float = 0.4) -> void:
+	# El menu principal usa el mouse visible (picking normal dentro de su
+	# SubViewport, ver main_menu.tscn); si se sale de la mision con el mouse
+	# todavia MOUSE_MODE_CAPTURED (modo escritorio), el cursor queda oculto y
+	# los botones del menu no responden a nada - el juego "se queda pasmado".
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var material: StandardMaterial3D = desvanecido.material_override if desvanecido else null
 	if not material:
 		get_tree().change_scene_to_file(escena_destino)

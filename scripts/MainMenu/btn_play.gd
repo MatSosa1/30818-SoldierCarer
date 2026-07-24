@@ -43,7 +43,18 @@ func _on_area_3d_input_event(camera: Node, event: InputEvent, event_position: Ve
 func comenzar_animacion_menu():
 	# Desactivo la colision para evitar doble clic
 	area_clic.input_ray_pickable = false
-	
+	# Sin esto, btn_options/btn_exit siguen recibiendo mouse_entered/exited
+	# durante el cierre (~2s): si el mouse los roza mientras se achican a
+	# cero, su propio hover (btn_options.gd/btn_exit.gd) crea un tween nuevo
+	# sobre la misma propiedad "scale", y si ese hover termina despues que
+	# el achicado, la sticky note queda pegada visible en vez de desaparecer
+	# (bug reportado: "se quedan algunos sticky notes, a veces uno o dos").
+	# Mismo patron que ya usa btn_options.gd al abrir sus opciones.
+	if btn_options and btn_options.has_node("Area3D"):
+		btn_options.get_node("Area3D").input_ray_pickable = false
+	if btn_exit and btn_exit.has_node("Area3D"):
+		btn_exit.get_node("Area3D").input_ray_pickable = false
+
 	var tween = create_tween()
 
 	# Desaparecemos las sticky notes 
