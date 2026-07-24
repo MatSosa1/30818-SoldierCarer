@@ -48,6 +48,7 @@ Se activa solo si no hay runtime OpenXR disponible. El jugador sigue sin traslad
 | Ciclar destino resaltado en el mapa | Rueda del mouse / `Tab` (`Shift+Tab` para atrás) |
 | Confirmar destino resaltado | Clic izquierdo |
 | Abrir/cerrar kit médico | `E` |
+| Elegir sobre qué herida trabajar | Mirarla (mira central) **antes** de elegir el ítem — ver notas |
 | Seleccionar ítem del kit | `1` Vendas · `2` Morfina · `3` Alcohol · `4` Suturas · `5` Analgésicos |
 | Aplicar vendas (equipadas) | Mover el mouse (acumula progreso, no hace falta mantener ningún botón) |
 | Aplicar alcohol (equipado) | Mantener clic derecho ~0.4s |
@@ -66,3 +67,5 @@ Se activa solo si no hay runtime OpenXR disponible. El jugador sigue sin traslad
 - El clic izquierdo es un único "gatillo" contextual (`jugador.gd._al_presionar_boton_mano`): dispara si no hay ningún panel abierto, o confirma el panel visible con más prioridad (resultados > pausa > despliegue > mapa > kit), igual que el gatillo derecho en VR.
 - El clic derecho es el "gesto secundario" que sustituye a los gestos físicos de alcohol/suturas (inclinar la mano, apretar el grip) que no tienen forma de replicarse sin una mano rastreada.
 - La pistola queda desenfundada de forma permanente en modo escritorio (el gesto de extraerla de la cadera no tiene equivalente sin manos).
+- **Con un ítem del kit equipado, la vista deja de rotar con el mouse** hasta que se guarda o se aplica: el mismo movimiento del mouse es el gesto de vendas, así que si además rotara la cámara el jugador terminaba girando sin control mientras vendaba. Por eso hay que **mirar la herida que se quiere tratar antes de presionar el número del ítem**, no después — una vez equipado, la herida objetivo queda fijada a donde estaba apuntando la mira en ese momento.
+- La herida objetivo se elige por la mira (la más centrada bajo el reticulo, con una tolerancia si ninguna está bien centrada), no por cercanía a un punto fijo: con 2+ heridas por herido (mínimo actual), esto es lo que permite elegir cuál tratar primero en vez de que el juego siempre eligiera la geométricamente más próxima a una mano fantasma.

@@ -123,6 +123,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _modo_vr:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		# Con un item del kit equipado, el mismo movimiento de mouse tambien
+		# es el gesto de vendas (vendas.gd lee Input.get_last_mouse_velocity()
+		# por su cuenta, no depende de este evento). Si ademas rota cabeza y
+		# cuerpo, el jugador queda girando sin control mientras venda -la
+		# mecanica "tosca"/impredecible reportada en pruebas-. Igual que en
+		# VR (donde mirar a otro lado no interrumpe un gesto de mano), la
+		# vista queda fija mientras hay un item en mano.
+		if kit_medico and kit_medico.item_equipado:
+			return
 		var movimiento := event as InputEventMouseMotion
 		# rotate_y() repetido (uno por evento de mouse motion, decenas por
 		# segundo) multiplica sobre la base existente cada vez; el error de

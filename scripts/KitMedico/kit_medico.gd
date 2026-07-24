@@ -15,7 +15,12 @@ class_name KitMedico
 @export var rango_tratamiento: float = 1.5
 @export var escala_hover: float = 1.2
 
-const LEYENDA_ESCRITORIO := "1 Vendas | 2 Morfina | 3 Alcohol | 4 Suturas | 5 Analgesicos"
+# La vista queda fija apenas se equipa un item (jugador.gd, para no pelear
+# con el gesto de vendas por el mismo mouse), asi que hay que mirar la
+# herida ANTES de elegir la herramienta, no despues.
+const LEYENDA_ESCRITORIO := (
+	"Mira la herida y elegi:\n1 Vendas 2 Morfina 3 Alcohol 4 Suturas 5 Analgesicos"
+)
 # Personajes.md SS4: la presencia enemiga bloquea la curacion — la zona debe
 # estar razonablemente despejada. Enemigos vivos dentro de este radio (m)
 # alrededor del medico impiden los gestos de secuencia (morfina/analgesicos
@@ -24,6 +29,7 @@ const LEYENDA_ESCRITORIO := "1 Vendas | 2 Morfina | 3 Alcohol | 4 Suturas | 5 An
 
 @onready var mano_izquierda: XRController3D = get_node_or_null("../ManoIzquierda")
 @onready var mano_derecha: XRController3D = get_node_or_null("../ManoDerecha")
+@onready var camara: Camera3D = get_node_or_null("../Camera3D")
 @onready var etiqueta_equipado: Label3D = $EtiquetaEquipado
 @onready var etiqueta_feedback: Label3D = $EtiquetaFeedback
 @onready var sonido_feedback: AudioStreamPlayer3D = $SonidoFeedback
@@ -86,7 +92,11 @@ func _process(delta: float) -> void:
 	if not herido:
 		etiqueta_equipado.text = "Equipado: %s | acercate a un herido" % item_equipado.nombre_item
 		return
-	var herida := herido.herida_mas_cercana(mano_derecha.global_position)
+	var herida: Herida
+	if modo_escritorio and camara:
+		herida = herido.herida_bajo_mira(camara)
+	else:
+		herida = herido.herida_mas_cercana(mano_derecha.global_position)
 	if not herida:
 		etiqueta_equipado.text = "Equipado: %s | sin heridas pendientes aqui" % item_equipado.nombre_item
 		item_equipado.reiniciar()

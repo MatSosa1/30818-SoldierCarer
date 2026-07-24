@@ -124,6 +124,33 @@ func herida_mas_cercana(pos_global: Vector3, radio_maximo: float = 1.5) -> Herid
 			mas_cercana = herida
 	return mas_cercana
 
+# Modo escritorio: sin mano que acercar a una herida puntual, herida_mas_
+# cercana() con un punto de mano fantasma fijo (ver kit_medico.gd) siempre
+# elegia la geometricamente mas cercana a ESE punto, sin que el jugador
+# pudiera elegir cual tratar cuando hay mas de una pendiente (desde que
+# el minimo paso a ser 2 heridas por herido, esto era casi siempre). En
+# su lugar, se elige la herida mas centrada bajo la mira de la camara
+# (mismo punto de referencia que ya usa la pistola para apuntar). Si
+# ninguna cae dentro del cono, cae a la mas cercana por distancia para no
+# exigir punteria perfecta en heridas casi centradas.
+func herida_bajo_mira(camara: Camera3D, angulo_maximo_grados: float = 35.0) -> Herida:
+	var adelante: Vector3 = -camara.global_transform.basis.z
+	var mejor: Herida = null
+	var mejor_angulo := deg_to_rad(angulo_maximo_grados)
+	for herida in heridas:
+		if herida.tratada:
+			continue
+		var direccion := herida.global_position - camara.global_position
+		if direccion.length_squared() < 0.0001:
+			continue
+		var angulo := adelante.angle_to(direccion.normalized())
+		if angulo <= mejor_angulo:
+			mejor_angulo = angulo
+			mejor = herida
+	if mejor:
+		return mejor
+	return herida_mas_cercana(camara.global_position)
+
 # Aplica un item del kit. Para morfina/analgesicos la herida puede ser null
 # (actuan sobre el paciente completo); el resto exige una herida concreta.
 # Devuelve {"exito": bool, "mensaje": String} para el feedback (RF-24).
