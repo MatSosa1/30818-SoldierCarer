@@ -97,17 +97,26 @@ func _al_input_de_icono(_camara: Node, event: InputEvent, _pos: Vector3, _normal
 
 # Resalta el icono al alcance de la mano derecha antes de confirmar con el
 # gatillo, con pulso haptico suave al entrar en rango (patron MapaMuneca).
+# Escala solo "Malla", no el icono entero: Malla esta offset del origen del
+# icono (que tambien contiene Etiqueta/Area3D con sus propios offsets), asi
+# que escalar el nodo padre corria la esfera visualmente en vez de solo
+# agrandarla -bug reportado: "los puntos de teletransporte se mueven".
 func _actualizar_hover() -> void:
 	var candidato := _icono_en_rango()
 	if candidato == _icono_hover:
 		return
 	if is_instance_valid(_icono_hover):
-		_icono_hover.scale = Vector3.ONE
+		_escalar_malla(_icono_hover, 1.0)
 	_icono_hover = candidato
 	if _icono_hover:
-		_icono_hover.scale = Vector3.ONE * escala_hover
+		_escalar_malla(_icono_hover, escala_hover)
 		if _mano_derecha:
 			_mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.2, 0.05, 0.0)
+
+func _escalar_malla(icono: Node3D, escala: float) -> void:
+	var malla: MeshInstance3D = icono.get_node_or_null("Malla")
+	if malla:
+		malla.scale = Vector3.ONE * escala
 
 func _icono_en_rango() -> Node3D:
 	if not get_viewport().use_xr:
