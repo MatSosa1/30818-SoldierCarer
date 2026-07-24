@@ -38,6 +38,8 @@ var _malla_icono_herido := SphereMesh.new()
 var _iconos_heridos: Dictionary = {} # herido -> MeshInstance3D
 var _destinos: Dictionary = {} # icono -> {"punto": Vector3, "escenario": String}
 var _icono_hover: Node3D = null
+var _abierto_manual: bool = false
+var _indice_hover_escritorio: int = 0
 
 func _ready() -> void:
 	visible = false
@@ -49,19 +51,55 @@ func _ready() -> void:
 		mano_derecha = jugador.get_node_or_null("XROrigin3D/ManoDerecha")
 		camara = jugador.get_node_or_null("XROrigin3D/Camera3D")
 
+# Modo escritorio (sin headset): no hay mano que levantar, asi que la tecla
+# M (jugador.gd) alterna esta bandera en vez del gesto de altura.
+func alternar_manual() -> void:
+	_abierto_manual = not _abierto_manual
+
 func _process(_delta: float) -> void:
 	if not mano_izquierda:
 		return
 	# Solo opera en mision y sin pausa: en el puesto de mando (DESPLIEGUE) la
 	# navegacion pasa por el mapa de la ciudad, no por la muneca.
-	visible = (
-		mano_izquierda.position.y >= altura_activacion
-		and GestorJuego.fase == GestorJuego.Fase.MISION
-		and not GestorJuego.en_pausa
-	)
+	if not get_viewport().use_xr:
+		visible = (
+			_abierto_manual
+			and GestorJuego.fase == GestorJuego.Fase.MISION
+			and not GestorJuego.en_pausa
+		)
+	else:
+		visible = (
+			mano_izquierda.position.y >= altura_activacion
+			and GestorJuego.fase == GestorJuego.Fase.MISION
+			and not GestorJuego.en_pausa
+		)
 	if visible:
 		_actualizar_iconos_heridos()
 		_actualizar_hover()
+
+# Modo escritorio: sin mano que acercar a un icono, la rueda del mouse o
+# Tab/Shift+Tab ciclan cual icono esta "en rango" (_icono_en_rango lo usa
+# igual que el hover por proximidad de VR); el clic izquierdo confirma el
+# que este resaltado (jugador.gd -> confirmar_seleccion, sin cambios).
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible or get_viewport().use_xr:
+		return
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_ciclar_hover_escritorio(-1)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_ciclar_hover_escritorio(1)
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_TAB:
+		_ciclar_hover_escritorio(-1 if event.shift_pressed else 1)
+
+func _ciclar_hover_escritorio(paso: int) -> void:
+	var iconos := _iconos_validos()
+	if iconos.is_empty():
+		return
+	_indice_hover_escritorio = wrapi(_indice_hover_escritorio + paso, 0, iconos.size())
+
+func _iconos_validos() -> Array:
+	return _destinos.keys().filter(func(icono): return is_instance_valid(icono))
 
 # Plotea cada herido activo en coordenadas locales del mapa, relativas a la
 # posicion del jugador (que siempre queda al centro, en el origen local).
@@ -127,6 +165,12 @@ func _actualizar_hover() -> void:
 			mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.2, 0.05, 0.0)
 
 func _icono_en_rango() -> Node3D:
+	if not get_viewport().use_xr:
+		var iconos := _iconos_validos()
+		if iconos.is_empty():
+			return null
+		_indice_hover_escritorio = clampi(_indice_hover_escritorio, 0, iconos.size() - 1)
+		return iconos[_indice_hover_escritorio]
 	if not mano_derecha:
 		return null
 	var mas_cercano: Node3D = null

@@ -14,6 +14,8 @@ class_name KitMedico
 @export var radio_seleccion: float = 0.05
 @export var rango_tratamiento: float = 1.5
 @export var escala_hover: float = 1.2
+
+const LEYENDA_ESCRITORIO := "1 Vendas | 2 Morfina | 3 Alcohol | 4 Suturas | 5 Analgesicos"
 # Personajes.md SS4: la presencia enemiga bloquea la curacion — la zona debe
 # estar razonablemente despejada. Enemigos vivos dentro de este radio (m)
 # alrededor del medico impiden los gestos de secuencia (morfina/analgesicos
@@ -30,6 +32,7 @@ var item_equipado: ItemMedico = null
 var _items: Array[ItemMedico] = []
 var _item_hover: ItemMedico = null
 var _posicion_original_equipado: Vector3
+var _abierto_manual: bool = false
 
 func _ready() -> void:
 	visible = false
@@ -37,6 +40,12 @@ func _ready() -> void:
 	for hijo in get_children():
 		if hijo is ItemMedico:
 			_items.append(hijo)
+
+# Modo escritorio (sin headset): no hay mano que acercar a la mochila, asi
+# que la tecla E (jugador.gd) alterna esta bandera en vez del gesto de
+# proximidad.
+func alternar_manual() -> void:
+	_abierto_manual = not _abierto_manual
 
 func _process(delta: float) -> void:
 	if not mano_izquierda:
@@ -48,15 +57,20 @@ func _process(delta: float) -> void:
 		visible = false # el kit no se abre en el puesto de mando, en pausa ni tras finalizar
 		GestorJuego.marcar_tratando(false)
 		return
-	var cerca: bool = mano_izquierda.position.distance_to(position) <= radio_apertura
-	visible = cerca or item_equipado != null
+	var modo_escritorio := not get_viewport().use_xr
+	if modo_escritorio:
+		visible = _abierto_manual or item_equipado != null
+	else:
+		var cerca: bool = mano_izquierda.position.distance_to(position) <= radio_apertura
+		visible = cerca or item_equipado != null
 	GestorJuego.marcar_tratando(visible) # RF-42: el tiempo corre mas lento mientras el kit esta en uso
 	if not visible:
 		return
 
 	if not item_equipado:
-		etiqueta_equipado.text = ""
-		_actualizar_hover()
+		etiqueta_equipado.text = LEYENDA_ESCRITORIO if modo_escritorio else ""
+		if not modo_escritorio:
+			_actualizar_hover()
 		return
 
 	# El item equipado se ve EN la mano derecha (confirmacion visual de que
@@ -101,6 +115,24 @@ func _process(delta: float) -> void:
 	herida.mostrar_progreso_gesto(item_equipado.progreso())
 	if item_equipado.procesar_gesto(delta, mano_derecha, herida):
 		_completar_aplicacion(herido.aplicar_tratamiento_en(herida, item_equipado.tipo))
+
+# Modo escritorio: las teclas 1-5 equipan el item de ese indice en _items
+# (mismo orden que KitMedico.tscn: Vendas/Morfina/Alcohol/Suturas/
+# Analgesicos, ver LEYENDA_ESCRITORIO) en vez de acercar la mano derecha al
+# item y confirmar con el gatillo. Con un item ya equipado no hace nada:
+# guardarlo sigue siendo el clic izquierdo (_al_presionar_boton_mano ->
+# confirmar_seleccion -> _guardar_item), igual que en VR.
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible or get_viewport().use_xr or item_equipado:
+		return
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	var indice := event.keycode - KEY_1
+	if indice >= 0 and indice < _items.size():
+		var item := _items[indice]
+		_posicion_original_equipado = item.position
+		item_equipado = item
+		item.reiniciar()
 
 # Resalta el item al alcance de la mano derecha (hover) antes de confirmar
 # con el gatillo, con un pulso haptico suave al entrar en rango.

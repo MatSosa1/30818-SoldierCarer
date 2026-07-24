@@ -96,10 +96,14 @@ func _inicializar_openxr() -> void:
 # rota junto con la vista, igual que en VR), pitch solo en la camara- y el
 # clic izquierdo reemplaza el gatillo derecho, reutilizando el mismo
 # despachador que trigger_click (dispara, o confirma pausa/mapa/kit/
-# despliegue si ya estan visibles). El kit medico y el mapa de muneca, al
-# abrirse por gesto de la mano (altura/proximidad), no tienen equivalente de
-# escritorio todavia -limitacion conocida de este fallback, no de la
-# mecanica VR original.
+# despliegue si ya estan visibles). El kit medico (tecla E) y el mapa de
+# muneca (tecla M) se abren por tecla en vez del gesto de mano (altura/
+# proximidad), que no tiene equivalente sin tracking; adentro, kit_medico.gd
+# y mapa_muneca.gd resuelven la seleccion por teclado/mouse en vez de
+# proximidad de la mano derecha (ver sus propios _unhandled_input). El clic
+# derecho sostenido/repetido es el "gesto secundario" que usan alcohol.gd y
+# suturas.gd para sus pasos del tratamiento; vendas.gd usa el movimiento del
+# mouse. Detalle completo en cada script.
 func _unhandled_input(event: InputEvent) -> void:
 	if _modo_vr:
 		return
@@ -110,10 +114,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		camara.rotation.x = clamp(pitch, -tope_pitch, tope_pitch)
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_al_presionar_boton_mano("trigger_click")
-	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
-		if menu_pausa:
-			menu_pausa.alternar()
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if menu_pausa.visible else Input.MOUSE_MODE_CAPTURED
+	elif event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_ESCAPE:
+				if menu_pausa:
+					menu_pausa.alternar()
+					if menu_pausa.visible:
+						Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+					else:
+						Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			KEY_E:
+				if kit_medico:
+					kit_medico.alternar_manual()
+			KEY_M:
+				if mapa_muneca:
+					mapa_muneca.alternar_manual()
 
 # El gatillo derecho dispara el arma por defecto. La pantalla de resultados
 # (RF-44) tiene la maxima prioridad -si la mision termino, nada mas importa-,

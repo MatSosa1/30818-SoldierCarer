@@ -59,12 +59,19 @@ func _posicionar_frente_a_la_vista() -> void:
 	rotate_object_local(Vector3.UP, PI) # el QuadMesh mira hacia +Z; girarlo hacia el jugador
 
 func confirmar_seleccion() -> void:
-	if not visible or not mano_derecha:
+	if not visible:
 		return
-	if mano_derecha.global_position.distance_to(icono_volver.global_position) <= radio_seleccion:
+	# Modo escritorio: un solo boton, sin mano que acercar - el clic ya
+	# implica la eleccion (jugador.gd solo llega aca con esto visible).
+	if get_viewport().use_xr:
+		if not mano_derecha:
+			return
+		var d := mano_derecha.global_position.distance_to(icono_volver.global_position)
+		if d > radio_seleccion:
+			return
 		mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.5, 0.1, 0.0)
-		# RNF-03: fundido a negro antes de volver al menu.
-		if jugador:
-			jugador.fundido_salida("res://views/main_menu.tscn")
-		else:
-			get_tree().change_scene_to_file("res://views/main_menu.tscn")
+	# RNF-03: fundido a negro antes de volver al menu.
+	if jugador:
+		jugador.fundido_salida("res://views/main_menu.tscn")
+	else:
+		get_tree().change_scene_to_file("res://views/main_menu.tscn")
