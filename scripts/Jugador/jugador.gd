@@ -118,7 +118,9 @@ func _inicializar_openxr() -> void:
 # proximidad de la mano derecha (ver sus propios _unhandled_input). El clic
 # derecho sostenido/repetido es el "gesto secundario" que usan alcohol.gd y
 # suturas.gd para sus pasos del tratamiento; vendas.gd usa el movimiento del
-# mouse. Detalle completo en cada script.
+# mouse. Q inyecta morfina directo en el herido cercano (kit_medico.gd.
+# administrar_morfina_rapida) sin pasar por equipar/apuntar/confirmar -
+# atajo para el aviso "DOLOR ALTO". Detalle completo en cada script.
 func _unhandled_input(event: InputEvent) -> void:
 	if _modo_vr:
 		return
@@ -166,6 +168,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_R:
 				if pistola:
 					pistola.recargar()
+			KEY_Q:
+				if kit_medico:
+					kit_medico.administrar_morfina_rapida()
 
 # El gatillo derecho dispara el arma por defecto. La pantalla de resultados
 # (RF-44) tiene la maxima prioridad -si la mision termino, nada mas importa-,

@@ -25,6 +25,14 @@ enum EstadoSalud {ESTABLE, CRITICO, AGONIZANTE, MUERTO, ESTABILIZADO}
 @export var umbral_dolor_bloqueo: float = 0.65
 # Cuanto alivio pierde por segundo (la morfina "se pasa" con el tiempo).
 @export var decaimiento_alivio: float = 0.015
+# RF-12/RF-31: ademas de FRENAR el decaimiento (_factor_decaimiento, via la
+# gravedad de heridas sin tratar), cada avance real le devuelve tiempo al
+# reloj de muerte del estado actual - un respiro concreto en vez de solo
+# demorar lo inevitable. tiempo_bonus_por_alivio se escala por la cantidad
+# de alivio aplicado (morfina 0.8 > analgesicos 0.4: la mas fuerte da mas
+# tiempo, mismo criterio que ya usan para el dolor).
+@export var tiempo_bonus_por_paso: float = 6.0
+@export var tiempo_bonus_por_alivio: float = 10.0
 
 # Nombre del escenario donde vive este herido (clave que usa GestorEscenarios,
 # "E1_Calle"/"E2_Edificio"). MapaMuneca y DirectorDeOleadas lo usan.
@@ -174,12 +182,32 @@ func aplicar_tratamiento_en(herida: Herida, tipo: int) -> Dictionary:
 
 func _aplicar_alivio(cantidad: float) -> void:
 	_alivio = clampf(_alivio + cantidad, 0.0, 1.0)
+	_otorgar_tiempo(tiempo_bonus_por_alivio * cantidad)
 
 func _al_progresar_herida(_herida: Herida) -> void:
+	_otorgar_tiempo(tiempo_bonus_por_paso)
 	# El director de oleadas escala con este avance (curar atrae enemigos).
 	EventBus.tratamiento_progresado.emit(self, fraccion_tratamiento())
 	if heridas.all(func(h: Herida) -> bool: return h.tratada):
 		_al_estabilizar()
+
+# Extiende _tiempo_restante sin pasarse de la duracion total del estado
+# actual (no hace que el herido "aguante para siempre" a fuerza de pasos
+# chicos, ni lo hace retroceder de CRITICO a ESTABLE - solo compra tiempo
+# dentro del estado en el que ya esta).
+func _otorgar_tiempo(cantidad: float) -> void:
+	if estado_salud == EstadoSalud.MUERTO or estado_salud == EstadoSalud.ESTABILIZADO:
+		return
+	_tiempo_restante = minf(_tiempo_restante + cantidad, _duracion_maxima_estado_actual())
+
+func _duracion_maxima_estado_actual() -> float:
+	match estado_salud:
+		EstadoSalud.CRITICO:
+			return duracion_critico
+		EstadoSalud.AGONIZANTE:
+			return duracion_agonizante
+		_:
+			return duracion_estable
 
 func fraccion_tratamiento() -> float:
 	var total := 0

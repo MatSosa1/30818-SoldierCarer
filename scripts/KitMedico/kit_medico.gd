@@ -73,6 +73,12 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 
+	# Se calcula una sola vez por frame: lo usan tanto el resalte de morfina
+	# (VR) como el chequeo de "hay un herido cerca" mas abajo.
+	var herido_cercano := _herido_en_rango()
+	if not modo_escritorio:
+		_actualizar_resalte_morfina(herido_cercano)
+
 	if not item_equipado:
 		etiqueta_equipado.text = LEYENDA_ESCRITORIO if modo_escritorio else ""
 		if not modo_escritorio:
@@ -88,7 +94,7 @@ func _process(delta: float) -> void:
 
 	# Los gestos se ejecutan sobre una HERIDA concreta del cuerpo, no sobre
 	# el herido generico: el medico tiene que trabajar donde esta la lesion.
-	var herido := _herido_en_rango()
+	var herido := herido_cercano
 	if not herido:
 		etiqueta_equipado.text = "Equipado: %s | acercate a un herido" % item_equipado.nombre_item
 		return
@@ -110,7 +116,10 @@ func _process(delta: float) -> void:
 	if herido.dolor_bloqueante():
 		# Con el paciente retorciendose no se puede trabajar: el gesto no
 		# avanza hasta controlar el dolor (morfina/analgesicos).
-		etiqueta_equipado.text = "DOLOR ALTO: administra morfina o analgesicos"
+		etiqueta_equipado.text = (
+			"DOLOR ALTO: pulsa Q para inyectar morfina" if modo_escritorio
+			else "DOLOR ALTO: administra la morfina resaltada"
+		)
 		item_equipado.reiniciar()
 		return
 	if item_equipado.tipo != herida.item_esperado():
@@ -170,6 +179,45 @@ func _item_en_rango_seleccion() -> ItemMedico:
 			distancia_min = d
 			mas_cercano = item
 	return mas_cercano
+
+func _item_de_tipo(tipo: ItemMedico.TipoItem) -> ItemMedico:
+	for item in _items:
+		if item.tipo == tipo:
+			return item
+	return null
+
+# VR, "alivio rapido": si el herido cercano esta bloqueado por dolor, la
+# morfina pulsa para que se la ubique de un vistazo en vez de tener que
+# leer las 5 etiquetas del kit una por una. No pisa el resalte de hover
+# (proximidad de la mano) cuando coinciden: el hover es la senial mas
+# inmediata de "esto es lo que vas a agarrar si confirmas ahora".
+func _actualizar_resalte_morfina(herido: Herido) -> void:
+	var morfina := _item_de_tipo(ItemMedico.TipoItem.MORFINA)
+	if not morfina or morfina == _item_hover:
+		return
+	if herido and herido.dolor_bloqueante():
+		morfina.scale = Vector3.ONE * (1.0 + sin(Time.get_ticks_msec() / 150.0) * 0.15)
+	elif morfina.scale != Vector3.ONE:
+		morfina.scale = Vector3.ONE
+
+# "Alivio rapido" de escritorio (tecla Q, jugador.gd): en vez de guardar el
+# item actual, elegir morfina con "2" y volver a apuntar/confirmar con
+# clic (varios pasos), inyecta la morfina directo en un solo gesto - lo
+# que el aviso "DOLOR ALTO" le pide al jugador, sin la friccion normal.
+# Si habia otro item equipado se guarda antes (su progreso ya se estaba
+# reiniciando cada frame por el bloqueo de dolor, asi que no se pierde
+# nada real al soltarlo).
+func administrar_morfina_rapida() -> void:
+	if GestorJuego.fase != GestorJuego.Fase.MISION or GestorJuego.en_pausa:
+		return
+	var herido := _herido_en_rango()
+	if not herido:
+		return
+	if item_equipado:
+		item_equipado.reiniciar()
+		item_equipado.position = _posicion_original_equipado
+		item_equipado = null
+	_completar_aplicacion(herido.aplicar_tratamiento_en(null, ItemMedico.TipoItem.MORFINA))
 
 # Llamado desde jugador.gd al presionar el gatillo derecho mientras el kit
 # esta abierto: sin item equipado, intenta seleccionar uno por proximidad;

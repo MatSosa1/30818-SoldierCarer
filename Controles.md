@@ -29,6 +29,7 @@ El jugador está **fijo en posición** (RF-03): nunca camina, solo gira la cabez
 | Aplicar alcohol | Inclinar la mano derecha (mano "boca abajo") y sostener 0.4s |
 | Aplicar suturas | Apretar y soltar el grip derecho 3 veces seguidas |
 | Aplicar morfina / analgésicos | Acercar la mano derecha al herido + gatillo derecho |
+| Alivio rápido (dolor bloqueando el tratamiento) | La morfina del kit pulsa sola: acercarse y gatillo, sin leer las 5 etiquetas |
 | Guardar ítem equipado sin aplicar | Gatillo derecho (con un ítem de secuencia en mano, sin herida válida en rango) |
 | Abrir/cerrar menú de pausa | Botón de menú de la mano izquierda (`menu_button`) |
 | Seleccionar opción del menú de pausa | Acercar la mano derecha al ícono (Reanudar/Opciones/Salir) + gatillo |
@@ -54,6 +55,7 @@ Se activa solo si no hay runtime OpenXR disponible. El jugador sigue sin traslad
 | Aplicar alcohol (equipado) | Mantener clic derecho ~0.4s |
 | Aplicar suturas (equipadas) | Clic derecho 3 veces seguidas |
 | Aplicar morfina / analgésicos (equipados) | Clic izquierdo, con la mira sobre un herido cercano |
+| Alivio rápido (inyectar morfina sin equipar nada) | `Q`, con un herido cerca — guarda lo que tengas en mano si hace falta |
 | Guardar ítem equipado sin aplicar | Clic izquierdo (con un ítem de secuencia en mano, sin herida válida) |
 | Abrir/cerrar menú de pausa | `ESC` (también libera/recaptura el mouse) |
 | Ciclar opción resaltada del menú de pausa | Rueda del mouse / `Tab` (`Shift+Tab` para atrás) |
@@ -69,3 +71,4 @@ Se activa solo si no hay runtime OpenXR disponible. El jugador sigue sin traslad
 - La pistola queda desenfundada de forma permanente en modo escritorio (el gesto de extraerla de la cadera no tiene equivalente sin manos).
 - **Con un ítem del kit equipado, la vista deja de rotar con el mouse** hasta que se guarda o se aplica: el mismo movimiento del mouse es el gesto de vendas, así que si además rotara la cámara el jugador terminaba girando sin control mientras vendaba. Por eso hay que **mirar la herida que se quiere tratar antes de presionar el número del ítem**, no después — una vez equipado, la herida objetivo queda fijada a donde estaba apuntando la mira en ese momento.
 - La herida objetivo se elige por la mira (la más centrada bajo el reticulo, con una tolerancia si ninguna está bien centrada), no por cercanía a un punto fijo: con 2+ heridas por herido (mínimo actual), esto es lo que permite elegir cuál tratar primero en vez de que el juego siempre eligiera la geométricamente más próxima a una mano fantasma.
+- `Q` es un atajo, no reemplaza al kit: sigue existiendo el flujo normal (`2` para equipar morfina y confirmar con clic) si preferís usarlo. `Q` funciona tenga el kit abierto o no.
