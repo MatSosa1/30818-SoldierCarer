@@ -93,7 +93,7 @@ func _inicializar_openxr() -> void:
 		get_viewport().use_xr = true
 		print("OpenXR inicializado: headset y controladores detectados.")
 	else:
-		print("OpenXR no disponible: modo escritorio activo (mouse-look, clic dispara, ESC pausa).")
+		print("OpenXR no disponible: modo escritorio (mouse-look, clic dispara, R recarga, E/M, ESC).")
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		# Mision.tscn corre en el Viewport raiz (a diferencia de main_menu.tscn,
 		# que usa un SubViewport con esto activado en la escena). Sin esto,
@@ -108,7 +108,8 @@ func _inicializar_openxr() -> void:
 # rota junto con la vista, igual que en VR), pitch solo en la camara- y el
 # clic izquierdo reemplaza el gatillo derecho, reutilizando el mismo
 # despachador que trigger_click (dispara, o confirma pausa/mapa/kit/
-# despliegue si ya estan visibles). El kit medico (tecla E) y el mapa de
+# despliegue si ya estan visibles). R recarga (pistola.gd, antes solo el
+# boton X/A de la mano izquierda). El kit medico (tecla E) y el mapa de
 # muneca (tecla M) se abren por tecla en vez del gesto de mano (altura/
 # proximidad), que no tiene equivalente sin tracking; adentro, kit_medico.gd
 # y mapa_muneca.gd resuelven la seleccion por teclado/mouse en vez de
@@ -142,6 +143,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_M:
 				if mapa_muneca:
 					mapa_muneca.alternar_manual()
+			KEY_R:
+				if pistola:
+					pistola.recargar()
 
 # El gatillo derecho dispara el arma por defecto. La pantalla de resultados
 # (RF-44) tiene la maxima prioridad -si la mision termino, nada mas importa-,
