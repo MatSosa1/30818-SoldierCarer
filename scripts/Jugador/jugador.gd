@@ -41,6 +41,11 @@ signal disparo_realizado(rayo: RayCast3D)
 # Etiqueta 2D de debug: al vivir en CanvasLayer solo aparece en la ventana
 # espejo de escritorio, nunca en el headset - util como consola del encargado.
 @onready var etiqueta_salud: Label = $UI/EtiquetaSalud
+# Mira de escritorio: en VR se apunta con la mano (ver pistola.gd), no
+# tiene sentido un punto fijo al centro de la pantalla. Solo se muestra
+# sin headset, donde ademas el disparo se re-apunta a la camara para que
+# coincida con este punto (ver pistola.gd._apuntar_camara_escritorio).
+@onready var mira: ColorRect = $UI/Mira
 @onready var trazador_disparo: MeshInstance3D = get_node_or_null(trazador_disparo_path)
 
 var salud: float
@@ -66,6 +71,7 @@ func _ready() -> void:
 	mano_izquierda.button_pressed.connect(_al_presionar_boton_mano_izquierda)
 	salud = salud_maxima
 	etiqueta_salud.visible = mostrar_debug_salud
+	mira.visible = not _modo_vr
 	_actualizar_etiqueta_salud()
 	# En el puesto de mando (fase DESPLIEGUE) suena musica de menu; el combate
 	# recien empieza al confirmar el despliegue en el mapa de la ciudad.
