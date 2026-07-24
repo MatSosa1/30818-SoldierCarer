@@ -9,7 +9,15 @@ class_name MapaDespliegue
 ## arranca el reloj de mision.
 ##
 ## Seleccion doble, coherente con el resto del proyecto:
-## - Escritorio: clic izquierdo sobre el Area3D del icono (patron MainMenu).
+## - Escritorio: mirar el icono (raycast desde la camara, igual que la mira
+##   de la pistola) y confirmar con clic izquierdo -ver _icono_en_rango()-.
+##   El Area3D + input_event de mas abajo queda como intento original (patron
+##   MainMenu) pero con el mouse en MOUSE_MODE_CAPTURED (necesario para
+##   mirar alrededor) el picking automatico de Godot no es confiable: puede
+##   quedar bloqueado por otro colisionador delante del icono (el propio
+##   mapa/mesa) o depender de la posicion exacta que Godot reporte para un
+##   cursor capturado. El raycast explicito, con collide_with_bodies=false,
+##   ignora cualquier solido en el medio y solo puede pegarle a las Area3D.
 ## - VR: acercar la mano derecha al icono y presionar el gatillo (arbitrado
 ##   en jugador.gd, mismo patron que MapaMuneca).
 ##
@@ -102,6 +110,8 @@ func _actualizar_hover() -> void:
 			_mano_derecha.trigger_haptic_pulse("haptic", 0.0, 0.2, 0.05, 0.0)
 
 func _icono_en_rango() -> Node3D:
+	if not get_viewport().use_xr:
+		return _icono_bajo_mira_escritorio()
 	if not _mano_derecha:
 		var jugador := get_tree().get_first_node_in_group("jugador")
 		if jugador:
@@ -116,6 +126,27 @@ func _icono_en_rango() -> Node3D:
 			distancia_min = d
 			mas_cercano = icono
 	return mas_cercano
+
+# Raycast explicito desde la camara (mismo origen/direccion que la mira de
+# pistola.gd), solo contra Area3D (collide_with_bodies=false) para no
+# depender del picking automatico de Godot ni de que algo solido lo tape.
+func _icono_bajo_mira_escritorio() -> Node3D:
+	var jugador := get_tree().get_first_node_in_group("jugador")
+	var camara: Camera3D = jugador.get_node_or_null("XROrigin3D/Camera3D") if jugador else null
+	if not camara:
+		return null
+	var origen := camara.global_position
+	var destino := origen - camara.global_transform.basis.z * 50.0
+	var parametros := PhysicsRayQueryParameters3D.create(origen, destino)
+	parametros.collide_with_areas = true
+	parametros.collide_with_bodies = false
+	var resultado := get_world_3d().direct_space_state.intersect_ray(parametros)
+	if resultado.is_empty():
+		return null
+	for icono: Node3D in _escenario_por_icono.keys():
+		if resultado["collider"] == icono.get_node_or_null("Area3D"):
+			return icono
+	return null
 
 # Llamado desde jugador.gd al presionar el gatillo derecho durante la fase
 # de despliegue.
