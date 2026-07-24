@@ -4,7 +4,7 @@ class_name Herido
 ## temporizador (RF-12): ESTABLE -> CRITICO -> AGONIZANTE -> MUERTO, con
 ## color semaforico en el foco y en los mapas (RF-13).
 ##
-## Desde el sistema de heridas procedurales, cada herido tiene 1..3 heridas
+## Desde el sistema de heridas procedurales, cada herido tiene 2..3 heridas
 ## generadas al azar (GeneradorHeridas) sobre puntos anatomicos del cuerpo
 ## ($PuntosDeHerida): tratarlo no es repetir una secuencia fija, sino leer
 ## cada herida, aplicar SU secuencia de items sobre SU posicion, y manejar

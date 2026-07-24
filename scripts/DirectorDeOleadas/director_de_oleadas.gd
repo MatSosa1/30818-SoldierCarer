@@ -8,10 +8,22 @@ extends Node3D
 ## E1, puertas y escalera en E2), avanzando desde la lejania (RF-33: los
 ## pasos espaciales anticipan la direccion).
 ##
-## La presion escala con la curacion: cada paso de tratamiento completado
-## (EventBus.tratamiento_progresado) encola refuerzos y acelera el goteo —
-## la Oposicion converge al detectar actividad del medico. Sin curar, solo
-## llega un goteo lento de patrullas.
+## Refuerzos por curacion (RF-31, curva de dificultad "facil"): en vez de
+## encolar enemigos en CADA paso de tratamiento (viejo diseno — con una
+## secuencia de 3-4 pasos por herida terminaba encolando mas enemigos de
+## los que se podian abatir con la municion disponible, practicamente
+## imposible curar sin estar ya bajo fuego), se dispara una oleada de
+## enemigos_por_oleada (una pareja arma+cuchillo) cada vez que el progreso
+## PONDERADO del herido avanza medio herida (0.5 / cantidad de heridas).
+## Ponderado = fraccion_tratamiento() del herido (pasos hechos / pasos
+## totales de TODAS sus heridas), no el % de una herida sola: si el
+## jugador reparte el esfuerzo entre varias heridas a la vez, el progreso
+## ponderado sube mas despacio que cualquiera de ellas por separado, asi
+## que no se disparan varias oleadas de golpe solo por trabajar en paralelo.
+## Con 2 heridas (minimo actual) esto da 4 oleadas en toda la curacion; con
+## 3, seis. El goteo de patrullas por tiempo sigue constante (no se acelera
+## con la curacion, para no sumar presion sobre la presion) — solo agrega
+## enemigos si el jugador se demora mucho sin avanzar.
 
 const ENEMIGO_ARMA := preload("res://views/EnemigoArma.tscn")
 const ENEMIGO_CUCHILLO := preload("res://views/EnemigoCuchillo.tscn")
@@ -22,12 +34,16 @@ const ENEMIGO_CUCHILLO := preload("res://views/EnemigoCuchillo.tscn")
 # Gracia inicial: tiempo desde el despliegue hasta el primer enemigo, para
 # poder orientarse y llegar al herido sin ser emboscado en el punto de entrada.
 @export var retardo_primera_oleada: float = 15.0
-# Goteo base de patrullas por tiempo (se acelera con la presion de curacion).
+# Goteo base de patrullas por tiempo, constante (ver docstring de la clase).
 @export var intervalo_goteo: float = 30.0
 @export var max_enemigos_simultaneos: int = 4
 @export var max_cola: int = 8
-# Refuerzos encolados por cada paso de curacion completado.
-@export var enemigos_por_avance_curacion: int = 1
+# Tamano de cada oleada de refuerzo por curacion: una pareja arma+cuchillo.
+@export var enemigos_por_oleada: int = 2
+# Fraccion de UNA herida (0..1) que hay que avanzar, en progreso ponderado
+# del herido completo, para disparar la siguiente oleada. 0.5 = una oleada
+# cada medio avance de herida (ver docstring de la clase para el porque).
+@export var avance_herida_por_oleada: float = 0.5
 # Separacion aleatoria entre entradas consecutivas: los enemigos aparecen
 # "poco a poco", nunca en parejas instantaneas.
 @export var retardo_spawn_min: float = 2.0
@@ -46,8 +62,10 @@ var _tiempo_gracia: float = 0.0
 var _tiempo_goteo: float = 0.0
 var _tiempo_spawn: float = 0.0
 var _alternar_cuchillo: bool = false
-var _presion: float = 0.0 # 0..1 segun el progreso de curacion del herido local
 var _indice_entrada_debug: int = 0
+# herido -> progreso ponderado (fraccion_tratamiento()) ya premiado con
+# oleada; permite detectar cada cruce de umbral sin repetirlo ni perderlo.
+var _progreso_premiado: Dictionary = {}
 
 @onready var contenedor_enemigos: Node3D = get_node(contenedor_enemigos_path)
 @onready var entradas: Array[Node] = $Entradas.get_children()
@@ -82,8 +100,9 @@ func _process(delta: float) -> void:
 		if _tiempo_gracia <= 0.0:
 			_encolar(1) # explorador inicial: un unico enemigo de reconocimiento
 		return
-	# Goteo de patrullas por tiempo; la presion de curacion lo acelera.
-	_tiempo_goteo -= delta * (1.0 + _presion)
+	# Goteo de patrullas por tiempo, constante (las oleadas por curacion ya
+	# escalan la presion; acelerar esto tambien las hacia compuestas).
+	_tiempo_goteo -= delta
 	if _tiempo_goteo <= 0.0:
 		_tiempo_goteo = intervalo_goteo
 		_encolar(1)
@@ -113,13 +132,33 @@ func _elegir_entrada() -> Node3D:
 			mas_lejana = entrada
 	return mas_lejana
 
+# RF-31, curva de dificultad: dispara una oleada por cada avance_herida_por_
+# oleada (0.5 = medio herida) de progreso PONDERADO del herido, no por cada
+# paso de tratamiento individual (ver docstring de la clase). "Ponderado"
+# = fraccion_tratamiento() del herido, que ya promedia pasos_hechos/pasos_
+# totales de TODAS sus heridas; dividir el umbral por la cantidad de
+# heridas hace que el numero de oleadas escale con cuantas tiene el herido
+# (2 heridas -> 4 oleadas; 3 -> 6) sin premiar per-herida de forma
+# independiente, que es lo que permitia que tratar varias en paralelo
+# disparara todas sus oleadas de golpe al cruzar el 50% "al mismo tiempo".
 func _al_progresar_tratamiento(herido: Node, fraccion: float) -> void:
 	if not _armado or not ("escenario" in herido) or herido.escenario != escenario:
 		return
-	_presion = clampf(fraccion, 0.0, 1.0)
-	# Mas cerca de estabilizar = refuerzos mas numerosos: defender al herido
-	# se vuelve progresivamente mas tenso (RF-31).
-	_encolar(enemigos_por_avance_curacion + int(fraccion * 2.0))
+	if not ("heridas" in herido) or herido.heridas.is_empty():
+		return
+	fraccion = clampf(fraccion, 0.0, 1.0)
+	var umbral: float = avance_herida_por_oleada / float(herido.heridas.size())
+	var premiado: float = _progreso_premiado.get(herido, 0.0)
+	# while, no if: si un solo paso completa una fraccion grande del total
+	# (herida corta, pocos pasos), puede cruzar mas de un umbral de una vez
+	# y las oleadas pendientes no deben perderse.
+	while premiado + umbral <= fraccion + 0.0001:
+		premiado += umbral
+		_encolar(enemigos_por_oleada)
+		print("Refuerzos por curacion en %s: oleada al %d%% de progreso ponderado." % [
+			escenario, roundi(premiado * 100.0),
+		])
+	_progreso_premiado[herido] = premiado
 
 func _encolar(cantidad: int) -> void:
 	_pendientes = min(_pendientes + cantidad, max_cola)
@@ -146,15 +185,19 @@ func _al_neutralizar_enemigo(_enemigo: CharacterBody3D) -> void:
 func hay_enemigos_activos() -> bool:
 	return enemigos_activos > 0
 
-# Teclas de debug (solo procesan con el escenario activo): R encola un
-# enemigo; 1-4 spawnean inmediato en la entrada correspondiente.
+# Teclas de debug (solo procesan con el escenario activo): F5 encola un
+# enemigo; F1-F4 spawnean inmediato en la entrada correspondiente. En F1-F5
+# (no R/1-4) porque el modo escritorio ya usa R para recargar y 1-5 para
+# elegir item del kit medico (jugador.gd/kit_medico.gd): con las teclas
+# viejas, cada recarga o seleccion de item durante una prueba tambien
+# disparaba estos atajos de debug sin querer.
 func _unhandled_input(event: InputEvent) -> void:
 	if not _armado or not event is InputEventKey or not event.pressed or event.echo:
 		return
 	match event.keycode:
-		KEY_R:
+		KEY_F5:
 			_encolar(1)
-		KEY_1, KEY_2, KEY_3, KEY_4:
-			var indice: int = event.keycode - KEY_1
+		KEY_F1, KEY_F2, KEY_F3, KEY_F4:
+			var indice: int = event.keycode - KEY_F1
 			if indice < entradas.size():
 				_spawnear_en_entrada(entradas[indice])

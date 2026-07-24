@@ -23,8 +23,11 @@ static func generar_para(cuerpo_puntos: Array[Node]) -> Array[Herida]:
 	var heridas: Array[Herida] = []
 	var puntos := cuerpo_puntos.duplicate()
 	puntos.shuffle()
-	# 1..3 heridas, sesgado hacia 2: un unico paso nunca estabiliza a nadie.
-	var cantidad: int = clampi([1, 2, 2, 3].pick_random(), 1, puntos.size())
+	# 2..3 heridas, sesgado hacia 2 (curva de dificultad, RF-31): antes podia
+	# salir 1 sola herida, muy facil de curar antes de que llegue cualquier
+	# refuerzo. Minimo 2 para que la curva de oleadas de director_de_oleadas.gd
+	# (una oleada cada medio avance ponderado de herida) tenga sentido siempre.
+	var cantidad: int = clampi([2, 2, 3].pick_random(), 2, puntos.size())
 	for i in cantidad:
 		var herida := _generar_una()
 		# La herida se cuelga del punto anatomico (pecho, brazo, pierna...):
