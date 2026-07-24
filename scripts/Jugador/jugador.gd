@@ -108,8 +108,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _modo_vr:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		rotate_y(-event.relative.x * sensibilidad_mouse)
-		var pitch := camara.rotation.x - event.relative.y * sensibilidad_mouse
+		var movimiento := event as InputEventMouseMotion
+		rotate_y(-movimiento.relative.x * sensibilidad_mouse)
+		var pitch := camara.rotation.x - movimiento.relative.y * sensibilidad_mouse
 		var tope_pitch := deg_to_rad(limite_pitch_grados)
 		camara.rotation.x = clamp(pitch, -tope_pitch, tope_pitch)
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

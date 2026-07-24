@@ -127,7 +127,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
-	var indice := event.keycode - KEY_1
+	var tecla := event as InputEventKey
+	var indice := tecla.keycode - KEY_1
 	if indice >= 0 and indice < _items.size():
 		var item := _items[indice]
 		_posicion_original_equipado = item.position
