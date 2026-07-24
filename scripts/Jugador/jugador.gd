@@ -52,6 +52,8 @@ var salud: float
 
 var _tiempo_desde_dano: float = 999.0
 var _modo_vr: bool = false
+var _yaw_escritorio: float = 0.0
+var _pitch_escritorio: float = 0.0
 
 func _process(delta: float) -> void:
 	if GestorJuego.en_pausa or salud <= 0.0:
@@ -122,10 +124,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var movimiento := event as InputEventMouseMotion
-		rotate_y(-movimiento.relative.x * sensibilidad_mouse)
-		var pitch := camara.rotation.x - movimiento.relative.y * sensibilidad_mouse
+		# rotate_y() repetido (uno por evento de mouse motion, decenas por
+		# segundo) multiplica sobre la base existente cada vez; el error de
+		# punto flotante se acumula con miles de llamadas y termina
+		# filtrando roll donde no deberia haber ninguno (bug reportado: la
+		# vista se ve "inclinada" tras jugar un rato). Se guarda el yaw/pitch
+		# como angulos propios y se asignan de cero cada vez, sin componer.
+		_yaw_escritorio -= movimiento.relative.x * sensibilidad_mouse
+		rotation.y = _yaw_escritorio
 		var tope_pitch := deg_to_rad(limite_pitch_grados)
-		camara.rotation.x = clamp(pitch, -tope_pitch, tope_pitch)
+		_pitch_escritorio = clamp(
+			_pitch_escritorio - movimiento.relative.y * sensibilidad_mouse, -tope_pitch, tope_pitch
+		)
+		camara.rotation.x = _pitch_escritorio
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_al_presionar_boton_mano("trigger_click")
 	elif event is InputEventKey and event.pressed and not event.echo:
