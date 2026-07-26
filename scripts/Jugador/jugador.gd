@@ -97,12 +97,6 @@ func _inicializar_openxr() -> void:
 	else:
 		print("OpenXR no disponible: modo escritorio (mouse-look, clic dispara, R recarga, E/M, ESC).")
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		# Mision.tscn corre en el Viewport raiz (a diferencia de main_menu.tscn,
-		# que usa un SubViewport con esto activado en la escena). Sin esto,
-		# Area3D.input_event nunca dispara con el mouse -mapa_despliegue.gd
-		# depende de eso para el clic de escritorio- aunque la mira este bien
-		# apuntada: el picking de fisica esta apagado por defecto.
-		get_viewport().physics_object_picking = true
 
 # Fallback sin headset (RF-01/RF-03): el jugador sigue fijo en posicion
 # (nunca se traslada, solo "mira"), asi que el mouse reemplaza el tracking

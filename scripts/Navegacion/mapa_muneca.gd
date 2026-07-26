@@ -8,8 +8,9 @@ class_name MapaMuneca
 ## MUERTO atenua/oculta su icono (RF-10). Seleccion: acercar la mano derecha
 ## a un icono y presionar el gatillo (arbitrado en jugador.gd).
 ##
-## PLACEHOLDER: fondo y iconos son primitivas de Godot (PH-014). El arte de
-## mapa holografico final ya existe en assets/2D/2D_neon_map/.
+## Fondo: textura holografica real (assets/2D/2D_neon_map/final.png),
+## integrada 2026-07-26 (PH-014). Iconos siguen siendo primitivas de Godot:
+## no existe asset propio para el jugador/heridos/E1-E2 todavia.
 
 @export var altura_activacion: float = 1.1
 @export var escala_mapa: float = 0.004

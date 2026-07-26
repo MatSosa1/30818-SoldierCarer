@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dapw5tud8fa2i"
-path.s3tc="res://.godot/imported/Pared_Con_Puerta.png-b5649d7cb084c46acb158b412a885756.s3tc.ctex"
+uid="uid://c1kapx88l3ip7"
+path.s3tc="res://.godot/imported/Watch.png-6b96fc303583d5d4ba6cae1505303ad4.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Fondos/Pared_Con_Puerta.png"
-dest_files=["res://.godot/imported/Pared_Con_Puerta.png-b5649d7cb084c46acb158b412a885756.s3tc.ctex"]
+source_file="res://assets/3D/entities/medic/Watch.png"
+dest_files=["res://.godot/imported/Watch.png-6b96fc303583d5d4ba6cae1505303ad4.s3tc.ctex"]
 
 [params]
 

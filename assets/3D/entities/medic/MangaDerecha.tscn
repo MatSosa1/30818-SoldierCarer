@@ -1,0 +1,47 @@
+[gd_scene format=4]
+
+[ext_resource type="Texture2D" path="res://assets/3D/entities/medic/MilitaryRightArm.png" id="1_3n3k3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cirl2"]
+resource_name = "LeftArm"
+cull_mode = 2
+albedo_texture = ExtResource("1_3n3k3")
+roughness = 0.5
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_bfyi2"]
+_surfaces = [{
+"aabb": AABB(-0.67500013, -0.5062494, -2.0866668, 1.3500001, 1, 4.0890846),
+"format": 34896613377,
+"index_count": 114,
+"index_data": PackedByteArray("DgAPABAABQAOABAABwAOAAUABQAQAAQABwARAA4ACgARAAcAEQAAAA4ADgAAAA8ACgASABEACwASAAoAEQATAAAAEgATABEAEwAPAAAAEgAJABMACwAUABIAFAAJABIADQAUAAsAFQATAAkAFAAVAAkAFQAPABMADQAMABQADAAVABQACAAMAA0ADAADABUACAAWAAwAFgADAAwABgAWAAgAFwAVAAMAFQAXAA8AFgAXAAMADwAXAAEAEAAPAAEAAgAXABYABgACABYAAgABABcAEAABAAIABAACAAYABAAQAAIA"),
+"lods": [0.045272715, PackedByteArray("AAABAAIAAgABAAMAAwABAAAABAAAAAIABQAAAAQABAACAAYABwAAAAUABgACAAgABwAJAAAAAwAAAAkACgAJAAcACwAJAAoADAADAAkACwAMAAkAAgADAAwACAACAAwADQAMAAsACAAMAA0A")],
+"name": "LeftArm",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("ksjQyP//AACSyKk3//8AAK3nFCRBhAAAbDepN///AAD///9/AAAAAP////8AAAAA/v8AAAAAAAD/f///RAsAAP9/AABECwAAbDfQyP//AAAAAP//AAAAAAAA/38AAAAAURgUJEGEAAAAAAAAAAAAAK3n6udBhAAAksg8gP//AACt5zyAQYQAAP9/6udPiAAAURjq50GEAAD/f9DISf8AAFEYPIBBhAAAbDc8gP//AAD/fxQkT4gAAP9/qTdJ/wAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_o7rcr"]
+resource_name = "Medic_Circle_003"
+_surfaces = [{
+"aabb": AABB(-0.67500013, -0.5062494, -2.0866668, 1.3500001, 1, 4.0890846),
+"attribute_data": PackedByteArray("gc8QlAnf+JN64SXIA9jm/1HK+/+15dD/TfIFlAHs//+b5DKU6PyVy4n7zP///9iTgrT/f/qkJJT6pP9/grQklECA+/+Ag0DIt5Ir+3ShH8g7pdL/uJwYlMCHL5TxySKU+MHl/3O335gAref/9qQllIbMRshF1wSUntc1yMXz5f8M87XL9Ofay3i3fc1+qMvLfLea//Tn2ssM87XL6PyVy76s/3/6pBGKvqwklIK0EYp4knzGt5Ir+4CDQMh4t33NcsbIyzyScJR4knzGcsbIy3y3mv94t33NeJJ8xjyScJR0oR/IeJJ8xnO335h+qMvLeLd9zXrhJcie1zXIhsxGyA=="),
+"format": 34896613399,
+"index_count": 114,
+"index_data": PackedByteArray("HAAdAB4AHAAAAB0AHgAdAAEAHgABAAIACQAfACAACQAKAB8AIAAfAAcAIAAHACEAIgAaACMAIgAkABoABgAlAAgABgAmACUACwAmAAYACwAnACYAKAApAA4AKAAqACkAKQAqAA0AKAArACoAKgArAA8AKwAoAAwAEAAsAC0AEAAuACwAFwAvABkAFwAwAC8AEQAxADIAEQAWADEAMwA0ADUAMwAYADQANgAVABMANgA3ABUAEgA4ABQAEgA5ADgAOgA7ABsAOgA8ADsAAwA9AAUAAwA+AD0ABAA+AAMABAA/AD4A"),
+"lods": [0.045272715, PackedByteArray("AAABAAIAAwAAAAIABAAAAAMAAwACAAUABgAHAAgABgAJAAcACQAKAAcACwAJAAYADAANAA4ADAAPAA0AEAARABIAEgARABMAEgATABQAEQAVABMAEQAWABUAFwAYABkAGQAYABoAGQAaABsA")],
+"material": SubResource("StandardMaterial3D_cirl2"),
+"name": "LeftArm",
+"primitive": 3,
+"uv_scale": Vector4(1.9228199, 2.0014842, 0, 0),
+"vertex_count": 64,
+"vertex_data": PackedByteArray("ksjQyP//cdeSyKk3//9x163nFCRBhHHX////fwAA6tb/////AADq1v7/AAAAAOrWAAD/fwAAEtdsN9DI//+Z1wAA//8AABLXURgUJEGEmddsN6k3//+Z1wAAAAAAABLXbDepN/////+SyNDI/////2w30Mj/////ksipN//////+/wAAAAC3/63nFCRBhPD//38AAEQLd/9RGBQkQYTM/wAAAAAAAHf/bDepN///zf+SyKk3///v/wAA//8AALv/bDfQyP//5v//f///RAu7/5LI0Mj//+H//////wAAtv+t5+rnQYRx15LIPID//3HXrec8gEGEcddsNzyA//+Z11EYPIBBhJnXURjq50GEmdf/f+rnT4jh/63n6udBhOH//3/QyEn/4f9RGOrnQYQS11EYPIBBhBLXURgUJEGEEtdsNzyA//////9/0MhJ////ksg8gP//////f6k3Sf////9/FCRPiLb//38AAEQLt/+t5xQkQYS2//9/6udPiLv/URjq50GEu///f6k3Sf/v//9/FCRPiPD/URjq50GE5v//f9DISf/m//9/6udPiOb//38UJE+IzP//f6k3Sf/N/1EYFCRBhHb//38UJE+Idv//f///RAu2/63n6udBhLb//3/q50+Itv+t5xQkQYTq1q3nPIBBhOrWrefq50GE6tYTVKSrE1SkqxNUpKtiVFWrYlRVq2JUVau2q9xUBqyNVLar3FQGrI1UBqyNVLar3FT/v/8//z//v/8//7//P/+/an/mwde+NwAOQkgAxb4TAA5CSQDFvhMA1743AEqArT4egA0+SoCtPgq+5f+pvrn/E1SkqxNUpKsTVKSrBqyNVAasjVQGrI1UCr7k/wq+5P8KvuX/tqvcVLar3FS2q9xU/7//P/8//7//v/8//7//P2t/5sFqf+bBa3/mwUqArT5LgK0+1743ANe+NwAfgA0+HoANPh+ADj7FvhMAxb4SAA9CSAAPQkcAqb65/6q+uP+qvrj/YlRVq2JUVatiVFWr")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_bfyi2")
+
+[node name="RightArm" type="MeshInstance3D" unique_id=1042401623]
+mesh = SubResource("ArrayMesh_o7rcr")

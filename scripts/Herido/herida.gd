@@ -73,7 +73,7 @@ func _ready() -> void:
 	_etiqueta = Label3D.new()
 	_etiqueta.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_etiqueta.no_depth_test = true
-	_etiqueta.pixel_size = 0.0025
+	_etiqueta.pixel_size = 0.0012
 	_etiqueta.font_size = 28
 	_etiqueta.outline_size = 6
 	_etiqueta.position = Vector3(0, 0.14, 0)

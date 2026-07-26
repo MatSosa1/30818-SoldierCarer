@@ -9,6 +9,11 @@
 [ext_resource type="Script" uid="uid://umxk5lgsl863" path="res://scripts/HUD/hud_mision.gd" id="7"]
 [ext_resource type="PackedScene" uid="uid://bmhmc0tak81ob" path="res://views/MenuPausa.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://dwrcqu1ewwlem" path="res://views/ResultadosMision.tscn" id="9"]
+[ext_resource type="PackedScene" path="res://assets/3D/entities/medic/HandRigDerecha.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://assets/3D/entities/medic/MangaIzquierda.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://assets/3D/entities/medic/MangaDerecha.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://assets/3D/entities/medic/HandRigIzquierda.tscn" id="13"]
+[ext_resource type="PackedScene" path="res://assets/3D/weapons/pistol/PistolaModelo.tscn" id="14"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jugador"]
 radius = 0.4
@@ -33,24 +38,6 @@ albedo_color = Color(0, 0, 0, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_desvanecido"]
 size = Vector2(2, 2)
-
-[sub_resource type="BoxMesh" id="BoxMesh_mano"]
-size = Vector3(0.08, 0.06, 0.16)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mano"]
-albedo_color = Color(0.75, 0.65, 0.55, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_manga"]
-size = Vector3(0.1, 0.1, 0.33594972)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_manga"]
-albedo_color = Color(0.294, 0.325, 0.125, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_pistola"]
-size = Vector3(0.04, 0.09, 0.18)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pistola"]
-albedo_color = Color(0.15, 0.15, 0.15, 1)
 
 [node name="Jugador" type="CharacterBody3D" unique_id=1236902120]
 collision_mask = 0
@@ -97,18 +84,15 @@ font_size = 64
 [node name="ResultadosMision" parent="XROrigin3D" unique_id=1888211852 instance=ExtResource("9")]
 
 [node name="ManoIzquierda" type="XRController3D" parent="XROrigin3D" unique_id=186687483]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1, -0.3)
+transform = Transform3D(-0.8123677, -0.07523986, -0.5782713, 0.58314556, -0.10481505, -0.80557746, 0, -0.99164146, 0.12902415, -0.2, 1.063997, -0.47258937)
 tracker = &"left_hand"
 script = ExtResource("2")
 
-[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda" unique_id=800012326]
-mesh = SubResource("BoxMesh_mano")
-surface_material_override/0 = SubResource("StandardMaterial3D_mano")
+[node name="Mano" parent="XROrigin3D/ManoIzquierda" unique_id=1717231214 instance=ExtResource("13")]
+transform = Transform3D(-0.024071582, -0.025221094, -0.0030748746, 0.004897755, -0.00044978224, -0.0346527, 0.024931302, -0.024263022, 0.0038386863, -0.080221236, 0.10627383, 0.039881766)
 
-[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoIzquierda" unique_id=1267811169]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.2112671)
-mesh = SubResource("BoxMesh_manga")
-surface_material_override/0 = SubResource("StandardMaterial3D_manga")
+[node name="Manga" parent="XROrigin3D/ManoIzquierda" unique_id=582459790 instance=ExtResource("11")]
+transform = Transform3D(0.08498985, -0.001288712, -0.00024680406, 8.444468e-05, 0.021326577, -0.082281046, 0.001309429, 0.08227098, 0.021325318, 0, -0.12829694, 0.016692936)
 
 [node name="MapaMuneca" parent="XROrigin3D/ManoIzquierda" unique_id=1730670309 instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.1)
@@ -126,27 +110,23 @@ outline_size = 10
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.9, -0.05)
 
 [node name="ManoDerecha" type="XRController3D" parent="XROrigin3D" unique_id=1608596376]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1, -0.3)
+transform = Transform3D(-0.9284402, -0.17315692, 0.3286572, -0.33184266, -0.011067343, -0.9432699, 0.16697106, -0.9848323, -0.047185477, 0.2, 1.0517846, -0.5281241)
 tracker = &"right_hand"
 script = ExtResource("2")
 
-[node name="PH_Mano" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha" unique_id=72984843]
-mesh = SubResource("BoxMesh_mano")
-surface_material_override/0 = SubResource("StandardMaterial3D_mano")
+[node name="Mano" parent="XROrigin3D/ManoDerecha" unique_id=105090535 instance=ExtResource("10")]
+transform = Transform3D(0.029452827, 0.007279815, 0.017450927, -0.009179508, 0.033745117, 0.001415642, -0.016530797, -0.00576816, 0.030306121, -0.012407064, -0.0023139417, 0.0043919683)
 
-[node name="PH_Manga" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha" unique_id=131468843]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.19489022)
-mesh = SubResource("BoxMesh_manga")
-surface_material_override/0 = SubResource("StandardMaterial3D_manga")
+[node name="Manga" parent="XROrigin3D/ManoDerecha" unique_id=41974505 instance=ExtResource("12")]
+transform = Transform3D(0.066324726, -0.052825082, -0.0059621204, 0.0012516743, -0.007978605, 0.084615484, -0.053145748, -0.06611245, -0.005447752, -5.9604645e-08, -0.16530985, 0.0019395947)
 
 [node name="Pistola" type="Node3D" parent="XROrigin3D/ManoDerecha" unique_id=1974691436]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+transform = Transform3D(1, 0, -5.5879354e-09, 0, 1, 0, -6.519258e-09, 0, 0.99999994, -0.017450988, 0.10292983, -0.045068383)
 script = ExtResource("5")
 
-[node name="PH_Pistola" type="MeshInstance3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=1117527719]
+[node name="Modelo" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=1117527719 instance=ExtResource("14")]
+transform = Transform3D(0, 0, -0.022, 0, 0.022, 0, 0.022, 0, 0, 0, 0, 0)
 visible = false
-mesh = SubResource("BoxMesh_pistola")
-surface_material_override/0 = SubResource("StandardMaterial3D_pistola")
 
 [node name="EtiquetaCargador" type="Label3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=2002465021]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
