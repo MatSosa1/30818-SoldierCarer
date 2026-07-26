@@ -19,6 +19,7 @@ var _cooldown_disparo: float = 0.0
 func _physics_process(delta: float) -> void:
 	if not jugador or estado == Estado.NEUTRALIZADO:
 		return
+	_orientar_hacia(jugador.global_position)
 
 	var distancia := global_position.distance_to(jugador.global_position)
 	match estado:

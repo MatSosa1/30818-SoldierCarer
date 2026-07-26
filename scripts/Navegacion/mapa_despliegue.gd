@@ -11,15 +11,28 @@ class_name MapaDespliegue
 ## Seleccion doble, coherente con el resto del proyecto:
 ## - Escritorio: mirar el icono (raycast desde la camara, igual que la mira
 ##   de la pistola) y confirmar con clic izquierdo -ver _icono_en_rango()-.
-##   El Area3D + input_event de mas abajo queda como intento original (patron
-##   MainMenu) pero con el mouse en MOUSE_MODE_CAPTURED (necesario para
-##   mirar alrededor) el picking automatico de Godot no es confiable: puede
-##   quedar bloqueado por otro colisionador delante del icono (el propio
-##   mapa/mesa) o depender de la posicion exacta que Godot reporte para un
-##   cursor capturado. El raycast explicito, con collide_with_bodies=false,
-##   ignora cualquier solido en el medio y solo puede pegarle a las Area3D.
 ## - VR: acercar la mano derecha al icono y presionar el gatillo (arbitrado
 ##   en jugador.gd, mismo patron que MapaMuneca).
+##
+## BUGS resueltos (2026-07-26), ambos con el mismo sintoma ("clic en E1
+## desplegaba en E2" / no seleccionaba nada):
+## 1. Existia ademas una conexion Area3D+input_event (patron MainMenu) como
+##    respaldo, pero con el mouse en MOUSE_MODE_CAPTURED el picking
+##    automatico de Godot no es confiable y disparaba con una posicion de
+##    mouse arbitraria, pisando la seleccion correcta del raycast. Se saco
+##    la conexion redundante (el raycast explicito ya cubre el caso solo).
+## 2. La causa real: MenuPausa/MapaTactico/PanelMapa (el mini-mapa del menu
+##    de pausa) tenia este MISMO script pegado por error (copy-paste al
+##    construir esa mini-mapa). Al llamar add_to_group("mapa_despliegue")
+##    en su _ready(), y registrarse ANTES que el PanelMapa real de
+##    PuestoDeMando, jugador.gd (get_first_node_in_group) siempre terminaba
+##    hablandole a la instancia equivocada -cuyos iconos e1/e2 son otros,
+##    sin relacion con los que el jugador ve y apunta en el puesto de
+##    mando-. Se saco el script de MenuPausa.tscn (su mapa tactico ya se
+##    actualiza solo via menu_pausa.gd _actualizar_mapa_tactico()). De paso,
+##    los iconos de PuestoDeMando (Mision.tscn) quedaron con collision_layer
+##    dedicada (bit 10) para que el raycast de aca nunca pueda confundirse
+##    con Area3D de otro sistema, pase lo que pase.
 ##
 ## PLACEHOLDER: plano de ciudad y iconos con primitivas de Godot (PH-020);
 ## el arte 2D de mapa neon existe en assets/2D/2D_neon_map.
@@ -43,10 +56,6 @@ var _mano_derecha: XRController3D
 func _ready() -> void:
 	add_to_group("mapa_despliegue") # para el arbitraje del gatillo en jugador.gd
 	_escenario_por_icono = {icono_e1: "E1_Calle", icono_e2: "E2_Edificio"}
-	for icono: Node3D in _escenario_por_icono.keys():
-		var area: Area3D = icono.get_node_or_null("Area3D")
-		if area:
-			area.input_event.connect(_al_input_de_icono.bind(icono))
 
 func _process(_delta: float) -> void:
 	var activo := GestorJuego.fase == GestorJuego.Fase.DESPLIEGUE
@@ -90,10 +99,6 @@ func _color_heridos_de(escenario: String) -> Color:
 			return COLOR_MUERTO
 		_:
 			return COLOR_ESTABLE
-
-func _al_input_de_icono(_camara: Node, event: InputEvent, _pos: Vector3, _normal: Vector3, _shape_idx: int, icono: Node3D) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		_seleccionar(icono)
 
 # Resalta el icono al alcance de la mano derecha antes de confirmar con el
 # gatillo, con pulso haptico suave al entrar en rango (patron MapaMuneca).
@@ -149,6 +154,11 @@ func _icono_bajo_mira_escritorio() -> Node3D:
 	var parametros := PhysicsRayQueryParameters3D.create(origen, destino)
 	parametros.collide_with_areas = true
 	parametros.collide_with_bodies = false
+	# Capa dedicada (bit 10): asi el rayo SOLO puede pegarle a los iconos de
+	# este mapa, sin importar que otro Area3D (menu de pausa, mapa de muneca,
+	# lo que sea) ande flotando en el medio con su propia colision activa o
+	# no -bug resuelto (2026-07-26), ver IconoE1/E2 en Mision.tscn-.
+	parametros.collision_mask = 1 << 9
 	var resultado := get_world_3d().direct_space_state.intersect_ray(parametros)
 	if resultado.is_empty():
 		return null

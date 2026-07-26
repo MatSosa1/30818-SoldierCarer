@@ -1,8 +1,8 @@
 [gd_scene format=4 uid="uid://bmhmc0tak81ob"]
 
 [ext_resource type="Script" uid="uid://gexa0yqkdx6v" path="res://scripts/Menus/menu_pausa.gd" id="1"]
-[ext_resource type="Script" uid="uid://cboooi8w0smx4" path="res://scripts/Navegacion/mapa_despliegue.gd" id="2_ygq1d"]
 [ext_resource type="PackedScene" uid="uid://bhkjj8skt3cmn" path="res://assets/2D/2D_neon_map/map.blend" id="3_8di8b"]
+[ext_resource type="Texture2D" uid="uid://blerhbykp1257" path="res://assets/2D/neon_background/final.png" id="4_neonbg"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_fondo"]
 size = Vector2(0.6, 0.35)
@@ -10,7 +10,8 @@ size = Vector2(0.6, 0.35)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fondo"]
 transparency = 1
 shading_mode = 0
-albedo_color = Color(0.02, 0.05, 0.08, 0.75)
+albedo_color = Color(1, 1, 1, 0.88)
+albedo_texture = ExtResource("4_neonbg")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pt2hv"]
 resource_name = "Gray"
@@ -108,7 +109,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0, 0.001)
 
 [node name="PanelMapa" type="Node3D" parent="MapaTactico" unique_id=421836420]
 transform = Transform3D(0.29999995, 0, 0, 0, 0.29882514, 0.026523687, 0, -0.026523687, 0.29882514, 0.025301538, -0.09902662, 0.13107295)
-script = ExtResource("2_ygq1d")
 
 [node name="map" parent="MapaTactico/PanelMapa" unique_id=1227643378 instance=ExtResource("3_8di8b")]
 transform = Transform3D(0.073240206, 0, 0, 0, -0.002633756, -0.065962985, 0, 0.025711106, -0.0067570214, -0.73458993, 0.0014457703, -0.44467163)

@@ -26,6 +26,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not jugador or estado == Estado.NEUTRALIZADO:
 		return
+	_orientar_hacia(jugador.global_position)
 
 	match estado:
 		Estado.AVANCE:

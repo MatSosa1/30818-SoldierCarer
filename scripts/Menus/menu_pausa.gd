@@ -51,6 +51,12 @@ var _indice_hover_escritorio: int = 0
 
 func _ready() -> void:
 	visible = false
+	# Arrancan deshabilitados: ver nota en alternar() sobre por que la
+	# colision de estos Area3D no puede depender solo de "visible".
+	for icono: Node3D in [mapa_tactico.get_node("PanelMapa/IconoE1"), mapa_tactico.get_node("PanelMapa/IconoE2")]:
+		var forma: CollisionShape3D = icono.get_node_or_null("Area3D/CollisionShape3D")
+		if forma:
+			forma.disabled = true
 	_malla_icono_herido.radius = 0.004
 	_malla_icono_herido.height = 0.008
 	_actualizar_etiqueta_opcion()
@@ -63,6 +69,17 @@ func _process(_delta: float) -> void:
 
 func alternar() -> void:
 	visible = not visible
+	# BUG resuelto (2026-07-26): ocultar este nodo (visible=false) no apaga la
+	# colision de sus Area3D -MapaTactico/PanelMapa/IconoE1/IconoE2 quedan
+	# fisicamente activos siempre, pegados a la cabeza del jugador (hijo de
+	# XROrigin3D)-, asi que interceptaban el raycast de otros sistemas que
+	# tambien buscan Area3D por delante de la camara (ej. mapa_despliegue.gd
+	# en el puesto de mando: el clic en "E1" terminaba resolviendo el "E2" de
+	# ESTE mapa, mas cerca de la camara, en vez de llegar al del puesto).
+	for icono: Node3D in [mapa_tactico.get_node("PanelMapa/IconoE1"), mapa_tactico.get_node("PanelMapa/IconoE2")]:
+		var forma: CollisionShape3D = icono.get_node_or_null("Area3D/CollisionShape3D")
+		if forma:
+			forma.disabled = not visible
 	if visible:
 		_posicionar_frente_a_la_vista()
 	var gestor := get_tree().get_first_node_in_group("gestor_escenarios")

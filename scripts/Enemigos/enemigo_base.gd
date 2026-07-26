@@ -16,6 +16,10 @@ signal neutralizado(enemigo: CharacterBody3D)
 # decenas de parejas). El retardo (no queue_free inmediato) deja tiempo a
 # que el disparo/animacion que causo la baja termine de reproducirse.
 @export var retardo_liberacion: float = 2.0
+# Correccion si el modelo queda mirando al reves tras _orientar_hacia() (el
+# .blend fuente no siempre trae el "frente" alineado con el -Z de Godot);
+# ajustar a ojo en el editor, en pasos de 180 si queda invertido.
+@export_range(-180, 180, 1) var offset_rotacion_visual_grados: float = 0.0
 
 var salud: float
 
@@ -57,6 +61,18 @@ func _reproducir_pasos() -> void:
 func _detener_pasos() -> void:
 	if sonido_pasos:
 		sonido_pasos.stop()
+
+# Orienta el cuerpo (solo en el plano horizontal, sin inclinarse) hacia un
+# punto del mundo. Sin esto el enemigo conserva para siempre la rotacion de
+# reposo del .tscn sin importar por donde entre o hacia donde se mueva —
+# spawneado por DirectorDeOleadas, que solo asigna global_position.
+func _orientar_hacia(punto_global: Vector3) -> void:
+	var destino := Vector3(punto_global.x, global_position.y, punto_global.z)
+	if destino.is_equal_approx(global_position):
+		return
+	look_at(destino, Vector3.UP)
+	if offset_rotacion_visual_grados != 0.0:
+		rotate_object_local(Vector3.UP, deg_to_rad(offset_rotacion_visual_grados))
 
 # --- Ganchos a implementar por cada subclase (su propio enum Estado) ---
 
