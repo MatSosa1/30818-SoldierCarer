@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ech0uuvo7yxd"
-path.s3tc="res://.godot/imported/MilitaryRightArm.png-0d0cadbcdc1fbd06dd6b6fb6fe2bb083.s3tc.ctex"
+uid="uid://4n5htujuw1ms"
+path.s3tc="res://.godot/imported/MilitaryLeftArm1.png-8e356e4235d262149d44d2ddd289852a.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/3D/entities/medic/MilitaryRightArm.png"
-dest_files=["res://.godot/imported/MilitaryRightArm.png-0d0cadbcdc1fbd06dd6b6fb6fe2bb083.s3tc.ctex"]
+source_file="res://assets/3D/entities/patient/MilitaryLeftArm1.png"
+dest_files=["res://.godot/imported/MilitaryLeftArm1.png-8e356e4235d262149d44d2ddd289852a.s3tc.ctex"]
 
 [params]
 
