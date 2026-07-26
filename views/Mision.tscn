@@ -1,12 +1,22 @@
 [gd_scene format=3 uid="uid://tpe1w4ybkpma"]
 
-[ext_resource type="PackedScene" path="res://views/Jugador.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://dia8c0cvasy8c" path="res://views/Jugador.tscn" id="1"]
 [ext_resource type="Script" uid="uid://b4tslni6citf3" path="res://scripts/DirectorDeOleadas/director_de_oleadas.gd" id="2"]
 [ext_resource type="Script" uid="uid://klnc5rvj33k4" path="res://scripts/Escenarios/gestor_escenarios.gd" id="4"]
 [ext_resource type="PackedScene" path="res://views/SoldadoHerido.tscn" id="5"]
 [ext_resource type="Script" uid="uid://cboooi8w0smx4" path="res://scripts/Navegacion/mapa_despliegue.gd" id="6"]
 [ext_resource type="PackedScene" uid="uid://bhkjj8skt3cmn" path="res://assets/2D/2D_neon_map/map.blend" id="6_msle2"]
 [ext_resource type="Texture2D" uid="uid://b0b6ryh7uvqrm" path="res://assets/Fondos/Panel_Inicio_Mision.png" id="7_4dleu"]
+[ext_resource type="PackedScene" path="res://assets/3D/destroyed_car/CarroModelo.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://assets/3D/tree/ArbolModelo.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://assets/3D/glass_shards/EscombroModelo.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://assets/3D/sofa/SofaModelo.tscn" id="13"]
+[ext_resource type="PackedScene" path="res://assets/3D/table/MesaModelo.tscn" id="14"]
+[ext_resource type="PackedScene" path="res://assets/3D/door/PuertaModelo.tscn" id="15"]
+[ext_resource type="PackedScene" path="res://assets/Escenarios/Scene1/EdificioModelo.tscn" id="16"]
+[ext_resource type="Texture2D" uid="uid://dsmh03ul7wa0m" path="res://assets/Fondos/PisoAgrietado.jpg" id="18"]
+[ext_resource type="Texture2D" uid="uid://bicodv48xsgfb" path="res://assets/Fondos/Grafiti.jpg" id="19"]
+[ext_resource type="PackedScene" uid="uid://ck00ham7yh848" path="res://assets/3D/kit/kit.blend" id="20"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_horizon_color = Color(0.65, 0.68, 0.7, 1)
@@ -30,13 +40,10 @@ albedo_color = Color(1, 0.9, 0.2, 1)
 size = Vector2(10, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso_puesto"]
-albedo_color = Color(0.22, 0.22, 0.23, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_mesa_mapa"]
-size = Vector3(2.9416993, 0.9, 0.9)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mesa_mapa"]
-albedo_color = Color(0.2, 0.24, 0.18, 1)
+albedo_color = Color(0.35, 0.35, 0.36, 1)
+albedo_texture = ExtResource("18")
+roughness = 0.9
+uv1_scale = Vector3(5, 5, 1)
 
 [sub_resource type="QuadMesh" id="QuadMesh_mapa_fondo"]
 size = Vector2(1.4, 0.8)
@@ -75,20 +82,14 @@ albedo_color = Color(0.45, 0.4, 0.3, 1)
 [sub_resource type="PlaneMesh" id="PlaneMesh_piso"]
 size = Vector2(40, 40)
 
-[sub_resource type="BoxMesh" id="BoxMesh_vehiculo"]
-size = Vector3(4.2, 1.5, 1.9)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vehiculo"]
-albedo_color = Color(0.35, 0.32, 0.3, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso_calle"]
+albedo_color = Color(0.6, 0.6, 0.6, 1)
+albedo_texture = ExtResource("18")
+roughness = 0.9
+uv1_scale = Vector3(20, 20, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vehiculo"]
 size = Vector3(4.2, 1.5, 1.9)
-
-[sub_resource type="BoxMesh" id="BoxMesh_edificio"]
-size = Vector3(6, 8, 6)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_edificio"]
-albedo_color = Color(0.353, 0.353, 0.353, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_edificio"]
 size = Vector3(6, 8, 6)
@@ -99,28 +100,13 @@ orientation = 2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grafiti"]
 cull_mode = 2
-albedo_color = Color(0.588, 0.196, 0.196, 1)
+albedo_texture = ExtResource("19")
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_tronco"]
-top_radius = 0.12
-bottom_radius = 0.15
-height = 2.2
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tronco"]
-albedo_color = Color(0.29, 0.216, 0.129, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_copa"]
-radius = 1.1
-height = 1.8
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_copa"]
-albedo_color = Color(0.216, 0.353, 0.157, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_escombro"]
-size = Vector3(0.3, 0.15, 0.3)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_escombro"]
-albedo_color = Color(0.45, 0.45, 0.45, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso_edificio"]
+albedo_color = Color(0.7, 0.68, 0.64, 1)
+albedo_texture = ExtResource("18")
+roughness = 0.85
+uv1_scale = Vector3(10, 10, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_pared"]
 size = Vector3(20, 3.5, 0.3)
@@ -133,18 +119,6 @@ size = Vector3(20, 3.5, 0.3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_techo"]
 size = Vector3(20, 0.3, 20)
-
-[sub_resource type="BoxMesh" id="BoxMesh_mueble"]
-size = Vector3(1.6, 0.7, 0.8)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mueble"]
-albedo_color = Color(0.3, 0.24, 0.2, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_puerta"]
-size = Vector3(1, 2.1, 0.08)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puerta"]
-albedo_color = Color(0.239, 0.169, 0.106, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_escalon"]
 size = Vector3(1.2, 0.2, 0.6)
@@ -170,18 +144,9 @@ mesh = SubResource("ImmediateMesh_trazador")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -78.19062)
 trazador_disparo_path = NodePath("../TrazadorDisparo")
 
-[node name="Camera3D" parent="Jugador/XROrigin3D" index="0"]
+[node name="Camera3D" parent="Jugador/XROrigin3D" parent_id_path=PackedInt32Array(2021962887, 1361717599) index="0" unique_id=1992525326]
 transform = Transform3D(1, 0, 0, 0, 0.9973883, 0.07222603, 0, -0.07222603, 0.9973883, 0, 1.6, 0)
 fov = 57.058956
-
-[node name="EtiquetaRescate" parent="Jugador/XROrigin3D/Camera3D/HudMision" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -1)
-
-[node name="PH_Manga" parent="Jugador/XROrigin3D/ManoDerecha" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15000153)
-
-[node name="EtiquetaCargador" parent="Jugador/XROrigin3D/ManoDerecha/Pistola" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 
 [node name="GestorEscenarios" type="Node3D" parent="." unique_id=547683573]
 script = ExtResource("4")
@@ -196,10 +161,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.000541687)
 mesh = SubResource("PlaneMesh_piso_puesto")
 surface_material_override/0 = SubResource("StandardMaterial3D_piso_puesto")
 
-[node name="MesaMapa" type="MeshInstance3D" parent="PuestoDeMando" unique_id=1485274680]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.010785431, 0.45, 0.9000015)
-mesh = SubResource("BoxMesh_mesa_mapa")
-surface_material_override/0 = SubResource("StandardMaterial3D_mesa_mapa")
+[node name="MesaMapa" parent="PuestoDeMando" unique_id=1485274680 instance=ExtResource("14")]
+transform = Transform3D(0.003139692, 0, -0.49999014, 0, 0.5, 0, 0.49999014, 0, 0.003139692, -0.010785431, -0.3717866, -0.13719177)
 
 [node name="PanelMapa" type="Node3D" parent="PuestoDeMando" unique_id=519653102]
 transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 1.32, 0.7)
@@ -208,7 +171,7 @@ script = ExtResource("6")
 [node name="map" parent="PuestoDeMando/PanelMapa" unique_id=508573465 instance=ExtResource("6_msle2")]
 transform = Transform3D(0.073240206, 0, 0, 0, -0.002633756, -0.065962985, 0, 0.025711106, -0.0067570214, -0.73458993, 0.0014457703, -0.44467163)
 
-[node name="Plane" parent="PuestoDeMando/PanelMapa/map" index="14" unique_id=1544585595]
+[node name="Plane" parent="PuestoDeMando/PanelMapa/map" index="14" unique_id=1325834349]
 visible = false
 
 [node name="Fondo" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa" unique_id=160722886]
@@ -239,6 +202,8 @@ font_size = 51
 outline_size = 6
 
 [node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE1" unique_id=1764641948]
+collision_layer = 512
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE1/Area3D" unique_id=1697794953]
 transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.23078725, 0.26140022, -0.310997)
@@ -260,10 +225,15 @@ font_size = 51
 outline_size = 6
 
 [node name="Area3D" type="Area3D" parent="PuestoDeMando/PanelMapa/IconoE2" unique_id=1046949686]
+collision_layer = 512
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PuestoDeMando/PanelMapa/IconoE2/Area3D" unique_id=1824186556]
 transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.08674717, 0.49631023, -0.32654572)
 shape = SubResource("SphereShape3D_icono_despliegue")
+
+[node name="MaletinMedico" parent="PuestoDeMando" unique_id=3200001 instance=ExtResource("20")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 1.05, 0.9, 0.65)
 
 [node name="LamparaPuesto" type="OmniLight3D" parent="PuestoDeMando" unique_id=57330077]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0.6)
@@ -307,119 +277,246 @@ autoplay = true
 
 [node name="Piso" type="MeshInstance3D" parent="Escenario_E1_Calle" unique_id=1338220353]
 mesh = SubResource("PlaneMesh_piso")
+surface_material_override/0 = SubResource("StandardMaterial3D_piso_calle")
 
 [node name="Herido" parent="Escenario_E1_Calle" unique_id=1039361856 instance=ExtResource("5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
 
 [node name="Ambientacion" type="Node3D" parent="Escenario_E1_Calle" unique_id=1325504989]
 
-[node name="VehiculoAbandonado1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1810743044]
-transform = Transform3D(0.906, 0, 0.423, -0.386, 0.454, 0.827, -0.192, -0.891, 0.411, 9, 0.9, 9)
-mesh = SubResource("BoxMesh_vehiculo")
-surface_material_override/0 = SubResource("StandardMaterial3D_vehiculo")
+[node name="VehiculoAbandonado1" parent="Escenario_E1_Calle/Ambientacion" unique_id=1810743044 instance=ExtResource("10")]
+transform = Transform3D(0.309, 0, 0.144, -0.132, 0.155, 0.282, -0.065, -0.304, 0.14, 9, 0.9, 9)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1" unique_id=185498731]
 
 [node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1/Colision" unique_id=1728154442]
 shape = SubResource("BoxShape3D_vehiculo")
 
-[node name="VehiculoAbandonado2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=321676661]
-transform = Transform3D(0.643, 0, -0.766, 0.766, 0, 0.643, 0, -1, 0, -11, 0.75, 7)
-mesh = SubResource("BoxMesh_vehiculo")
-surface_material_override/0 = SubResource("StandardMaterial3D_vehiculo")
+[node name="VehiculoAbandonado2" parent="Escenario_E1_Calle/Ambientacion" unique_id=321676661 instance=ExtResource("10")]
+transform = Transform3D(0.219, 0, -0.261, 0.261, 0, 0.219, 0, -0.341, 0, -11, 0.75, 7)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2" unique_id=511935329]
 
 [node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado2/Colision" unique_id=144387468]
 shape = SubResource("BoxShape3D_vehiculo")
 
-[node name="EdificioLateralIzq" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=270259558]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 4, 0)
-mesh = SubResource("BoxMesh_edificio")
-surface_material_override/0 = SubResource("StandardMaterial3D_edificio")
+[node name="VehiculoAbandonado3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1263611394 instance=ExtResource("10")]
+transform = Transform3D(-0.1988, 0, -0.277, 0, 0.341, 0, 0.277, 0, -0.1988, 4.7542443, -0.011535764, -9.776)
+
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado3" unique_id=813886922]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado3/Colision" unique_id=825419048]
+shape = SubResource("BoxShape3D_vehiculo")
+
+[node name="VehiculoAbandonado4" parent="Escenario_E1_Calle/Ambientacion" unique_id=1348812376 instance=ExtResource("10")]
+transform = Transform3D(-0.22660002, 0, 0.2548, -0.081236005, 0.3232047, -0.07224521, -0.2415031, -0.108718514, -0.21477474, -6.1111984, -0.4605118, -8.495835)
+
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado4" unique_id=1382252688]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado4/Colision" unique_id=583734525]
+shape = SubResource("BoxShape3D_vehiculo")
+
+[node name="VehiculoAbandonado5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1927522352 instance=ExtResource("10")]
+transform = Transform3D(-0.29077238, -0.09735443, 0.14931555, -0.08661975, 0.32680744, 0.04448041, -0.1558, 0, -0.3034, 4.664812, 0.6396698, -11.46)
+
+[node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado5" unique_id=125409205]
+
+[node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado5/Colision" unique_id=1480752192]
+shape = SubResource("BoxShape3D_vehiculo")
+
+[node name="EdificioLateralIzq" parent="Escenario_E1_Calle/Ambientacion" unique_id=270259558 instance=ExtResource("16")]
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, -20, 4, 0)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq" unique_id=916759623]
 
 [node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralIzq/Colision" unique_id=1757245545]
 shape = SubResource("BoxShape3D_edificio")
 
-[node name="EdificioLateralDer" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1899975469]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 4, 0)
-mesh = SubResource("BoxMesh_edificio")
-surface_material_override/0 = SubResource("StandardMaterial3D_edificio")
+[node name="EdificioLateralDer" parent="Escenario_E1_Calle/Ambientacion" unique_id=1899975469 instance=ExtResource("16")]
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 20, 4, 0)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer" unique_id=571353790]
 
 [node name="Forma" type="CollisionShape3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer/Colision" unique_id=767757320]
 shape = SubResource("BoxShape3D_edificio")
 
+[node name="EdificioFondoNO" parent="Escenario_E1_Calle/Ambientacion" unique_id=2128503193 instance=ExtResource("16")]
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, -20, 4, -15)
+
+[node name="EdificioFondoSO" parent="Escenario_E1_Calle/Ambientacion" unique_id=1765110905 instance=ExtResource("16")]
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, -20, 4, 15)
+
+[node name="EdificioFondoNE" parent="Escenario_E1_Calle/Ambientacion" unique_id=924465376 instance=ExtResource("16")]
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 20, 4, -15)
+
+[node name="EdificioFondoSE" parent="Escenario_E1_Calle/Ambientacion" unique_id=179232961 instance=ExtResource("16")]
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 20, 4, 15)
+
+[node name="Escombro5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1760604728 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 3, 0.08, -12)
+
+[node name="Escombro6" parent="Escenario_E1_Calle/Ambientacion" unique_id=109841680 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -3, 0.08, 12)
+
+[node name="Escombro7" parent="Escenario_E1_Calle/Ambientacion" unique_id=718597244 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 14, 0.08, 2)
+
+[node name="Escombro8" parent="Escenario_E1_Calle/Ambientacion" unique_id=1932398158 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -14, 0.08, -3)
+
+[node name="Escombro9" parent="Escenario_E1_Calle/Ambientacion" unique_id=1917989136 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 2, 0.08, 4)
+
+[node name="Escombro10" parent="Escenario_E1_Calle/Ambientacion" unique_id=1349625908 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -4, 0.08, -14)
+
+[node name="EdificioExtra1" parent="Escenario_E1_Calle/Ambientacion" unique_id=711299912 instance=ExtResource("16")]
+transform = Transform3D(1.3871, 0, 0, 0, 1.3871, 0, 0, 0, 1.3871, -20, 4, 5.019)
+
+[node name="EdificioExtra2" parent="Escenario_E1_Calle/Ambientacion" unique_id=1240038730 instance=ExtResource("16")]
+transform = Transform3D(1.3855, 0, 0, 0, 1.3855, 0, 0, 0, 1.3855, -20, 4, -9.184)
+
+[node name="EdificioExtra3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1280256962 instance=ExtResource("16")]
+transform = Transform3D(1.3643, 0, 0, 0, 1.3643, 0, 0, 0, 1.3643, -20, 4, -4.673)
+
+[node name="EdificioExtra4" parent="Escenario_E1_Calle/Ambientacion" unique_id=809587114 instance=ExtResource("16")]
+transform = Transform3D(1.3556, 0, -0.0678, 0, 1.3572, 0, 0.0678, 0, 1.3556, 20, 4, 7.266)
+
+[node name="EdificioExtra5" parent="Escenario_E1_Calle/Ambientacion" unique_id=812924631 instance=ExtResource("16")]
+transform = Transform3D(1.4074, 0, 0, 0, 1.4074, 0, 0, 0, 1.4074, 20, 4, -9.754)
+
+[node name="EdificioExtra6" parent="Escenario_E1_Calle/Ambientacion" unique_id=1056595000 instance=ExtResource("16")]
+transform = Transform3D(1.313, 0, 0, 0, 1.313, 0, 0, 0, 1.313, 20, 4, -4.968)
+
+[node name="EscombroExtra1" parent="Escenario_E1_Calle/Ambientacion" unique_id=2134807400 instance=ExtResource("12")]
+transform = Transform3D(0.1319, 0, 0.1086, 0, 0.1709, 0, -0.1086, 0, 0.1319, -14.727, 0.08, -15.398)
+
+[node name="EscombroExtra2" parent="Escenario_E1_Calle/Ambientacion" unique_id=496312103 instance=ExtResource("12")]
+transform = Transform3D(0.1337, 0, 0.0564, 0, 0.1451, 0, -0.0564, 0, 0.1337, 10.515, 0.08, -2.647)
+
+[node name="EscombroExtra3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1041839163 instance=ExtResource("12")]
+transform = Transform3D(0.1922, 0, -0.0353, 0, 0.1954, 0, 0.0353, 0, 0.1922, 17.86, 0.08, 0.99)
+
+[node name="EscombroExtra4" parent="Escenario_E1_Calle/Ambientacion" unique_id=596919862 instance=ExtResource("12")]
+transform = Transform3D(-0.0672, 0, -0.1467, 0, 0.1614, 0, 0.1467, 0, -0.0672, -17.587, 0.08, 7.505)
+
+[node name="EscombroExtra5" parent="Escenario_E1_Calle/Ambientacion" unique_id=541363044 instance=ExtResource("12")]
+transform = Transform3D(0.1151, 0, 0.0972, 0, 0.1507, 0, -0.0972, 0, 0.1151, -8.394, 0.08, 4.793)
+
+[node name="EscombroExtra6" parent="Escenario_E1_Calle/Ambientacion" unique_id=1373114283 instance=ExtResource("12")]
+transform = Transform3D(0.0943, 0, -0.0933, 0, 0.1327, 0, 0.0933, 0, 0.0943, -1.666, 0.08, 15.43)
+
+[node name="EscombroExtra7" parent="Escenario_E1_Calle/Ambientacion" unique_id=1091211621 instance=ExtResource("12")]
+transform = Transform3D(0.1675, 0, -0.1025, 0, 0.1964, 0, 0.1025, 0, 0.1675, 0.021, 0.08, -10.926)
+
+[node name="EscombroExtra8" parent="Escenario_E1_Calle/Ambientacion" unique_id=94147225 instance=ExtResource("12")]
+transform = Transform3D(0.0127, 0, -0.1611, 0, 0.1616, 0, 0.1611, 0, 0.0127, 3.923, 0.08, -11.803)
+
+[node name="EscombroExtra9" parent="Escenario_E1_Calle/Ambientacion" unique_id=269558147 instance=ExtResource("12")]
+transform = Transform3D(0.139, 0, 0.0005, 0, 0.139, 0, -0.0005, 0, 0.139, 10.031, 0.08, 1.032)
+
+[node name="EscombroExtra10" parent="Escenario_E1_Calle/Ambientacion" unique_id=1993956754 instance=ExtResource("12")]
+transform = Transform3D(0.1391, 0, -0.1328, 0, 0.1923, 0, 0.1328, 0, 0.1391, -17.299, 0.08, 14.589)
+
+[node name="EscombroExtra2_1" parent="Escenario_E1_Calle/Ambientacion" unique_id=191822774 instance=ExtResource("12")]
+transform = Transform3D(0.0551, 0, 0.1147, 0, 0.1273, 0, -0.1147, 0, 0.0551, -3.457, 0.08, -10.797)
+
+[node name="EscombroExtra2_2" parent="Escenario_E1_Calle/Ambientacion" unique_id=1607500057 instance=ExtResource("12")]
+transform = Transform3D(-0.1429, 0, 0.1292, 0, 0.1926, 0, -0.1292, 0, -0.1429, 9.356, 0.08, -8.959)
+
+[node name="EscombroExtra2_3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1931163606 instance=ExtResource("12")]
+transform = Transform3D(-0.1529, 0, 0.0103, 0, 0.1532, 0, -0.0103, 0, -0.1529, 1.391, 0.08, 15.782)
+
+[node name="EscombroExtra2_4" parent="Escenario_E1_Calle/Ambientacion" unique_id=740258697 instance=ExtResource("12")]
+transform = Transform3D(0.1193, 0, -0.0844, 0, 0.1461, 0, 0.0844, 0, 0.1193, 4.076, 0.08, -10.199)
+
+[node name="EscombroExtra2_5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1287592552 instance=ExtResource("12")]
+transform = Transform3D(0.1089, 0, 0.1545, 0, 0.1891, 0, -0.1545, 0, 0.1089, -4.028, 0.08, 6.565)
+
+[node name="EscombroExtra2_6" parent="Escenario_E1_Calle/Ambientacion" unique_id=369510003 instance=ExtResource("12")]
+transform = Transform3D(0.1599, 0, -0.0555, 0, 0.1693, 0, 0.0555, 0, 0.1599, 12.599, 0.08, -5.803)
+
+[node name="EscombroExtra2_7" parent="Escenario_E1_Calle/Ambientacion" unique_id=1214190021 instance=ExtResource("12")]
+transform = Transform3D(-0.1067, 0, 0.0749, 0, 0.1304, 0, -0.0749, 0, -0.1067, 9.881, 0.08, -1.115)
+
+[node name="EscombroExtra2_8" parent="Escenario_E1_Calle/Ambientacion" unique_id=1073562298 instance=ExtResource("12")]
+transform = Transform3D(0.1698, 0, -0.0112, 0, 0.1701, 0, 0.0112, 0, 0.1698, -17.726, 0.08, -10.664)
+
+[node name="EscombroExtra2_9" parent="Escenario_E1_Calle/Ambientacion" unique_id=1400874283 instance=ExtResource("12")]
+transform = Transform3D(-0.1864, 0, -0.1455, 0, 0.2365, 0, 0.1455, 0, -0.1864, -1.365, 0.08, 14.409)
+
+[node name="EscombroExtra2_10" parent="Escenario_E1_Calle/Ambientacion" unique_id=883974515 instance=ExtResource("12")]
+transform = Transform3D(0.0466, 0, -0.1732, 0, 0.1793, 0, 0.1732, 0, 0.0466, 15.148, 0.08, -12.211)
+
+[node name="EscombroExtra2_11" parent="Escenario_E1_Calle/Ambientacion" unique_id=1846958346 instance=ExtResource("12")]
+transform = Transform3D(-0.0511, 0, -0.0808, 0, 0.0956, 0, 0.0808, 0, -0.0511, 17.384, 0.08, 15.981)
+
+[node name="EscombroExtra2_12" parent="Escenario_E1_Calle/Ambientacion" unique_id=1284093138 instance=ExtResource("12")]
+transform = Transform3D(0.0433, 0, -0.0925, 0, 0.1022, 0, 0.0925, 0, 0.0433, -17.161, 0.08, -0.946)
+
+[node name="Arbol4" parent="Escenario_E1_Calle/Ambientacion" unique_id=715763718 instance=ExtResource("11")]
+transform = Transform3D(0.389, 0, 0, 0, 0.389, 0, 0, 0, 0.389, -13, 0, -12)
+
+[node name="Arbol5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1870454811 instance=ExtResource("11")]
+transform = Transform3D(0.389, 0, 0, 0, 0.389, 0, 0, 0, 0.389, 14, 0, -13)
+
+[node name="Arbol6" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000001 instance=ExtResource("11")]
+transform = Transform3D(0.42, 0, 0, 0, 0.42, 0, 0, 0, 0.42, -16, 0, -16)
+
+[node name="Arbol7" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000002 instance=ExtResource("11")]
+transform = Transform3D(0.36, 0, 0, 0, 0.36, 0, 0, 0, 0.36, -17, 0, -2)
+
+[node name="Arbol8" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000003 instance=ExtResource("11")]
+transform = Transform3D(0.41, 0, 0, 0, 0.41, 0, 0, 0, 0.41, -16, 0, 6)
+
+[node name="Arbol9" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000004 instance=ExtResource("11")]
+transform = Transform3D(0.37, 0, 0, 0, 0.37, 0, 0, 0, 0.37, 15, 0, -17)
+
+[node name="Arbol10" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000005 instance=ExtResource("11")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 17, 0, 2)
+
+[node name="Arbol11" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000006 instance=ExtResource("11")]
+transform = Transform3D(0.38, 0, 0, 0, 0.38, 0, 0, 0, 0.38, 16, 0, 16)
+
 [node name="Grafiti" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1942776892]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16.8, 2, 5)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 18.384542, 1.5926466, -0.07882929)
+mesh = SubResource("PlaneMesh_grafiti")
+surface_material_override/0 = SubResource("StandardMaterial3D_grafiti")
+
+[node name="Grafiti" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Grafiti" unique_id=966304416]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5.1903567, 0.17268181, -0.07882881)
 mesh = SubResource("PlaneMesh_grafiti")
 surface_material_override/0 = SubResource("StandardMaterial3D_grafiti")
 
 [node name="Arbol1" type="Node3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1284876898]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 13)
 
-[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol1" unique_id=57127930]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
-mesh = SubResource("CylinderMesh_tronco")
-surface_material_override/0 = SubResource("StandardMaterial3D_tronco")
-
-[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol1" unique_id=60927081]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
-mesh = SubResource("SphereMesh_copa")
-surface_material_override/0 = SubResource("StandardMaterial3D_copa")
+[node name="Malla" parent="Escenario_E1_Calle/Ambientacion/Arbol1" unique_id=57127930 instance=ExtResource("11")]
+transform = Transform3D(0.389, 0, 0, 0, 0.389, 0, 0, 0, 0.389, 0, 0, 0)
 
 [node name="Arbol2" type="Node3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=200167944]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 0, 10)
 
-[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol2" unique_id=1636089866]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
-mesh = SubResource("CylinderMesh_tronco")
-surface_material_override/0 = SubResource("StandardMaterial3D_tronco")
-
-[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol2" unique_id=1196615417]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
-mesh = SubResource("SphereMesh_copa")
-surface_material_override/0 = SubResource("StandardMaterial3D_copa")
+[node name="Malla" parent="Escenario_E1_Calle/Ambientacion/Arbol2" unique_id=1636089866 instance=ExtResource("11")]
+transform = Transform3D(0.389, 0, 0, 0, 0.389, 0, 0, 0, 0.389, 0, 0, 0)
 
 [node name="Arbol3" type="Node3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=650041318]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 15.5)
 
-[node name="Tronco" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol3" unique_id=1490977520]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
-mesh = SubResource("CylinderMesh_tronco")
-surface_material_override/0 = SubResource("StandardMaterial3D_tronco")
+[node name="Malla" parent="Escenario_E1_Calle/Ambientacion/Arbol3" unique_id=1490977520 instance=ExtResource("11")]
+transform = Transform3D(0.389, 0, 0, 0, 0.389, 0, 0, 0, 0.389, 0, 0, 0)
 
-[node name="Copa" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion/Arbol3" unique_id=1858187131]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
-mesh = SubResource("SphereMesh_copa")
-surface_material_override/0 = SubResource("StandardMaterial3D_copa")
+[node name="Escombro1" parent="Escenario_E1_Calle/Ambientacion" unique_id=752603817 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 6, 0.08, 9)
 
-[node name="Escombro1" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=752603817]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.08, 9)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_escombro")
-surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+[node name="Escombro2" parent="Escenario_E1_Calle/Ambientacion" unique_id=694184667 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -7, 0.08, 6)
 
-[node name="Escombro2" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=694184667]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.08, 6)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_escombro")
-surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+[node name="Escombro3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1296767059 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 8, 0.08, -7)
 
-[node name="Escombro3" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1296767059]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.08, -7)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_escombro")
-surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
-
-[node name="Escombro4" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=95241350]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.08, -9)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_escombro")
-surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+[node name="Escombro4" parent="Escenario_E1_Calle/Ambientacion" unique_id=95241350 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -6, 0.08, -9)
 
 [node name="DirectorDeOleadas" type="Node3D" parent="Escenario_E1_Calle" unique_id=893093468]
 script = ExtResource("2")
@@ -454,6 +551,7 @@ autoplay = true
 [node name="Piso" type="MeshInstance3D" parent="Escenario_E2_Edificio" unique_id=805294515]
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 0, 0, 0)
 mesh = SubResource("PlaneMesh_piso")
+surface_material_override/0 = SubResource("StandardMaterial3D_piso_edificio")
 
 [node name="Herido" parent="Escenario_E2_Edificio" unique_id=1068605195 instance=ExtResource("5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -5)
@@ -508,25 +606,41 @@ surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
 [node name="Mobiliario" type="Node3D" parent="Escenario_E2_Edificio" unique_id=489011061]
 
-[node name="SofaVolcado" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=485771070]
-transform = Transform3D(1, 0, 0, 0, 0.342, 0.94, 0, -0.94, 0.342, -5, 0.55, -3)
-mesh = SubResource("BoxMesh_mueble")
-surface_material_override/0 = SubResource("StandardMaterial3D_mueble")
+[node name="SofaVolcado" parent="Escenario_E2_Edificio/Mobiliario" unique_id=485771070 instance=ExtResource("13")]
+transform = Transform3D(0.165, 0, 0, 0, 0.0564, 0.155, 0, -0.155, 0.0564, -5, 0.55, -3)
 
-[node name="Mesa" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=434956045]
-transform = Transform3D(0.985, 0, -0.174, 0, 1, 0, 0.174, 0, 0.985, 4, 0.35, -6)
-mesh = SubResource("BoxMesh_mueble")
-surface_material_override/0 = SubResource("StandardMaterial3D_mueble")
+[node name="Mesa" parent="Escenario_E2_Edificio/Mobiliario" unique_id=434956045 instance=ExtResource("14")]
+transform = Transform3D(0.323, 0, -0.057, 0, 0.328, 0, 0.057, 0, 0.323, 4, 0.35, -6)
 
-[node name="PuertaEntreabierta" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=612917518]
-transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, 2, 1.05, 9.8)
-mesh = SubResource("BoxMesh_puerta")
-surface_material_override/0 = SubResource("StandardMaterial3D_puerta")
+[node name="PuertaEntreabierta" parent="Escenario_E2_Edificio/Mobiliario" unique_id=612917518 instance=ExtResource("15")]
+transform = Transform3D(0.113, 0, 0.0655, 0, 0.131, 0, -0.0655, 0, 0.113, 2, 1.05, 9.8)
 
-[node name="PuertaCaida" type="MeshInstance3D" parent="Escenario_E2_Edificio/Mobiliario" unique_id=1294727809]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -2, 0.04, 9)
-mesh = SubResource("BoxMesh_puerta")
-surface_material_override/0 = SubResource("StandardMaterial3D_puerta")
+[node name="PuertaCaida" parent="Escenario_E2_Edificio/Mobiliario" unique_id=1294727809 instance=ExtResource("15")]
+transform = Transform3D(0.131, 0, 0, 0, 0, 0.131, 0, -0.131, 0, -2, 0.04, 9)
+
+[node name="Sofa2" parent="Escenario_E2_Edificio/Mobiliario" unique_id=686420368 instance=ExtResource("13")]
+transform = Transform3D(0.1026, 0, 0.1292, 0, 0.165, 0, -0.1292, 0, 0.1026, 7, 0.55, 6)
+
+[node name="Sofa3" parent="Escenario_E2_Edificio/Mobiliario" unique_id=1793804848 instance=ExtResource("13")]
+transform = Transform3D(-0.1099, 0, 0.123, 0, 0.165, 0, -0.123, 0, -0.1099, -6.5, 0.55, -7)
+
+[node name="Mesa2" parent="Escenario_E2_Edificio/Mobiliario" unique_id=536385930 instance=ExtResource("14")]
+transform = Transform3D(0.2975, 0, 0.1258, 0, 0.323, 0, -0.1258, 0, 0.2975, -6, 0.35, 4)
+
+[node name="Mesa3" parent="Escenario_E2_Edificio/Mobiliario" unique_id=106573147 instance=ExtResource("14")]
+transform = Transform3D(-0.0094, 0, 0.3229, 0, 0.323, 0, -0.3229, 0, -0.0094, 6.5, 0.35, -7)
+
+[node name="Mesa4" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000011 instance=ExtResource("14")]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0.35, 2)
+
+[node name="Sofa4" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000012 instance=ExtResource("13")]
+transform = Transform3D(0, 0, 0.15, 0, 0.15, 0, -0.15, 0, 0, 8, 0.55, -2)
+
+[node name="Sofa5" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000013 instance=ExtResource("13")]
+transform = Transform3D(0, 0, -0.15, 0, 0.15, 0, 0.15, 0, 0, -8, 0.55, 2)
+
+[node name="Mesa5" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000014 instance=ExtResource("14")]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 2, 0.35, 7)
 
 [node name="Escalera" type="Node3D" parent="Escenario_E2_Edificio" unique_id=726439679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 6)
@@ -571,23 +685,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 4)
 
 [node name="Escombros" type="Node3D" parent="Escenario_E2_Edificio" unique_id=1341949345]
 
-[node name="Escombro1" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros" unique_id=409314063]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.08, 2)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_escombro")
-surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+[node name="Escombro1" parent="Escenario_E2_Edificio/Escombros" unique_id=409314063 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 3, 0.08, 2)
 
-[node name="Escombro2" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros" unique_id=1116356198]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.08, -2)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_escombro")
-surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+[node name="Escombro2" parent="Escenario_E2_Edificio/Escombros" unique_id=1116356198 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -3, 0.08, -2)
 
-[node name="Escombro3" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escombros" unique_id=1241784901]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.08, -4)
-cast_shadow = 0
-mesh = SubResource("BoxMesh_escombro")
-surface_material_override/0 = SubResource("StandardMaterial3D_escombro")
+[node name="Escombro3" parent="Escenario_E2_Edificio/Escombros" unique_id=1241784901 instance=ExtResource("12")]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 6, 0.08, -4)
 
 [node name="Pared_Con_Ventana" type="Sprite3D" parent="." unique_id=898487716]
 transform = Transform3D(0.1116261, 0, 0, 0, 0.114223376, 0.004474424, 0, -0.008048622, 0.06349954, -0.031360507, 1.519461, -79.77636)
