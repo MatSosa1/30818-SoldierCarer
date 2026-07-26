@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dwrcqu1ewwlem"]
 
 [ext_resource type="Script" uid="uid://bkyk5as7wniw0" path="res://scripts/Menus/resultados_mision.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://blerhbykp1257" path="res://assets/2D/neon_background/final.png" id="2_neonbg"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_fondo"]
 size = Vector2(0.7, 0.4)
@@ -8,7 +9,8 @@ size = Vector2(0.7, 0.4)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fondo"]
 transparency = 1
 shading_mode = 0
-albedo_color = Color(0.02, 0.05, 0.08, 0.85)
+albedo_color = Color(1, 1, 1, 0.9)
+albedo_texture = ExtResource("2_neonbg")
 
 [sub_resource type="BoxMesh" id="BoxMesh_icono"]
 size = Vector3(0.08, 0.05, 0.01)

@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dtugb2vr05jq1"]
 
 [ext_resource type="Script" uid="uid://dr523nusen33k" path="res://scripts/Menus/estado_inicial.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://cjjjgkx6flmsh" path="res://assets/2D/sticky_note/sticky_note.blend" id="2"]
+[ext_resource type="Texture2D" uid="uid://dapw5tud8fa2i" path="res://assets/Fondos/Pared_Con_Puerta.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://dsmh03ul7wa0m" path="res://assets/Fondos/PisoAgrietado.jpg" id="4"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.05, 0.05, 0.07, 1)
@@ -16,6 +19,15 @@ sky = SubResource("Sky_1")
 ambient_light_source = 3
 ambient_light_color = Color(0.3, 0.3, 0.32, 1)
 tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_piso"]
+size = Vector2(10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso"]
+albedo_color = Color(0.6, 0.6, 0.6, 1)
+albedo_texture = ExtResource("4")
+roughness = 0.9
+uv1_scale = Vector3(5, 5, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_documento"]
 size = Vector3(1.2338867, 0.02, 1.4)
@@ -36,6 +48,16 @@ environment = SubResource("Environment_1")
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 1.8, 0.85)
 current = true
 fov = 60.2657
+
+[node name="Piso" type="MeshInstance3D" parent="." unique_id=3100003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+mesh = SubResource("PlaneMesh_piso")
+surface_material_override/0 = SubResource("StandardMaterial3D_piso")
+
+[node name="FondoNarrativo" type="Sprite3D" parent="." unique_id=3100002]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0, 2.6966405, -3)
+pixel_size = 0.0026
+texture = ExtResource("3")
 
 [node name="LamparaEscritorio" type="OmniLight3D" parent="." unique_id=568696123]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0.2)
@@ -62,6 +84,9 @@ necesario: la medicina es la mision,
 no el combate."
 font_size = 50
 horizontal_alignment = 0
+
+[node name="NotaAdhesiva" parent="." unique_id=3100001 instance=ExtResource("2")]
+transform = Transform3D(0.05, 0, 0, 0, 0.0413, 0.02818, 0, -0.02818, 0.0413, 0.511, 1.25, -0.487)
 
 [node name="AreaContinuar" type="Area3D" parent="." unique_id=1258254916]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

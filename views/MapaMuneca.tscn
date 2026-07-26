@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/Navegacion/mapa_muneca.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dwkyro25eigd2" path="res://assets/2D/2D_neon_map/final.png" id="2"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_fondo"]
 size = Vector2(0.16, 0.16)
@@ -8,10 +9,11 @@ size = Vector2(0.16, 0.16)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fondo"]
 transparency = 1
 shading_mode = 0
-albedo_color = Color(0, 0.749, 1, 0.45)
+albedo_color = Color(1, 1, 1, 0.85)
+albedo_texture = ExtResource("2")
 emission_enabled = true
 emission = Color(0, 0.749, 1, 1)
-emission_energy_multiplier = 0.6
+emission_energy_multiplier = 0.35
 
 [sub_resource type="SphereMesh" id="SphereMesh_jugador"]
 radius = 0.008
