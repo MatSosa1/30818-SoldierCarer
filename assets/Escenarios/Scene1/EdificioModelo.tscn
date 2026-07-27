@@ -1,9 +1,13 @@
 [gd_scene format=4]
 
+[ext_resource type="Texture2D" uid="uid://dsmh03ul7wa0m" path="res://assets/Fondos/PisoAgrietado.jpg" id="1"]
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8gfr8"]
 resource_name = "Building"
 cull_mode = 2
-albedo_color = Color(0.4910963, 0.4910963, 0.4910963, 1)
+albedo_color = Color(0.55, 0.53, 0.5, 1)
+albedo_texture = ExtResource("1")
+uv1_scale = Vector3(1.5, 3, 1.5)
 roughness = 0.5
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_5xk8t"]

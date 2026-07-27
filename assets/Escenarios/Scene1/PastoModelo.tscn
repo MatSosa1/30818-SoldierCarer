@@ -1,0 +1,22 @@
+[gd_scene format=4]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n8dbu"]
+albedo_color = Color(0.16, 0.32, 0.12, 1)
+roughness = 1.0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ayvwv"]
+_surfaces = [{
+"aabb": AABB(-45, 0, -18, 46, 1e-05, 22),
+"attribute_data": PackedByteArray("AAAAAAAAgD8AAIA/AAAAAAAAgD8AAIA/AAAAAAAAAAA="),
+"format": 34359742487,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAADAAEA"),
+"material": SubResource("StandardMaterial3D_n8dbu"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAA0wgAAAAAAAIBAAACAPwAAAAAAAJDBAACAPwAAAAAAAIBAAAA0wgAAAAAAAJDB/3/9//7//7//f/3//v//v/9//f/+//+//3/9//7//78=")
+}]
+
+[node name="Pasto" type="MeshInstance3D" unique_id=1595846601]
+mesh = SubResource("ArrayMesh_ayvwv")
