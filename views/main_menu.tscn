@@ -10,13 +10,13 @@
 [ext_resource type="PackedScene" uid="uid://ckmo5gnlpyahl" path="res://assets/2D/folder/folder.blend" id="8_2mudq"]
 [ext_resource type="PackedScene" uid="uid://cjjjgkx6flmsh" path="res://assets/2D/sticky_note/sticky_note.blend" id="9_cafmx"]
 [ext_resource type="Script" uid="uid://p6pn0x2ycmm4" path="res://scripts/MainMenu/btn_play.gd" id="10_cafmx"]
-[ext_resource type="Texture2D" uid="uid://bu5n7538qpl3d" path="res://assets/Fondos/Opciones_extra.png" id="10_twxu1"]
 [ext_resource type="FontFile" uid="uid://l45ci8imolwd" path="res://fonts/Caveat-Regular.ttf" id="11_qubkb"]
 [ext_resource type="Script" uid="uid://dt4bc8a4me66x" path="res://scripts/MainMenu/btn_options.gd" id="12_06hvf"]
 [ext_resource type="Script" uid="uid://cl32cywrw8lo3" path="res://scripts/MainMenu/btn_exit.gd" id="13_06hvf"]
 [ext_resource type="Texture2D" uid="uid://dld10yoe1swvy" path="res://assets/Fondos/Pared_Con_Agujero.png" id="14_lgncj"]
 [ext_resource type="Script" path="res://scripts/Menus/menu_principal.gd" id="16_menu_s8"]
 [ext_resource type="Texture2D" uid="uid://bhhtohbvhw4y7" path="res://assets/Fondos/Pared_Con_Ventana.png" id="15_twxu1"]
+[ext_resource type="Script" path="res://scripts/MainMenu/control_volumen.gd" id="17_volumen"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cafmx"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -42,6 +42,9 @@ size = Vector3(2.3540192, 0.38720703, 2.2057495)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lgncj"]
 size = Vector3(1.871582, 0.35681152, 1.8955078)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_volumen"]
+size = Vector3(1.15, 0.1, 0.42)
 
 [node name="MainMenu" type="Node3D" unique_id=1011262876]
 script = ExtResource("16_menu_s8")
@@ -117,9 +120,57 @@ text = "Volver"
 font = ExtResource("11_qubkb")
 font_size = 78
 
-[node name="Sprite3D" type="Sprite3D" parent="folder/Contenedor_Opciones" unique_id=21693052]
-transform = Transform3D(0.070143275, 0.02373347, 0.004846785, -0.002998082, -0.0031566857, 0.10118025, 0.017321194, -0.09665659, -0.002114317, 0.18998957, 0.24082518, -0.32097387)
-texture = ExtResource("10_twxu1")
+[node name="EtiquetaTitulo" type="Label3D" parent="folder/Contenedor_Opciones" unique_id=21693052]
+transform = Transform3D(1.3777792, -0.0019231513, -0.07822394, 0.07823813, 0.05498724, 1.3766823, 0.0011984417, -1.3789027, 0.05500786, -0.075, 0.064, -1.131)
+modulate = Color(0, 0, 0, 1)
+text = "AUDIO"
+font = ExtResource("11_qubkb")
+font_size = 52
+
+[node name="ControlVolumenMaster" type="Area3D" parent="folder/Contenedor_Opciones" unique_id=875001101]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.061, 0.064, -0.498)
+script = ExtResource("17_volumen")
+canal = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="folder/Contenedor_Opciones/ControlVolumenMaster" unique_id=875001102]
+shape = SubResource("BoxShape3D_volumen")
+
+[node name="EtiquetaValor" type="Label3D" parent="folder/Contenedor_Opciones/ControlVolumenMaster" unique_id=875001103]
+transform = Transform3D(1.3777792, -0.0019231513, -0.07822394, 0.07823813, 0.05498724, 1.3766823, 0.0011984417, -1.3789027, 0.05500786, 0, 0, 0)
+modulate = Color(0, 0, 0, 1)
+text = "General: 100%"
+font = ExtResource("11_qubkb")
+font_size = 40
+
+[node name="ControlVolumenMusica" type="Area3D" parent="folder/Contenedor_Opciones" unique_id=875001104]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.051, 0.064, -0.026)
+script = ExtResource("17_volumen")
+canal = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="folder/Contenedor_Opciones/ControlVolumenMusica" unique_id=875001105]
+shape = SubResource("BoxShape3D_volumen")
+
+[node name="EtiquetaValor" type="Label3D" parent="folder/Contenedor_Opciones/ControlVolumenMusica" unique_id=875001106]
+transform = Transform3D(1.3777792, -0.0019231513, -0.07822394, 0.07823813, 0.05498724, 1.3766823, 0.0011984417, -1.3789027, 0.05500786, 0, 0, 0)
+modulate = Color(0, 0, 0, 1)
+text = "Musica: 80%"
+font = ExtResource("11_qubkb")
+font_size = 40
+
+[node name="ControlVolumenSFX" type="Area3D" parent="folder/Contenedor_Opciones" unique_id=875001107]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.041, 0.064, 0.451)
+script = ExtResource("17_volumen")
+canal = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="folder/Contenedor_Opciones/ControlVolumenSFX" unique_id=875001108]
+shape = SubResource("BoxShape3D_volumen")
+
+[node name="EtiquetaValor" type="Label3D" parent="folder/Contenedor_Opciones/ControlVolumenSFX" unique_id=875001109]
+transform = Transform3D(1.3777792, -0.0019231513, -0.07822394, 0.07823813, 0.05498724, 1.3766823, 0.0011984417, -1.3789027, 0.05500786, 0, 0, 0)
+modulate = Color(0, 0, 0, 1)
+text = "Efectos: 80%"
+font = ExtResource("11_qubkb")
+font_size = 40
 
 [node name="btn_play" parent="." unique_id=1810911924 instance=ExtResource("9_cafmx")]
 transform = Transform3D(-0.048843082, 0.1803998, 0.01674219, 0.024229672, 0.023688307, -0.18455842, -0.17954752, -0.045878183, -0.02946036, -4.892998, 3.917031, 1.53213)
