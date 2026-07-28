@@ -103,6 +103,7 @@ text = "(clic para continuar)"
 font_size = 40
 
 [node name="SonidoTecleo" type="AudioStreamPlayer" parent="." unique_id=398624024]
+bus = "SFX"
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=715524828]
 

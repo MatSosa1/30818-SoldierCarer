@@ -142,9 +142,11 @@ target_position = Vector3(0, 0, -100)
 collision_mask = 2
 
 [node name="SonidoDisparo" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=1627370787]
+bus = "SFX"
 stream = ExtResource("15")
 
 [node name="SonidoRecarga" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=197379001]
+bus = "SFX"
 
 [node name="KitMedico" parent="XROrigin3D" unique_id=1391889604 instance=ExtResource("4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015823886, 0.9, -0.28010148)

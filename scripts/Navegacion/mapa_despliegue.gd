@@ -59,6 +59,10 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	var activo := GestorJuego.fase == GestorJuego.Fase.DESPLIEGUE
+	# Las etiquetas de este mapa son Label3D con no_depth_test: se dibujan por
+	# encima de TODO, incluido el panel del menu de pausa abierto a 0.45 m de
+	# la cara. Se apagan mientras dure la pausa (se veian atravesando el menu).
+	_mostrar_etiquetas(not GestorJuego.en_pausa)
 	for icono: Node3D in _escenario_por_icono.keys():
 		_actualizar_color_icono(icono, activo)
 	if not activo:
@@ -79,6 +83,13 @@ func _actualizar_color_icono(icono: Node3D, activo: bool) -> void:
 	var material := malla.material_override as StandardMaterial3D
 	material.albedo_color = color
 	material.emission = color
+
+func _mostrar_etiquetas(mostrar: bool) -> void:
+	etiqueta_titulo.visible = mostrar
+	for icono: Node3D in _escenario_por_icono.keys():
+		var etiqueta: Label3D = icono.get_node_or_null("Etiqueta")
+		if etiqueta:
+			etiqueta.visible = mostrar
 
 func _color_heridos_de(escenario: String) -> Color:
 	var peor := -1

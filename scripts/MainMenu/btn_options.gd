@@ -6,6 +6,14 @@ extends Node3D
 @onready var area_clic: Area3D = $Area3D
 @onready var contenedor_opciones: Node3D = $"../folder/Contenedor_Opciones"
 @onready var area_clic_volver: Area3D = $"../folder/Contenedor_Opciones/btn_volver"
+# RF-38: controles de volumen (mismo bug ya documentado en menu_pausa.gd -
+# ocultar Contenedor_Opciones con visible=false no desactiva la colision de
+# sus Area3D hijos, hay que apagar input_ray_pickable a mano).
+@onready var controles_volumen: Array[Area3D] = [
+	$"../folder/Contenedor_Opciones/ControlVolumenMaster",
+	$"../folder/Contenedor_Opciones/ControlVolumenMusica",
+	$"../folder/Contenedor_Opciones/ControlVolumenSFX",
+]
 
 # REFERENCIAS DE OBJETOS A OCULTAR
 @onready var btn_options: Node3D = $"."
@@ -28,8 +36,17 @@ var escala_original_btn_exit: Vector3
 var _escala_base_hover: Vector3
 
 func _ready() -> void:
+	# area_clic_volver.input_event ya esta cableado desde main_menu.tscn
+	# ([connection] a _on_btn_volver_input_event) - conectarlo tambien aca
+	# duplicaba la conexion y tiraba un error en cada arranque del juego.
 	if area_clic_volver:
-		area_clic_volver.input_event.connect(_on_btn_volver_input_event)
+		# Contenedor_Opciones arranca oculto (visible=false), pero eso no
+		# desactiva la colision de sus Area3D hijos (mismo bug ya resuelto en
+		# menu_pausa.gd) - sin la tapa cerrada tapando esta zona, area_clic_volver
+		# y los controles de volumen quedarian clickeables desde el menu principal.
+		area_clic_volver.input_ray_pickable = false
+	for control in controles_volumen:
+		control.input_ray_pickable = false
 	_escala_base_hover = scale
 	area_clic.mouse_entered.connect(_al_entrar_hover)
 	area_clic.mouse_exited.connect(_al_salir_hover)
@@ -106,26 +123,29 @@ func mostrar_menu_opciones():
 	var tween = create_tween()
 	tween.set_parallel(true)
 	
+	# Todas las opciones entran con la misma escala: ya no queda ningun Sprite3D
+	# (el placeholder "Opciones_extra" se reemplazo por las filas de volumen).
 	for opcion in contenedor_opciones.get_children():
 		opcion.scale = Vector3.ZERO
-		if opcion is Sprite3D:
-			tween.tween_property(opcion, "scale", Vector3(0.1, 0.1, 0.1), 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		else:
-			tween.tween_property(opcion, "scale", Vector3.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(opcion, "scale", Vector3.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	
 	tween.set_parallel(false)
 	tween.tween_callback(reactivar_colisiones_opciones)
 
 func reactivar_colisiones_opciones():
-	
+
 	if area_clic_volver:
 		area_clic_volver.input_ray_pickable = true
+	for control in controles_volumen:
+		control.input_ray_pickable = true
 
 # ANIMACIÓN DE VUELTA
 func animacion_volver_menu():
 	if area_clic_volver:
 		area_clic_volver.input_ray_pickable = false
-	
+	for control in controles_volumen:
+		control.input_ray_pickable = false
+
 	var tween = create_tween()
 	
 	# Ocultar los botones de opciones

@@ -18,9 +18,11 @@
 [ext_resource type="Texture2D" uid="uid://bicodv48xsgfb" path="res://assets/Fondos/Grafiti.jpg" id="19"]
 [ext_resource type="PackedScene" uid="uid://ck00ham7yh848" path="res://assets/3D/kit/kit.blend" id="20"]
 [ext_resource type="PackedScene" path="res://assets/Escenarios/Scene1/VeredaModelo.tscn" id="21"]
-[ext_resource type="PackedScene" path="res://assets/Escenarios/Scene1/PastoModelo.tscn" id="22"]
+[ext_resource type="PackedScene" uid="uid://xslh48ao7w1k" path="res://assets/Escenarios/Scene1/PastoModelo.tscn" id="22"]
 [ext_resource type="Texture2D" uid="uid://dapw5tud8fa2i" path="res://assets/Fondos/Pared_Con_Puerta.png" id="23"]
+[ext_resource type="PackedScene" uid="uid://cyqw8x0kw01q6" path="res://assets/Escenarios/Scene2/Scene2.blend" id="23_om24b"]
 [ext_resource type="Texture2D" uid="uid://bhhtohbvhw4y7" path="res://assets/Fondos/Pared_Con_Ventana.png" id="24"]
+[ext_resource type="PackedScene" uid="uid://bo1lf10sheqsa" path="res://assets/Escenarios/Scene1/Scene1.blend" id="24_m3t5m"]
 [ext_resource type="Texture2D" uid="uid://bm1caruyambg2" path="res://assets/Fondos/FondoCalle.jpeg" id="25"]
 [ext_resource type="Texture2D" uid="uid://dl5582326g6ec" path="res://assets/Fondos/FondoCalle2.jpeg" id="26"]
 
@@ -134,7 +136,7 @@ albedo_color = Color(0.4, 0.4, 0.4, 1)
 environment = SubResource("Environment_1")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=448106285]
-transform = Transform3D(0.7071068, -0.5, 0.5, 0, 0.7071068, 0.7071068, -0.7071068, -0.5, 0.5, 0, 5, 0)
+transform = Transform3D(0.60133684, -0.7972229, 0.05319599, 0.07747385, 0.12444356, 0.9891975, -0.79523075, -0.5907197, 0.13659647, 0, 7.924342, 0)
 light_color = Color(0.82, 0.83, 0.88, 1)
 light_energy = 0.55
 shadow_enabled = true
@@ -151,6 +153,12 @@ trazador_disparo_path = NodePath("../TrazadorDisparo")
 [node name="Camera3D" parent="Jugador/XROrigin3D" parent_id_path=PackedInt32Array(2021962887, 1361717599) index="0" unique_id=1992525326]
 transform = Transform3D(1, 0, 0, 0, 0.9973883, 0.07222603, 0, -0.07222603, 0.9973883, 0, 1.6, 0)
 fov = 57.058956
+
+[node name="SonidoDisparo" parent="Jugador/XROrigin3D/ManoDerecha/Pistola" parent_id_path=PackedInt32Array(2021962887, 1974691436) index="3" unique_id=1627370787]
+bus = &"Master"
+
+[node name="SonidoRecarga" parent="Jugador/XROrigin3D/ManoDerecha/Pistola" parent_id_path=PackedInt32Array(2021962887, 1974691436) index="4" unique_id=197379001]
+bus = &"Master"
 
 [node name="GestorEscenarios" type="Node3D" parent="." unique_id=547683573]
 script = ExtResource("4")
@@ -195,7 +203,7 @@ script = ExtResource("6")
 [node name="map" parent="PuestoDeMando/PanelMapa" unique_id=508573465 instance=ExtResource("6_msle2")]
 transform = Transform3D(0.073240206, 0, 0, 0, -0.002633756, -0.065962985, 0, 0.025711106, -0.0067570214, -0.73458993, 0.0014457703, -0.44467163)
 
-[node name="Plane" parent="PuestoDeMando/PanelMapa/map" index="14" unique_id=1325834349]
+[node name="Plane" parent="PuestoDeMando/PanelMapa/map" index="14" unique_id=1524149073]
 visible = false
 
 [node name="Fondo" type="MeshInstance3D" parent="PuestoDeMando/PanelMapa" unique_id=160722886]
@@ -300,20 +308,22 @@ unit_size = 20.0
 autoplay = true
 
 [node name="Piso" parent="Escenario_E1_Calle" unique_id=1338220353 instance=ExtResource("21")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 176.04797)
 
 [node name="Pasto1" parent="Escenario_E1_Calle" unique_id=3300001 instance=ExtResource("22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.446291, -0.05, 15.41283)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.446291, -0.05, 180.98228)
 
 [node name="Pasto2" parent="Escenario_E1_Calle" unique_id=3300002 instance=ExtResource("22")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, -14.129822, -0.05, 2.864317)
+transform = Transform3D(-1.2564024e-07, -3.821371e-15, 7.5884204, -2.5128048e-07, 1, 0, 2.8743138, 8.742278e-08, 3.3170036e-07, 33.466545, -0.05, 68.37363)
 
 [node name="Herido" parent="Escenario_E1_Calle" unique_id=1039361856 instance=ExtResource("5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.9)
 
 [node name="Ambientacion" type="Node3D" parent="Escenario_E1_Calle" unique_id=1325504989]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 171.27641)
 
 [node name="VehiculoAbandonado1" parent="Escenario_E1_Calle/Ambientacion" unique_id=1810743044 instance=ExtResource("10")]
-transform = Transform3D(0.309, 0, 0.144, -0.132, 0.155, 0.282, -0.065, -0.304, 0.14, 9, 0.9, 9)
+transform = Transform3D(0.309, 0, 0.144, -0.132, 0.155, 0.282, -0.065, -0.304, 0.14, 9, 0.9, 91.98336)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado1" unique_id=185498731]
 
@@ -329,7 +339,7 @@ transform = Transform3D(0.3324519, 0, -0.07455021, 0.07455021, 0, 0.3324519, 0, 
 shape = SubResource("BoxShape3D_vehiculo")
 
 [node name="VehiculoAbandonado3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1263611394 instance=ExtResource("10")]
-transform = Transform3D(-0.1988, 0, -0.277, 0, 0.341, 0, 0.277, 0, -0.1988, 4.7542443, -0.011535764, -9.776)
+transform = Transform3D(-0.1988, 0, -0.277, 0, 0.341, 0, 0.277, 0, -0.1988, 4.7542443, -0.011535764, 73.20736)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado3" unique_id=813886922]
 
@@ -345,7 +355,7 @@ transform = Transform3D(-0.22660002, 0, 0.2548, -0.081236005, 0.3232047, -0.0722
 shape = SubResource("BoxShape3D_vehiculo")
 
 [node name="VehiculoAbandonado5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1927522352 instance=ExtResource("10")]
-transform = Transform3D(-0.29077238, -0.09735443, 0.14931555, -0.08661975, 0.32680744, 0.04448041, -0.1558, 0, -0.3034, 4.664812, 0.6396698, -11.46)
+transform = Transform3D(-0.29077238, -0.09735443, 0.14931555, -0.08661975, 0.32680744, 0.04448041, -0.1558, 0, -0.3034, 4.664812, 0.6396698, 71.52336)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/VehiculoAbandonado5" unique_id=125409205]
 
@@ -361,7 +371,7 @@ transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, -8.5351715, 4, 0)
 shape = SubResource("BoxShape3D_edificio")
 
 [node name="EdificioLateralDer" parent="Escenario_E1_Calle/Ambientacion" unique_id=1899975469 instance=ExtResource("16")]
-transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 16.217648, 4, 0)
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 16.217648, 4, 82.98336)
 
 [node name="Colision" type="StaticBody3D" parent="Escenario_E1_Calle/Ambientacion/EdificioLateralDer" unique_id=571353790]
 
@@ -378,16 +388,16 @@ transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, -14.723129, 4, 15
 transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 16.704273, 4, -15)
 
 [node name="EdificioFondoSE" parent="Escenario_E1_Calle/Ambientacion" unique_id=179232961 instance=ExtResource("16")]
-transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 9.934963, 4, 15)
+transform = Transform3D(1.278, 0, 0, 0, 1.278, 0, 0, 0, 1.278, 9.934963, 4, 97.98336)
 
 [node name="Escombro5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1760604728 instance=ExtResource("12")]
-transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 3, 0.08, -12)
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 3, 0.08, 70.98336)
 
 [node name="Escombro6" parent="Escenario_E1_Calle/Ambientacion" unique_id=109841680 instance=ExtResource("12")]
 transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -3, 0.08, 12)
 
 [node name="Escombro7" parent="Escenario_E1_Calle/Ambientacion" unique_id=718597244 instance=ExtResource("12")]
-transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 14, 0.08, 2)
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 14, 0.08, 84.98336)
 
 [node name="Escombro8" parent="Escenario_E1_Calle/Ambientacion" unique_id=1932398158 instance=ExtResource("12")]
 transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -14, 0.08, -3)
@@ -408,22 +418,22 @@ transform = Transform3D(1.3855, 0, 0, 0, 1.3855, 0, 0, 0, 1.3855, -13.317049, 4,
 transform = Transform3D(1.3643, 0, 0, 0, 1.3643, 0, 0, 0, 1.3643, -17.588188, 4, -4.673)
 
 [node name="EdificioExtra4" parent="Escenario_E1_Calle/Ambientacion" unique_id=809587114 instance=ExtResource("16")]
-transform = Transform3D(1.3556, 0, -0.0678, 0, 1.3572, 0, 0.0678, 0, 1.3556, 20, 4, 7.266)
+transform = Transform3D(1.3556, 0, -0.0678, 0, 1.3572, 0, 0.0678, 0, 1.3556, 20, 4, 90.24936)
 
 [node name="EdificioExtra5" parent="Escenario_E1_Calle/Ambientacion" unique_id=812924631 instance=ExtResource("16")]
-transform = Transform3D(1.4074, 0, 0, 0, 1.4074, 0, 0, 0, 1.4074, 20, 4, -9.754)
+transform = Transform3D(1.4074, 0, 0, 0, 1.4074, 0, 0, 0, 1.4074, 20, 4, 73.22936)
 
 [node name="EdificioExtra6" parent="Escenario_E1_Calle/Ambientacion" unique_id=1056595000 instance=ExtResource("16")]
-transform = Transform3D(1.313, 0, 0, 0, 1.313, 0, 0, 0, 1.313, 8.945892, 4, -4.968)
+transform = Transform3D(1.313, 0, 0, 0, 1.313, 0, 0, 0, 1.313, 8.945892, 4, 78.015366)
 
 [node name="EscombroExtra1" parent="Escenario_E1_Calle/Ambientacion" unique_id=2134807400 instance=ExtResource("12")]
 transform = Transform3D(0.1319, 0, 0.1086, 0, 0.1709, 0, -0.1086, 0, 0.1319, -14.727, 0.08, -15.398)
 
 [node name="EscombroExtra2" parent="Escenario_E1_Calle/Ambientacion" unique_id=496312103 instance=ExtResource("12")]
-transform = Transform3D(0.1337, 0, 0.0564, 0, 0.1451, 0, -0.0564, 0, 0.1337, 10.515, 0.08, -2.647)
+transform = Transform3D(0.1337, 0, 0.0564, 0, 0.1451, 0, -0.0564, 0, 0.1337, 10.515, 0.08, 80.336365)
 
 [node name="EscombroExtra3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1041839163 instance=ExtResource("12")]
-transform = Transform3D(0.1922, 0, -0.0353, 0, 0.1954, 0, 0.0353, 0, 0.1922, 17.86, 0.08, 0.99)
+transform = Transform3D(0.1922, 0, -0.0353, 0, 0.1954, 0, 0.0353, 0, 0.1922, 17.86, 0.08, 83.97336)
 
 [node name="EscombroExtra4" parent="Escenario_E1_Calle/Ambientacion" unique_id=596919862 instance=ExtResource("12")]
 transform = Transform3D(-0.0672, 0, -0.1467, 0, 0.1614, 0, 0.1467, 0, -0.0672, -17.587, 0.08, 7.505)
@@ -438,10 +448,10 @@ transform = Transform3D(0.0943, 0, -0.0933, 0, 0.1327, 0, 0.0933, 0, 0.0943, -1.
 transform = Transform3D(0.1675, 0, -0.1025, 0, 0.1964, 0, 0.1025, 0, 0.1675, 0.021, 0.08, -10.926)
 
 [node name="EscombroExtra8" parent="Escenario_E1_Calle/Ambientacion" unique_id=94147225 instance=ExtResource("12")]
-transform = Transform3D(0.0127, 0, -0.1611, 0, 0.1616, 0, 0.1611, 0, 0.0127, 3.923, 0.08, -11.803)
+transform = Transform3D(0.0127, 0, -0.1611, 0, 0.1616, 0, 0.1611, 0, 0.0127, 3.923, 0.08, 71.18036)
 
 [node name="EscombroExtra9" parent="Escenario_E1_Calle/Ambientacion" unique_id=269558147 instance=ExtResource("12")]
-transform = Transform3D(0.139, 0, 0.0005, 0, 0.139, 0, -0.0005, 0, 0.139, 10.031, 0.08, 1.032)
+transform = Transform3D(0.139, 0, 0.0005, 0, 0.139, 0, -0.0005, 0, 0.139, 10.031, 0.08, 84.015366)
 
 [node name="EscombroExtra10" parent="Escenario_E1_Calle/Ambientacion" unique_id=1993956754 instance=ExtResource("12")]
 transform = Transform3D(0.1391, 0, -0.1328, 0, 0.1923, 0, 0.1328, 0, 0.1391, -17.299, 0.08, 14.589)
@@ -450,22 +460,22 @@ transform = Transform3D(0.1391, 0, -0.1328, 0, 0.1923, 0, 0.1328, 0, 0.1391, -17
 transform = Transform3D(0.0551, 0, 0.1147, 0, 0.1273, 0, -0.1147, 0, 0.0551, -3.457, 0.08, -10.797)
 
 [node name="EscombroExtra2_2" parent="Escenario_E1_Calle/Ambientacion" unique_id=1607500057 instance=ExtResource("12")]
-transform = Transform3D(-0.1429, 0, 0.1292, 0, 0.1926, 0, -0.1292, 0, -0.1429, 9.356, 0.08, -8.959)
+transform = Transform3D(-0.1429, 0, 0.1292, 0, 0.1926, 0, -0.1292, 0, -0.1429, 9.356, 0.08, 74.02436)
 
 [node name="EscombroExtra2_3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1931163606 instance=ExtResource("12")]
 transform = Transform3D(-0.1529, 0, 0.0103, 0, 0.1532, 0, -0.0103, 0, -0.1529, 1.391, 0.08, 15.782)
 
 [node name="EscombroExtra2_4" parent="Escenario_E1_Calle/Ambientacion" unique_id=740258697 instance=ExtResource("12")]
-transform = Transform3D(0.1193, 0, -0.0844, 0, 0.1461, 0, 0.0844, 0, 0.1193, 4.076, 0.08, -10.199)
+transform = Transform3D(0.1193, 0, -0.0844, 0, 0.1461, 0, 0.0844, 0, 0.1193, 4.076, 0.08, 72.78436)
 
 [node name="EscombroExtra2_5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1287592552 instance=ExtResource("12")]
 transform = Transform3D(0.1089, 0, 0.1545, 0, 0.1891, 0, -0.1545, 0, 0.1089, -4.028, 0.08, 6.565)
 
 [node name="EscombroExtra2_6" parent="Escenario_E1_Calle/Ambientacion" unique_id=369510003 instance=ExtResource("12")]
-transform = Transform3D(0.1599, 0, -0.0555, 0, 0.1693, 0, 0.0555, 0, 0.1599, 12.599, 0.08, -5.803)
+transform = Transform3D(0.1599, 0, -0.0555, 0, 0.1693, 0, 0.0555, 0, 0.1599, 12.599, 0.08, 77.18036)
 
 [node name="EscombroExtra2_7" parent="Escenario_E1_Calle/Ambientacion" unique_id=1214190021 instance=ExtResource("12")]
-transform = Transform3D(-0.1067, 0, 0.0749, 0, 0.1304, 0, -0.0749, 0, -0.1067, 9.881, 0.08, -1.115)
+transform = Transform3D(-0.1067, 0, 0.0749, 0, 0.1304, 0, -0.0749, 0, -0.1067, 9.881, 0.08, 81.86836)
 
 [node name="EscombroExtra2_8" parent="Escenario_E1_Calle/Ambientacion" unique_id=1073562298 instance=ExtResource("12")]
 transform = Transform3D(0.1698, 0, -0.0112, 0, 0.1701, 0, 0.0112, 0, 0.1698, -17.726, 0.08, -10.664)
@@ -474,10 +484,10 @@ transform = Transform3D(0.1698, 0, -0.0112, 0, 0.1701, 0, 0.0112, 0, 0.1698, -17
 transform = Transform3D(-0.1864, 0, -0.1455, 0, 0.2365, 0, 0.1455, 0, -0.1864, -1.365, 0.08, 14.409)
 
 [node name="EscombroExtra2_10" parent="Escenario_E1_Calle/Ambientacion" unique_id=883974515 instance=ExtResource("12")]
-transform = Transform3D(0.0466, 0, -0.1732, 0, 0.1793, 0, 0.1732, 0, 0.0466, 15.148, 0.08, -12.211)
+transform = Transform3D(0.0466, 0, -0.1732, 0, 0.1793, 0, 0.1732, 0, 0.0466, 15.148, 0.08, 70.77236)
 
 [node name="EscombroExtra2_11" parent="Escenario_E1_Calle/Ambientacion" unique_id=1846958346 instance=ExtResource("12")]
-transform = Transform3D(-0.0511, 0, -0.0808, 0, 0.0956, 0, 0.0808, 0, -0.0511, 17.384, 0.08, 15.981)
+transform = Transform3D(-0.0511, 0, -0.0808, 0, 0.0956, 0, 0.0808, 0, -0.0511, 17.384, 0.08, 98.96436)
 
 [node name="EscombroExtra2_12" parent="Escenario_E1_Calle/Ambientacion" unique_id=1284093138 instance=ExtResource("12")]
 transform = Transform3D(0.0433, 0, -0.0925, 0, 0.1022, 0, 0.0925, 0, 0.0433, -17.161, 0.08, -0.946)
@@ -486,28 +496,28 @@ transform = Transform3D(0.0433, 0, -0.0925, 0, 0.1022, 0, 0.0925, 0, 0.0433, -17
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3857079, 0, -12)
 
 [node name="Arbol5" parent="Escenario_E1_Calle/Ambientacion" unique_id=1870454811 instance=ExtResource("11")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -13)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 69.98336)
 
 [node name="Arbol6" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000001 instance=ExtResource("11")]
 transform = Transform3D(1.08, 0, 0, 0, 1.08, 0, 0, 0, 1.08, -3.611023, 0, -8.068047)
 
 [node name="Arbol7" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000002 instance=ExtResource("11")]
-transform = Transform3D(0.93, 0, 0, 0, 0.93, 0, 0, 0, 0.93, 26.20932, 0, -2)
+transform = Transform3D(0.93, 0, 0, 0, 0.93, 0, 0, 0, 0.93, 26.20932, 0, 80.98336)
 
 [node name="Arbol8" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000003 instance=ExtResource("11")]
 transform = Transform3D(1.05, 0, 0, 0, 1.05, 0, 0, 0, 1.05, -1.507225, 0, 6)
 
 [node name="Arbol9" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000004 instance=ExtResource("11")]
-transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 22.856636, 0, -12.854907)
+transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 22.856636, 0, 70.12845)
 
 [node name="Arbol10" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000005 instance=ExtResource("11")]
-transform = Transform3D(1.03, 0, 0, 0, 1.03, 0, 0, 0, 1.03, 17, 0, 2)
+transform = Transform3D(1.03, 0, 0, 0, 1.03, 0, 0, 0, 1.03, 17, 0, 84.98336)
 
 [node name="Arbol11" parent="Escenario_E1_Calle/Ambientacion" unique_id=3000006 instance=ExtResource("11")]
 transform = Transform3D(0.98, 0, 0, 0, 0.98, 0, 0, 0, 0.98, 16, 0, 20.348116)
 
 [node name="Grafiti" type="MeshInstance3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=1942776892]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 18.384542, 1.5926466, -0.07882929)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 18.384542, 1.5926466, 82.904526)
 mesh = SubResource("PlaneMesh_grafiti")
 surface_material_override/0 = SubResource("StandardMaterial3D_grafiti")
 
@@ -534,34 +544,34 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 15.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.7937927)
 
 [node name="Escombro1" parent="Escenario_E1_Calle/Ambientacion" unique_id=752603817 instance=ExtResource("12")]
-transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 6, 0.08, 9)
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 6, 0.08, 91.98336)
 
 [node name="Escombro2" parent="Escenario_E1_Calle/Ambientacion" unique_id=694184667 instance=ExtResource("12")]
 transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -7, 0.08, 6)
 
 [node name="Escombro3" parent="Escenario_E1_Calle/Ambientacion" unique_id=1296767059 instance=ExtResource("12")]
-transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 8, 0.08, -7)
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 8, 0.08, 75.98336)
 
 [node name="Escombro4" parent="Escenario_E1_Calle/Ambientacion" unique_id=95241350 instance=ExtResource("12")]
 transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -6, 0.08, -9)
 
 [node name="FondoCalle" type="Sprite3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=3500001]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21, -18.68681)
+transform = Transform3D(1.8915689, 0, 0, 0, 1.7747469, 0, 0, 0, 1, -15.066681, 35.764694, -235.21182)
 pixel_size = 0.0456
 texture = ExtResource("25")
 
-[node name="FondoCalle" type="Sprite3D" parent="Escenario_E1_Calle/Ambientacion/FondoCalle" unique_id=732913562]
-transform = Transform3D(-0.02539819, 0, 0.9996774, 0, 1, 0, -0.9996774, 0, -0.02539819, -20.050535, -2.00626, 20.339375)
+[node name="FondoCalle3" type="Sprite3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=732913562]
+transform = Transform3D(-0.046657093, 0, 1.0209363, 0, 1.550101, 0, -1.8364319, 0, -0.0259383, -94.19794, 32.594006, -169.3295)
 pixel_size = 0.0456
 texture = ExtResource("25")
 
 [node name="FondoCalle2" type="Sprite3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=3500002]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 21, 18.767399)
+transform = Transform3D(-1.8999158, 0, 0.036085255, 0, 1.61337, 0, -0.070997894, 0, -0.9656475, -16.506344, 29.971973, -100.388084)
 pixel_size = 0.0456
 texture = ExtResource("26")
 
-[node name="FondoCalle2" type="Sprite3D" parent="Escenario_E1_Calle/Ambientacion/FondoCalle2" unique_id=177673083]
-transform = Transform3D(-0.009454543, 0, -0.9999553, 0, 1, 0, 0.9999553, 0, -0.009454543, -23.873127, 0.47586823, 18.767399)
+[node name="FondoCalle4" type="Sprite3D" parent="Escenario_E1_Calle/Ambientacion" unique_id=177673083]
+transform = Transform3D(0.0776183, 0, 0.9680757, 0, 1.6956444, 0, -1.6570773, 0, 0.04534513, 66.912735, 38.801018, -172.43192)
 pixel_size = 0.0456
 texture = ExtResource("26")
 
@@ -572,16 +582,16 @@ contenedor_enemigos_path = NodePath("../Enemigos")
 [node name="Entradas" type="Node3D" parent="Escenario_E1_Calle/DirectorDeOleadas" unique_id=1963728542]
 
 [node name="ExtremoNorte" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=622888018]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.099621, 0, 42.054317)
 
 [node name="ExtremoSur" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=1534749111]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.964664, 0, -49.94307)
 
 [node name="CallejonOeste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=418514066]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.537132, 0, -6.012949)
 
 [node name="CallejonEste" type="Marker3D" parent="Escenario_E1_Calle/DirectorDeOleadas/Entradas" unique_id=1484585332]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.560444, 0, -7.249029)
 
 [node name="Enemigos" type="Node3D" parent="Escenario_E1_Calle" unique_id=927374184]
 
@@ -589,22 +599,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 0, 8)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 0)
 
 [node name="PuntoDespliegue" type="Marker3D" parent="Escenario_E2_Edificio" unique_id=1958645332]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.222412, 0, -4.700536)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 189.63983, 0, 17.605694)
 
 [node name="SonidoAmbiente" type="AudioStreamPlayer3D" parent="Escenario_E2_Edificio" unique_id=918279331]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 192.32779, 0.20874453, 17.037407)
 unit_size = 15.0
 autoplay = true
 
 [node name="Piso" type="MeshInstance3D" parent="Escenario_E2_Edificio" unique_id=805294515]
-transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 0, 0, 0)
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 202.8479, 0, 0)
 mesh = SubResource("PlaneMesh_piso")
 surface_material_override/0 = SubResource("StandardMaterial3D_piso_edificio")
 
 [node name="Herido" parent="Escenario_E2_Edificio" unique_id=1068605195 instance=ExtResource("5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -5)
+transform = Transform3D(0.4333846, 0, 0.90120906, 0, 1, 0, -0.90120906, 0, 0.4333846, 190.61002, 0.18565702, 16.575535)
 escenario = "E2_Edificio"
 
 [node name="Estructura" type="Node3D" parent="Escenario_E2_Edificio" unique_id=904821398]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 170.8318)
+visible = false
 
 [node name="ParedNorte" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=1526618024]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -10)
@@ -617,7 +630,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 shape = SubResource("BoxShape3D_pared")
 
 [node name="ParedSur" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=143007377]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 152.88335)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
@@ -627,7 +640,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 shape = SubResource("BoxShape3D_pared")
 
 [node name="ParedEste" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=578371343]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 1.75, 0)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 1.75, 116.84032)
 mesh = SubResource("BoxMesh_pared")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
@@ -644,10 +657,11 @@ surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 [node name="Colision" type="StaticBody3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste" unique_id=130441011]
 
 [node name="Forma" type="CollisionShape3D" parent="Escenario_E2_Edificio/Estructura/ParedOeste/Colision" unique_id=1643428270]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.66164, 0, 0)
 shape = SubResource("BoxShape3D_pared")
 
 [node name="Techo" type="MeshInstance3D" parent="Escenario_E2_Edificio/Estructura" unique_id=1131581522]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 243.5563)
 mesh = SubResource("BoxMesh_techo")
 surface_material_override/0 = SubResource("StandardMaterial3D_pared")
 
@@ -664,63 +678,64 @@ light_energy = 1.1
 omni_range = 12.0
 
 [node name="Mobiliario" type="Node3D" parent="Escenario_E2_Edificio" unique_id=489011061]
+visible = false
 
 [node name="SofaVolcado" parent="Escenario_E2_Edificio/Mobiliario" unique_id=485771070 instance=ExtResource("13")]
-transform = Transform3D(0.165, 0, 0, 0, 0.0564, 0.155, 0, -0.155, 0.0564, -5, 0.55, -3)
+transform = Transform3D(0.165, 0, 0, 0, 0.0564, 0.155, 0, -0.155, 0.0564, 197.8479, 0.55, -3)
 
 [node name="Mesa" parent="Escenario_E2_Edificio/Mobiliario" unique_id=434956045 instance=ExtResource("14")]
-transform = Transform3D(0.323, 0, -0.057, 0, 0.328, 0, 0.057, 0, 0.323, 4, 0.35, -6)
+transform = Transform3D(0.323, 0, -0.057, 0, 0.328, 0, 0.057, 0, 0.323, 206.8479, 0.35, -6)
 
 [node name="PuertaEntreabierta" parent="Escenario_E2_Edificio/Mobiliario" unique_id=612917518 instance=ExtResource("15")]
-transform = Transform3D(0.113, 0, 0.0655, 0, 0.131, 0, -0.0655, 0, 0.113, 2, 1.05, 9.8)
+transform = Transform3D(0.113, 0, 0.0655, 0, 0.131, 0, -0.0655, 0, 0.113, 204.8479, 1.05, 9.8)
 
 [node name="PuertaCaida" parent="Escenario_E2_Edificio/Mobiliario" unique_id=1294727809 instance=ExtResource("15")]
-transform = Transform3D(0.131, 0, 0, 0, 0, 0.131, 0, -0.131, 0, -2, 0.04, 9)
+transform = Transform3D(0.131, 0, 0, 0, 0, 0.131, 0, -0.131, 0, 200.8479, 0.04, 9)
 
 [node name="Sofa2" parent="Escenario_E2_Edificio/Mobiliario" unique_id=686420368 instance=ExtResource("13")]
-transform = Transform3D(0.1026, 0, 0.1292, 0, 0.165, 0, -0.1292, 0, 0.1026, 7, 0.55, 6)
+transform = Transform3D(0.1026, 0, 0.1292, 0, 0.165, 0, -0.1292, 0, 0.1026, 209.8479, 0.55, 6)
 
 [node name="Sofa3" parent="Escenario_E2_Edificio/Mobiliario" unique_id=1793804848 instance=ExtResource("13")]
-transform = Transform3D(-0.1099, 0, 0.123, 0, 0.165, 0, -0.123, 0, -0.1099, -6.5, 0.55, -7)
+transform = Transform3D(-0.1099, 0, 0.123, 0, 0.165, 0, -0.123, 0, -0.1099, 196.3479, 0.55, -7)
 
 [node name="Mesa2" parent="Escenario_E2_Edificio/Mobiliario" unique_id=536385930 instance=ExtResource("14")]
-transform = Transform3D(0.2975, 0, 0.1258, 0, 0.323, 0, -0.1258, 0, 0.2975, -6, 0.35, 4)
+transform = Transform3D(0.2975, 0, 0.1258, 0, 0.323, 0, -0.1258, 0, 0.2975, 196.8479, 0.35, 4)
 
 [node name="Mesa3" parent="Escenario_E2_Edificio/Mobiliario" unique_id=106573147 instance=ExtResource("14")]
-transform = Transform3D(-0.0094, 0, 0.3229, 0, 0.323, 0, -0.3229, 0, -0.0094, 6.5, 0.35, -7)
+transform = Transform3D(-0.0094, 0, 0.3229, 0, 0.323, 0, -0.3229, 0, -0.0094, 209.3479, 0.35, -7)
 
 [node name="Mesa4" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000011 instance=ExtResource("14")]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0.35, 2)
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 202.8479, 0.35, 2)
 
 [node name="Sofa4" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000012 instance=ExtResource("13")]
-transform = Transform3D(0, 0, 0.15, 0, 0.15, 0, -0.15, 0, 0, 8, 0.55, -2)
+transform = Transform3D(0, 0, 0.15, 0, 0.15, 0, -0.15, 0, 0, 210.8479, 0.55, -2)
 
 [node name="Sofa5" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000013 instance=ExtResource("13")]
-transform = Transform3D(0, 0, -0.15, 0, 0.15, 0, 0.15, 0, 0, -8, 0.55, 2)
+transform = Transform3D(0, 0, -0.15, 0, 0.15, 0, 0.15, 0, 0, 194.8479, 0.55, 2)
 
 [node name="Mesa5" parent="Escenario_E2_Edificio/Mobiliario" unique_id=3000014 instance=ExtResource("14")]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 2, 0.35, 7)
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 204.8479, 0.35, 7)
 
 [node name="Escalera" type="Node3D" parent="Escenario_E2_Edificio" unique_id=726439679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 6)
 
 [node name="Escalon1" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=2118382150]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 202.8479, 0.1, 0)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
 [node name="Escalon2" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=939390225]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 202.8479, 0.3, -0.5999999)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
 [node name="Escalon3" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=826582731]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 202.8479, 0.5, -1.1999998)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
 [node name="Escalon4" type="MeshInstance3D" parent="Escenario_E2_Edificio/Escalera" unique_id=991129550]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, -1.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 202.8479, 0.7, -1.8000002)
 mesh = SubResource("BoxMesh_escalon")
 surface_material_override/0 = SubResource("StandardMaterial3D_escalon")
 
@@ -732,30 +747,36 @@ contenedor_enemigos_path = NodePath("../Enemigos")
 [node name="Entradas" type="Node3D" parent="Escenario_E2_Edificio/DirectorDeOleadas" unique_id=1140283376]
 
 [node name="PuertaEntreabierta" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas" unique_id=1922783454]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 9.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 189.465, 0, 8.583906)
 
 [node name="PuertaCaida" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas" unique_id=1337642902]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 9.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 193.65067, 0, 22.541561)
 
 [node name="Escalera" type="Marker3D" parent="Escenario_E2_Edificio/DirectorDeOleadas/Entradas" unique_id=23981747]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 0, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 181.5444, 0, 12.912191)
 
 [node name="Enemigos" type="Node3D" parent="Escenario_E2_Edificio" unique_id=1780206967]
 
 [node name="Escombros" type="Node3D" parent="Escenario_E2_Edificio" unique_id=1341949345]
 
 [node name="Escombro1" parent="Escenario_E2_Edificio/Escombros" unique_id=409314063 instance=ExtResource("12")]
-transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 3, 0.08, 2)
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 205.8479, 0.08, 2)
 
 [node name="Escombro2" parent="Escenario_E2_Edificio/Escombros" unique_id=1116356198 instance=ExtResource("12")]
-transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, -3, 0.08, -2)
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 199.8479, 0.08, -2)
 
 [node name="Escombro3" parent="Escenario_E2_Edificio/Escombros" unique_id=1241784901 instance=ExtResource("12")]
-transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 6, 0.08, -4)
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 208.8479, 0.08, -4)
+
+[node name="Scene2" parent="Escenario_E2_Edificio" unique_id=1957920664 instance=ExtResource("23_om24b")]
+transform = Transform3D(0.2659066, 0, 0, 0, 0.2659066, 0, 0, 0, 0.2659066, 185.36356, 0, 8.872857)
 
 [node name="Pared_Con_Ventana" type="Sprite3D" parent="." unique_id=898487716]
 transform = Transform3D(0.1116261, 0, 0, 0, 0.114223376, 0.004474424, 0, -0.008048622, 0.06349954, -0.031360507, 1.519461, -79.77636)
 texture = ExtResource("7_4dleu")
+
+[node name="Scene1" parent="." unique_id=1095219089 instance=ExtResource("24_m3t5m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.228012)
 
 [editable path="Jugador"]
 [editable path="PuestoDeMando/PanelMapa/map"]

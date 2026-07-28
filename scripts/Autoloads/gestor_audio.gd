@@ -28,6 +28,9 @@ var estado_actual: EstadoMusica = EstadoMusica.MENU
 @onready var reproductor: AudioStreamPlayer = AudioStreamPlayer.new()
 
 func _ready() -> void:
+	# Bus "Musica" (default_bus_layout.tres): permite mezclar musica de fondo
+	# por separado de los SFX (RF-38, ajuste de volumen en Opciones).
+	reproductor.bus = "Musica"
 	add_child(reproductor)
 
 func cambiar_estado(nuevo: EstadoMusica) -> void:
