@@ -213,9 +213,11 @@ font_size = 48
 outline_size = 8
 
 [node name="SonidoPasos" type="AudioStreamPlayer3D" parent="." unique_id=1320713928]
+bus = "SFX"
 stream = ExtResource("3_pasos")
 
 [node name="SonidoEmbestida" type="AudioStreamPlayer3D" parent="." unique_id=2078761155]
+bus = "SFX"
 
 [node name="Head" type="MeshInstance3D" parent="." unique_id=705404190]
 transform = Transform3D(0.122, 0, 0, 0, 0.122, 0, 0, 0, 0.122, 0.097, 0.0122, 0.232)

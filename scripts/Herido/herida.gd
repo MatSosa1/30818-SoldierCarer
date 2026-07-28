@@ -77,10 +77,10 @@ func _ready() -> void:
 	_etiqueta = Label3D.new()
 	_etiqueta.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_etiqueta.no_depth_test = true
-	_etiqueta.pixel_size = 0.0008
-	_etiqueta.font_size = 24
+	_etiqueta.pixel_size = 0.0016
+	_etiqueta.font_size = 28
 	_etiqueta.outline_size = 6
-	_etiqueta.position = Vector3(0, 0.12, 0)
+	_etiqueta.position = Vector3(0, 0.15, 0)
 	add_child(_etiqueta)
 	_actualizar_etiqueta()
 
@@ -162,17 +162,17 @@ func _actualizar_etiqueta(fraccion_gesto: float = -1.0) -> void:
 		return
 	if tratada:
 		_etiqueta.text = "TRATADA"
-		_etiqueta.modulate = Color(0.5, 0.9, 0.5, 0.8)
-		_etiqueta.font_size = 20
+		_etiqueta.modulate = Color(0.5, 0.9, 0.5, 0.85)
+		_etiqueta.font_size = 24
 		return
 	if not _activa:
 		_etiqueta.text = "%s %d/%d" % [nombre_item_esperado(), paso_actual + 1, pasos.size()]
-		_etiqueta.modulate = Color(0.85, 0.85, 0.85, 0.6)
-		_etiqueta.font_size = 20
+		_etiqueta.modulate = Color(0.88, 0.88, 0.88, 0.8)
+		_etiqueta.font_size = 24
 		return
 	var linea_paso := "%s %d/%d" % [nombre_item_esperado(), paso_actual + 1, pasos.size()]
 	if fraccion_gesto >= 0.0:
 		linea_paso += "  %d%%" % int(fraccion_gesto * 100.0)
 	_etiqueta.text = "%s\n%s" % [nombre(), linea_paso]
 	_etiqueta.modulate = Color.WHITE
-	_etiqueta.font_size = 24
+	_etiqueta.font_size = 28

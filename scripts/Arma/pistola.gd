@@ -1,8 +1,15 @@
 extends Node3D
 class_name Pistola
 ## Pistola VR: extraccion de la funda de la cadera derecha (RF-25), disparo
-## por raycast con municion limitada (RF-26) y recarga (RF-28). El indicador
-## de cargador solo es visible con la pistola en mano (RF-27).
+## por raycast (RF-26) y recarga (RF-28). El indicador de cargador solo es
+## visible con la pistola en mano (RF-27).
+##
+## municion_infinita (por defecto true, decision del encargado): los
+## cargadores de repuesto no se gastan y el cargador se rellena SOLO en el
+## mismo frame en que se vacia, sin sonido, sin haptico y sin espera - no hay
+## animacion de recarga que valga el tiempo de produccion, y el eje del juego
+## es la medicina, no el combate (CLAUDE.md SS8). Ponerlo en false devuelve el
+## comportamiento original de municion limitada (RF-26/RF-28) sin tocar codigo.
 ##
 ## Este nodo es hijo de ManoDerecha (el modelo/raycast siguen a la mano una
 ## vez desenfundada), pero el gesto de desenfundar compara la posicion de la
@@ -13,6 +20,7 @@ class_name Pistola
 @export var radio_funda: float = 0.15
 @export var balas_por_cargador: int = 7
 @export var cargadores_totales: int = 3
+@export var municion_infinita: bool = true
 
 @onready var mano_derecha: XRController3D = get_parent()
 @onready var punto_funda: Marker3D = get_node_or_null("../../PuntoFunda")
@@ -67,9 +75,15 @@ func intentar_disparar() -> RayCast3D:
 	if not en_mano:
 		return null
 	if municion_actual <= 0:
-		print("Pistola sin balas: recargar (boton X/A en mano izquierda).")
-		return null
+		if not municion_infinita:
+			print("Pistola sin balas: recargar (boton X/A en mano izquierda).")
+			return null
+		municion_actual = balas_por_cargador # red de seguridad: nunca deja el arma trabada
 	municion_actual -= 1
+	# Recarga automatica instantanea: el cargador se rellena en el mismo frame
+	# en que se vacia, asi el disparo siguiente nunca encuentra el arma seca.
+	if municion_infinita and municion_actual <= 0:
+		municion_actual = balas_por_cargador
 	if not get_viewport().use_xr:
 		_apuntar_camara_escritorio()
 	raycast.force_raycast_update()
@@ -95,10 +109,11 @@ func _apuntar_camara_escritorio() -> void:
 	raycast.global_transform = t
 
 func recargar() -> void:
-	if cargadores_restantes <= 0:
-		print("Sin cargadores de repuesto.")
-		return
-	cargadores_restantes -= 1
+	if not municion_infinita:
+		if cargadores_restantes <= 0:
+			print("Sin cargadores de repuesto.")
+			return
+		cargadores_restantes -= 1
 	municion_actual = balas_por_cargador
 	if sonido_recarga:
 		sonido_recarga.play()

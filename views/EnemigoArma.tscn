@@ -170,9 +170,11 @@ font_size = 48
 outline_size = 8
 
 [node name="SonidoPasos" type="AudioStreamPlayer3D" parent="." unique_id=2098267860]
+bus = "SFX"
 stream = ExtResource("3_pasos")
 
 [node name="SonidoDisparo" type="AudioStreamPlayer3D" parent="." unique_id=86482528]
+bus = "SFX"
 stream = ExtResource("4_disparo")
 
 [node name="Head" type="MeshInstance3D" parent="." unique_id=1359220611]
