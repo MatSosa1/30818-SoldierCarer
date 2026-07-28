@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bk7twcmo5fkoi"
+path="res://.godot/imported/All Bandage Sounds (Fortnite) - Sound Effects for editing.mp3-2c0c79d53208e58559c3542e68a5e884.mp3str"
+
+[deps]
+
+source_file="res://audio/All Bandage Sounds (Fortnite) - Sound Effects for editing.mp3"
+dest_files=["res://.godot/imported/All Bandage Sounds (Fortnite) - Sound Effects for editing.mp3-2c0c79d53208e58559c3542e68a5e884.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

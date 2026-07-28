@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dcyeufnq4flsn" path="res://scripts/Enemigos/enemigo_arma.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://fcuqb02qaye3" path="res://assets/3D/entities/enemies/Feet&Shoe.png" id="2_ycxwg"]
+[ext_resource type="AudioStream" uid="uid://bs8agb6lt2hdv" path="res://audio/PasosEnemigo.mp3" id="3_pasos"]
+[ext_resource type="AudioStream" uid="uid://cvpoyx4kdiskb" path="res://audio/DisparoEnemigo.mp3" id="4_disparo"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_arma"]
 radius = 0.4
@@ -168,8 +170,10 @@ font_size = 48
 outline_size = 8
 
 [node name="SonidoPasos" type="AudioStreamPlayer3D" parent="." unique_id=2098267860]
+stream = ExtResource("3_pasos")
 
 [node name="SonidoDisparo" type="AudioStreamPlayer3D" parent="." unique_id=86482528]
+stream = ExtResource("4_disparo")
 
 [node name="Head" type="MeshInstance3D" parent="." unique_id=1359220611]
 transform = Transform3D(0.122, 0, 0, 0, 0.122, 0, 0, 0, 0.122, 0.097, 0.0122, 0.232)

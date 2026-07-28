@@ -5,15 +5,23 @@ extends Node
 ## posicion 3D propia, no tiene sentido centralizarlos aqui-; GestorAudio
 ## solo centraliza la musica de fondo, que es unica y global por naturaleza.
 ##
-## PLACEHOLDER: los tres streams quedan sin asignar (PH-012, musica original
-## del equipo pendiente). cambiar_estado() sigue funcionando sin ellos (no
-## suena nada hasta que se asignen los @export, sin errores).
-
+## PH-012 (tracks en audio/, no assets/ - carpeta aparte agregada por el
+## encargado), asignados como default en el propio script (GestorAudio se
+## registra en project.godot como .gd suelto, no .tscn, asi que no hay
+## Inspector donde arrastrarlos). MENU cubre tanto el menu principal como
+## el puesto de mando/instrucciones (jugador.gd solo cambia a COMBATE al
+## confirmar el despliegue - ver EventBus.mision_desplegada); COMBATE y
+## CRITICO sueltan el mismo ambiente de guerra ya que ambos son "en mision",
+## solo cambia la intensidad narrativa (RF-46 dejo la distincion para si se
+## consigue un track especifico de tension alta).
 enum EstadoMusica {MENU, COMBATE, CRITICO}
 
-@export var musica_menu: AudioStream
-@export var musica_combate: AudioStream
-@export var musica_critico: AudioStream
+const MUSICA_MENU := preload("res://audio/GHOST FREQ-0  1H Tactical Stealth Music - Reaction Window.mp3")
+const MUSICA_MISION := preload("res://audio/Call of Duty_ WARZONE AMBIENCE  Background Noise (Relaxing Call of Duty Ambient Sounds).mp3")
+
+@export var musica_menu: AudioStream = MUSICA_MENU
+@export var musica_combate: AudioStream = MUSICA_MISION
+@export var musica_critico: AudioStream = MUSICA_MISION
 
 var estado_actual: EstadoMusica = EstadoMusica.MENU
 

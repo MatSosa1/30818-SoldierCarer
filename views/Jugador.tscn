@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://assets/3D/entities/medic/MangaDerecha.tscn" id="12"]
 [ext_resource type="PackedScene" path="res://assets/3D/entities/medic/HandRigIzquierda.tscn" id="13"]
 [ext_resource type="PackedScene" path="res://assets/3D/weapons/pistol/PistolaModelo.tscn" id="14"]
+[ext_resource type="AudioStream" uid="uid://ds35ujvmot3w1" path="res://audio/Gunshot Sound Effect.mp3" id="15"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jugador"]
 radius = 0.4
@@ -141,6 +142,7 @@ target_position = Vector3(0, 0, -100)
 collision_mask = 2
 
 [node name="SonidoDisparo" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=1627370787]
+stream = ExtResource("15")
 
 [node name="SonidoRecarga" type="AudioStreamPlayer3D" parent="XROrigin3D/ManoDerecha/Pistola" unique_id=197379001]
 

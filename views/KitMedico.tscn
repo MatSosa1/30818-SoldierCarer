@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://xju0cgxdbyro" path="res://assets/3D/alcohol/Bottle Base Color.png" id="4_r76ms"]
 [ext_resource type="Script" uid="uid://bwxaw458hveb7" path="res://scripts/KitMedico/suturas.gd" id="5"]
 [ext_resource type="Script" uid="uid://bun5bsqoq4sn8" path="res://scripts/KitMedico/analgesicos.gd" id="6"]
+[ext_resource type="AudioStream" uid="uid://chnghftht2wqv" path="res://audio/CuracionFeedback.mp3" id="7"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yurst"]
 resource_name = "Material.001"
@@ -247,6 +248,7 @@ no_depth_test = true
 text = "OK"
 
 [node name="SonidoFeedback" type="AudioStreamPlayer3D" parent="." unique_id=1690589752]
+stream = ExtResource("7")
 
 [node name="ItemVendas" type="Node3D" parent="." unique_id=188840896]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12841445, 0, -0.03)

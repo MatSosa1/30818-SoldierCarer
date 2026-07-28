@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://e8y514gvk41r" path="res://scripts/Enemigos/enemigo_cuchillo.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://fcuqb02qaye3" path="res://assets/3D/entities/enemies/Feet&Shoe.png" id="2_kr2vs"]
+[ext_resource type="AudioStream" uid="uid://bs8agb6lt2hdv" path="res://audio/PasosEnemigo.mp3" id="3_pasos"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_cuchillo"]
 radius = 0.4
@@ -212,6 +213,7 @@ font_size = 48
 outline_size = 8
 
 [node name="SonidoPasos" type="AudioStreamPlayer3D" parent="." unique_id=1320713928]
+stream = ExtResource("3_pasos")
 
 [node name="SonidoEmbestida" type="AudioStreamPlayer3D" parent="." unique_id=2078761155]
 
