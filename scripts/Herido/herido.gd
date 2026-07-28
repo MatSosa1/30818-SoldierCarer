@@ -1,8 +1,9 @@
 extends Node3D
 class_name Herido
-## Paciente en un punto de rescate fijo (RF-11). Su salud decae por
-## temporizador (RF-12): ESTABLE -> CRITICO -> AGONIZANTE -> MUERTO, con
-## color semaforico en el foco y en los mapas (RF-13).
+## Paciente en un punto de rescate fijo (RF-11). Su salud decae como un
+## MEDIDOR DE VITALIDAD 0..100 (RF-12): ESTABLE -> CRITICO -> AGONIZANTE ->
+## MUERTO segun el porcentaje restante, con color semaforico en el foco, en
+## la barra sobre el cuerpo y en los mapas (RF-13).
 ##
 ## Desde el sistema de heridas procedurales, cada herido tiene 2..3 heridas
 ## generadas al azar (GeneradorHeridas) sobre puntos anatomicos del cuerpo
@@ -17,22 +18,33 @@ signal curado # se mantiene por compatibilidad; MapaMuneca lee curado_completo
 
 enum EstadoSalud {ESTABLE, CRITICO, AGONIZANTE, MUERTO, ESTABILIZADO}
 
-@export var duracion_estable: float = 40.0
-@export var duracion_critico: float = 30.0
-@export var duracion_agonizante: float = 20.0
+# Vitalidad como porcentaje (0..100) en vez de la vieja cadena de tres
+# temporizadores en segundos (duracion_estable/critico/agonizante = 135 s
+# totales, demasiado poco para tratar 2-3 heridas con el kit). Ahora cada
+# punto de vitalidad cuesta segundos_por_punto segundos de juego: con los
+# valores por defecto, un herido sin heridas graves tarda 100 * 3 = 300 s en
+# morir, y la gravedad solo acelera esa caida (ver _factor_decaimiento).
+@export var vitalidad_maxima: float = 100.0
+@export var segundos_por_punto: float = 3.0
+# Umbrales (en puntos de vitalidad) de los estados semaforicos (RF-13).
+@export var umbral_critico: float = 66.0
+@export var umbral_agonizante: float = 33.0
+# Cuanto acelera el decaimiento cada punto de gravedad de las heridas sin
+# tratar (ver _factor_decaimiento). 0 = la gravedad no influye.
+@export var factor_gravedad: float = 0.15
 # Dolor (0..1) a partir del cual el herido se retuerce y bloquea los gestos
 # de tratamiento (RF-19/RF-22: morfina y analgesicos dejan de ser opcionales).
 @export var umbral_dolor_bloqueo: float = 0.65
 # Cuanto alivio pierde por segundo (la morfina "se pasa" con el tiempo).
 @export var decaimiento_alivio: float = 0.015
 # RF-12/RF-31: ademas de FRENAR el decaimiento (_factor_decaimiento, via la
-# gravedad de heridas sin tratar), cada avance real le devuelve tiempo al
-# reloj de muerte del estado actual - un respiro concreto en vez de solo
-# demorar lo inevitable. tiempo_bonus_por_alivio se escala por la cantidad
-# de alivio aplicado (morfina 0.8 > analgesicos 0.4: la mas fuerte da mas
-# tiempo, mismo criterio que ya usan para el dolor).
-@export var tiempo_bonus_por_paso: float = 6.0
-@export var tiempo_bonus_por_alivio: float = 10.0
+# gravedad de heridas sin tratar), cada avance real le DEVUELVE puntos de
+# vitalidad - un respiro concreto en vez de solo demorar lo inevitable, y
+# visible al instante en la barra. bonus_vitalidad_por_alivio se escala por
+# la cantidad de alivio aplicado (morfina 0.8 > analgesicos 0.4: la mas
+# fuerte da mas margen, mismo criterio que ya usan para el dolor).
+@export var bonus_vitalidad_por_paso: float = 5.0
+@export var bonus_vitalidad_por_alivio: float = 8.0
 
 # Nombre del escenario donde vive este herido (clave que usa GestorEscenarios,
 # "E1_Calle"/"E2_Edificio"). MapaMuneca y DirectorDeOleadas lo usan.
@@ -42,6 +54,13 @@ const COLOR_ESTABLE := Color(0.137, 0.545, 0.137) # verde #228B22
 const COLOR_CRITICO := Color(0.855, 0.647, 0.125) # amarillo #DAA520
 const COLOR_AGONIZANTE := Color(0.8, 0.0, 0.0) # rojo #CC0000
 const COLOR_MUERTO := Color(0.2, 0.2, 0.2)
+
+# Barra de vitalidad flotante sobre el cuerpo (medidor de RF-12/RF-13). Se
+# construye por codigo, como las marcas de Herida: es puro HUD diegetico de
+# primitivas, no hay asset que sustituir.
+const ANCHO_BARRA := 0.4
+const ALTO_BARRA := 0.05
+const ALTURA_BARRA := 0.88
 
 const PESO_SEVERIDAD := {
 	Herida.Severidad.LEVE: 1.0,
@@ -60,11 +79,13 @@ const PESO_SEVERIDAD := {
 var estado_salud: EstadoSalud = EstadoSalud.ESTABLE
 var curado_completo: bool = false # true solo cuando estado_salud == ESTABILIZADO
 var heridas: Array[Herida] = []
+var vitalidad: float # 0..vitalidad_maxima; el medidor que reemplaza al reloj
 
-var _tiempo_restante: float
 var _alivio: float = 0.0 # aportado por morfina/analgesicos, decae solo
 var _tiempo_gemido: float = 3.0
 var _posicion_base_cuerpo: Vector3
+var _barra_fondo: MeshInstance3D
+var _barra_relleno: MeshInstance3D
 
 func _ready() -> void:
 	add_to_group("heridos")
@@ -77,7 +98,8 @@ func _ready() -> void:
 		if malla is MeshInstance3D and malla.get_surface_override_material(0):
 			malla.set_surface_override_material(0, malla.get_surface_override_material(0).duplicate())
 	_posicion_base_cuerpo = cuerpo.position
-	_tiempo_restante = duracion_estable
+	vitalidad = vitalidad_maxima
+	_construir_barra_vitalidad()
 	_actualizar_visual()
 	print("Herido en %s: %d heridas -> %s" % [escenario, heridas.size(), _resumen_heridas()])
 
@@ -94,19 +116,24 @@ func _process(delta: float) -> void:
 	_alivio = max(_alivio - decaimiento_alivio * delta, 0.0)
 	# La gravedad de las heridas sin tratar acelera el decaimiento; tratar
 	# heridas lo frena aunque aun no este estabilizado.
-	_tiempo_restante -= delta * _factor_decaimiento()
-	if _tiempo_restante <= 0.0:
-		_avanzar_estado_salud()
+	vitalidad = max(vitalidad - (delta / segundos_por_punto) * _factor_decaimiento(), 0.0)
+	_actualizar_estado_por_vitalidad()
+	if estado_salud == EstadoSalud.MUERTO:
+		return
 	_actualizar_dolor_fisico(delta)
 	_actualizar_visual()
 
-# 1.0 sin heridas pendientes; +0.35 por cada punto de gravedad acumulada.
+# 1.0 sin heridas pendientes; +factor_gravedad por cada punto de gravedad
+# acumulada (una herida GRAVE sin tocar pesa 2.0, una LEVE 1.0).
 func _factor_decaimiento() -> float:
 	var gravedad := 0.0
 	for herida in heridas:
 		if not herida.tratada:
 			gravedad += PESO_SEVERIDAD[herida.severidad] * (1.0 - herida.fraccion_completada() * 0.5)
-	return 1.0 + gravedad * 0.35
+	return 1.0 + gravedad * factor_gravedad
+
+func fraccion_vitalidad() -> float:
+	return clampf(vitalidad / max(vitalidad_maxima, 0.001), 0.0, 1.0)
 
 func dolor_actual() -> float:
 	var dolor := 0.0
@@ -182,32 +209,26 @@ func aplicar_tratamiento_en(herida: Herida, tipo: int) -> Dictionary:
 
 func _aplicar_alivio(cantidad: float) -> void:
 	_alivio = clampf(_alivio + cantidad, 0.0, 1.0)
-	_otorgar_tiempo(tiempo_bonus_por_alivio * cantidad)
+	_otorgar_vitalidad(bonus_vitalidad_por_alivio * cantidad)
 
 func _al_progresar_herida(_herida: Herida) -> void:
-	_otorgar_tiempo(tiempo_bonus_por_paso)
+	_otorgar_vitalidad(bonus_vitalidad_por_paso)
 	# El director de oleadas escala con este avance (curar atrae enemigos).
 	EventBus.tratamiento_progresado.emit(self, fraccion_tratamiento())
 	if heridas.all(func(h: Herida) -> bool: return h.tratada):
 		_al_estabilizar()
 
-# Extiende _tiempo_restante sin pasarse de la duracion total del estado
-# actual (no hace que el herido "aguante para siempre" a fuerza de pasos
-# chicos, ni lo hace retroceder de CRITICO a ESTABLE - solo compra tiempo
-# dentro del estado en el que ya esta).
-func _otorgar_tiempo(cantidad: float) -> void:
+# Devuelve puntos de vitalidad al medidor. A diferencia del viejo reloj por
+# estado (que solo podia comprar tiempo DENTRO del estado actual), aca un
+# tratamiento sostenido puede sacar al herido de AGONIZANTE y devolverlo a
+# CRITICO: la mejora es visible en la barra y en el color semaforico, que es
+# justamente la lectura que el medidor tiene que dar.
+func _otorgar_vitalidad(cantidad: float) -> void:
 	if estado_salud == EstadoSalud.MUERTO or estado_salud == EstadoSalud.ESTABILIZADO:
 		return
-	_tiempo_restante = minf(_tiempo_restante + cantidad, _duracion_maxima_estado_actual())
-
-func _duracion_maxima_estado_actual() -> float:
-	match estado_salud:
-		EstadoSalud.CRITICO:
-			return duracion_critico
-		EstadoSalud.AGONIZANTE:
-			return duracion_agonizante
-		_:
-			return duracion_estable
+	vitalidad = minf(vitalidad + cantidad, vitalidad_maxima)
+	_actualizar_estado_por_vitalidad()
+	_actualizar_visual()
 
 func fraccion_tratamiento() -> float:
 	var total := 0
@@ -236,29 +257,41 @@ func _actualizar_dolor_fisico(delta: float) -> void:
 		if sonido_gemido:
 			sonido_gemido.play()
 
-func _avanzar_estado_salud() -> void:
-	match estado_salud:
-		EstadoSalud.ESTABLE:
-			estado_salud = EstadoSalud.CRITICO
-			_tiempo_restante = duracion_critico
-			if sonido_gemido:
-				sonido_gemido.play()
-		EstadoSalud.CRITICO:
-			estado_salud = EstadoSalud.AGONIZANTE
-			_tiempo_restante = duracion_agonizante
-			if sonido_gemido:
-				sonido_gemido.play()
-		EstadoSalud.AGONIZANTE:
-			_morir()
+# El estado semaforico es ahora una LECTURA del medidor, no una maquina de
+# estados con reloj propio: se recalcula desde la vitalidad cada vez que
+# cambia (decaimiento o tratamiento). Solo el empeoramiento suena, para que
+# el gemido siga marcando "se te va" y no premie con ruido una mejora.
+func _actualizar_estado_por_vitalidad() -> void:
+	var nuevo := _estado_por_vitalidad()
+	if nuevo == estado_salud:
+		return
+	var empeora := nuevo > estado_salud
+	estado_salud = nuevo
+	if nuevo == EstadoSalud.MUERTO:
+		_morir()
+		return
+	if empeora and sonido_gemido:
+		sonido_gemido.play()
+
+func _estado_por_vitalidad() -> EstadoSalud:
+	if vitalidad <= 0.0:
+		return EstadoSalud.MUERTO
+	if vitalidad <= umbral_agonizante:
+		return EstadoSalud.AGONIZANTE
+	if vitalidad <= umbral_critico:
+		return EstadoSalud.CRITICO
+	return EstadoSalud.ESTABLE
 
 # RF-14: sin estabilizacion a tiempo, el herido muere, deja de poder
 # rescatarse y su foco se apaga.
 func _morir() -> void:
 	estado_salud = EstadoSalud.MUERTO
+	vitalidad = 0.0
 	if foco_luz:
 		foco_luz.visible = false
 	if foco_malla:
 		foco_malla.visible = false
+	_mostrar_barra(false)
 	_tenir_cuerpo(COLOR_MUERTO)
 	cuerpo.position = _posicion_base_cuerpo
 	_actualizar_etiqueta()
@@ -268,6 +301,7 @@ func _morir() -> void:
 func _al_estabilizar() -> void:
 	estado_salud = EstadoSalud.ESTABILIZADO
 	curado_completo = true
+	vitalidad = vitalidad_maxima # el medidor queda lleno: el paciente esta fuera de peligro
 	_tenir_cuerpo(COLOR_ESTABLE)
 	cuerpo.position = _posicion_base_cuerpo
 	if sonido_rescate:
@@ -303,7 +337,53 @@ func _actualizar_visual() -> void:
 		if mat is StandardMaterial3D:
 			mat.albedo_color = color
 			mat.emission = color
+	_actualizar_barra(color)
 	_actualizar_etiqueta()
+
+# Medidor de vitalidad: dos quads billboard (fondo oscuro + relleno del color
+# semaforico). El relleno no se ESCALA sino que se redimensiona la malla y se
+# corre su center_offset: el offset de la malla si queda en el espacio ya
+# rotado por el billboard, asi que la barra crece desde el borde izquierdo
+# mirandola desde cualquier angulo (escalar el nodo la desplazaria de costado).
+# Las dos usan render_priority negativa para quedar por DEBAJO de las Label3D
+# (prioridad 0), que si no tapaban con la barra.
+func _construir_barra_vitalidad() -> void:
+	_barra_fondo = _nueva_barra(
+		Vector2(ANCHO_BARRA + 0.02, ALTO_BARRA + 0.012), Color(0.04, 0.04, 0.05, 0.8), -2
+	)
+	_barra_relleno = _nueva_barra(Vector2(ANCHO_BARRA, ALTO_BARRA), COLOR_ESTABLE, -1)
+	add_child(_barra_fondo)
+	add_child(_barra_relleno)
+
+func _nueva_barra(tamano: Vector2, color: Color, prioridad: int) -> MeshInstance3D:
+	var malla := QuadMesh.new()
+	malla.size = tamano
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	material.no_depth_test = true
+	material.render_priority = prioridad
+	material.albedo_color = color
+	var instancia := MeshInstance3D.new()
+	instancia.mesh = malla
+	instancia.material_override = material
+	instancia.position = Vector3(0.0, ALTURA_BARRA, 0.0)
+	return instancia
+
+func _actualizar_barra(color: Color) -> void:
+	if not _barra_relleno:
+		return
+	var fraccion := fraccion_vitalidad()
+	var malla := _barra_relleno.mesh as QuadMesh
+	malla.size = Vector2(maxf(ANCHO_BARRA * fraccion, 0.002), ALTO_BARRA)
+	malla.center_offset = Vector3(-ANCHO_BARRA * 0.5 + malla.size.x * 0.5, 0.0, 0.0)
+	(_barra_relleno.material_override as StandardMaterial3D).albedo_color = color
+
+func _mostrar_barra(visible_barra: bool) -> void:
+	for barra: MeshInstance3D in [_barra_fondo, _barra_relleno]:
+		if barra:
+			barra.visible = visible_barra
 
 func _color_actual() -> Color:
 	match estado_salud:
@@ -331,14 +411,16 @@ func _actualizar_etiqueta() -> void:
 		EstadoSalud.AGONIZANTE: "AGONIZANTE",
 	}
 	var pendientes := heridas.filter(func(h: Herida) -> bool: return not h.tratada).size()
-	var texto := "%s (%ds) | %d herida%s" % [
+	# Dos lineas cortas en vez de una larga: estado + medidor arriba, carga de
+	# trabajo pendiente abajo (la barra de vitalidad ya da la lectura rapida).
+	var texto := "%s %d%%\n%d herida%s" % [
 		nombres_salud.get(estado_salud, "?"),
-		int(_tiempo_restante),
+		int(round(vitalidad)),
 		pendientes,
 		"" if pendientes == 1 else "s",
 	]
 	if dolor_bloqueante():
-		texto += " | DOLOR ALTO"
+		texto += " · DOLOR ALTO"
 	etiqueta_estado.text = texto
 
 func _resumen_heridas() -> String:

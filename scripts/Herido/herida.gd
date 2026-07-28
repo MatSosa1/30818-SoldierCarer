@@ -50,6 +50,10 @@ var tratada: bool = false
 var _marca: MeshInstance3D
 var _material: StandardMaterial3D
 var _etiqueta: Label3D
+# Solo la herida "activa" (la que el kit esta tratando o apuntando) muestra la
+# ficha completa; el resto queda en una linea minima. Sin esto, un herido con
+# 3 heridas apilaba 3 fichas de 2 lineas sobre el cuerpo y tapaba la escena.
+var _activa: bool = false
 
 # La marca y la etiqueta se construyen por codigo: la herida es procedural,
 # no hay dos escenas iguales que justifiquen un .tscn propio.
@@ -73,10 +77,10 @@ func _ready() -> void:
 	_etiqueta = Label3D.new()
 	_etiqueta.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_etiqueta.no_depth_test = true
-	_etiqueta.pixel_size = 0.0012
-	_etiqueta.font_size = 28
+	_etiqueta.pixel_size = 0.0008
+	_etiqueta.font_size = 24
 	_etiqueta.outline_size = 6
-	_etiqueta.position = Vector3(0, 0.14, 0)
+	_etiqueta.position = Vector3(0, 0.12, 0)
 	add_child(_etiqueta)
 	_actualizar_etiqueta()
 
@@ -123,6 +127,15 @@ func mostrar_progreso_gesto(fraccion: float) -> void:
 		return
 	_actualizar_etiqueta(fraccion)
 
+# Llamado por kit_medico.gd cada frame: marca cual de las heridas del herido
+# es la que el jugador esta tratando/apuntando ahora mismo.
+func resaltar(activa: bool) -> void:
+	if _activa == activa:
+		return
+	_activa = activa
+	_marca.scale = Vector3.ONE * (1.25 if activa else 1.0)
+	_actualizar_etiqueta()
+
 func _completar() -> void:
 	tratada = true
 	dolor = 0.0
@@ -140,15 +153,26 @@ func _color_tipo() -> Color:
 		_:
 			return COLOR_LACERACION
 
+# Divulgacion progresiva (RF-36, HUD minimo): la herida activa muestra tipo,
+# severidad, paso y avance; las demas solo el item que estan esperando, en
+# gris y a media escala. Asi el jugador ve de un vistazo "que falta aca" sin
+# leer tres fichas completas superpuestas.
 func _actualizar_etiqueta(fraccion_gesto: float = -1.0) -> void:
 	if not _etiqueta:
 		return
 	if tratada:
-		_etiqueta.text = "%s\nTRATADA" % nombre()
-		_etiqueta.modulate = Color(0.5, 0.9, 0.5)
+		_etiqueta.text = "TRATADA"
+		_etiqueta.modulate = Color(0.5, 0.9, 0.5, 0.8)
+		_etiqueta.font_size = 20
 		return
-	var linea_paso := "> %s (%d/%d)" % [nombre_item_esperado(), paso_actual + 1, pasos.size()]
+	if not _activa:
+		_etiqueta.text = "%s %d/%d" % [nombre_item_esperado(), paso_actual + 1, pasos.size()]
+		_etiqueta.modulate = Color(0.85, 0.85, 0.85, 0.6)
+		_etiqueta.font_size = 20
+		return
+	var linea_paso := "%s %d/%d" % [nombre_item_esperado(), paso_actual + 1, pasos.size()]
 	if fraccion_gesto >= 0.0:
-		linea_paso += " %d%%" % int(fraccion_gesto * 100.0)
+		linea_paso += "  %d%%" % int(fraccion_gesto * 100.0)
 	_etiqueta.text = "%s\n%s" % [nombre(), linea_paso]
 	_etiqueta.modulate = Color.WHITE
+	_etiqueta.font_size = 24

@@ -15,12 +15,21 @@ class_name KitMedico
 @export var rango_tratamiento: float = 1.5
 @export var escala_hover: float = 1.2
 
-# La vista queda fija apenas se equipa un item (jugador.gd, para no pelear
-# con el gesto de vendas por el mismo mouse), asi que hay que mirar la
-# herida ANTES de elegir la herramienta, no despues.
-const LEYENDA_ESCRITORIO := (
-	"Mira la herida y elegi:\n1 Vendas 2 Morfina 3 Alcohol 4 Suturas 5 Analgesicos"
-)
+# HUD del kit (RF-36: minimo y discreto). La leyenda ya no enumera los cinco
+# items -eso lo dice la etiqueta de cada item, que ademas trae su numero de
+# tecla- sino solo las teclas que no se ven en ningun lado. La vista queda
+# fija apenas se equipa un item (jugador.gd, para no pelear con el gesto de
+# vendas por el mismo mouse), asi que hay que mirar la herida ANTES de elegir
+# la herramienta: por eso el estado, sin item en mano, dice que item pide la
+# herida apuntada en vez de repetir el menu completo.
+const LEYENDA_ESCRITORIO := "[1-5] tomar item · [Q] morfina · [E] cerrar"
+const PISTA_SIN_OBJETIVO := "Mira una herida para ver que necesita"
+
+const COLOR_ESTADO_NEUTRO := Color(0.88, 0.92, 1.0)
+const COLOR_ESTADO_LISTO := Color(0.35, 0.9, 0.45)
+const COLOR_ESTADO_BLOQUEO := Color(1.0, 0.72, 0.2)
+const COLOR_ITEM_PEDIDO := Color(0.35, 0.9, 0.45)
+const COLOR_ITEM_INACTIVO := Color(0.7, 0.73, 0.78, 0.5)
 # Personajes.md SS4: la presencia enemiga bloquea la curacion — la zona debe
 # estar razonablemente despejada. Enemigos vivos dentro de este radio (m)
 # alrededor del medico impiden los gestos de secuencia (morfina/analgesicos
@@ -39,6 +48,8 @@ var _items: Array[ItemMedico] = []
 var _item_hover: ItemMedico = null
 var _posicion_original_equipado: Vector3
 var _abierto_manual: bool = false
+var _herida_activa: Herida = null
+var _etiquetas_preparadas: bool = false
 
 func _ready() -> void:
 	visible = false
@@ -62,6 +73,7 @@ func _process(delta: float) -> void:
 	if GestorJuego.fase != GestorJuego.Fase.MISION or GestorJuego.en_pausa:
 		visible = false # el kit no se abre en el puesto de mando, en pausa ni tras finalizar
 		GestorJuego.marcar_tratando(false)
+		_marcar_herida_activa(null)
 		return
 	var modo_escritorio := not get_viewport().use_xr
 	if modo_escritorio:
@@ -71,16 +83,20 @@ func _process(delta: float) -> void:
 		visible = cerca or item_equipado != null
 	GestorJuego.marcar_tratando(visible) # RF-42: el tiempo corre mas lento mientras el kit esta en uso
 	if not visible:
+		_marcar_herida_activa(null)
 		return
 
-	# Se calcula una sola vez por frame: lo usan tanto el resalte de morfina
-	# (VR) como el chequeo de "hay un herido cerca" mas abajo.
+	# Se calculan una sola vez por frame: los usan el resalte de morfina (VR),
+	# la guia de "que item pide esta herida" y el gesto en curso.
 	var herido_cercano := _herido_en_rango()
+	var herida_objetivo := _herida_objetivo(herido_cercano, modo_escritorio)
+	_marcar_herida_activa(herida_objetivo)
+	_actualizar_etiquetas_items(herida_objetivo)
 	if not modo_escritorio:
 		_actualizar_resalte_morfina(herido_cercano)
 
 	if not item_equipado:
-		etiqueta_equipado.text = LEYENDA_ESCRITORIO if modo_escritorio else ""
+		_mostrar_estado(_texto_sin_item(herida_objetivo, modo_escritorio), COLOR_ESTADO_NEUTRO)
 		if not modo_escritorio:
 			_actualizar_hover()
 		return
@@ -89,51 +105,129 @@ func _process(delta: float) -> void:
 	# esta equipado), no desaparece.
 	item_equipado.global_position = mano_derecha.global_position
 	if item_equipado.requiere_confirmacion_manual():
-		etiqueta_equipado.text = "Equipado: %s (gatillo cerca del herido)" % item_equipado.nombre_item
+		_mostrar_estado(
+			"%s lista — confirma junto al herido" % item_equipado.nombre_item, COLOR_ESTADO_LISTO
+		)
 		return
 
 	# Los gestos se ejecutan sobre una HERIDA concreta del cuerpo, no sobre
 	# el herido generico: el medico tiene que trabajar donde esta la lesion.
-	var herido := herido_cercano
-	if not herido:
-		etiqueta_equipado.text = "Equipado: %s | acercate a un herido" % item_equipado.nombre_item
+	if not herido_cercano:
+		_mostrar_estado("%s — acercate a un herido" % item_equipado.nombre_item, COLOR_ESTADO_NEUTRO)
 		return
-	var herida: Herida
-	if modo_escritorio and camara:
-		herida = herido.herida_bajo_mira(camara)
-	else:
-		herida = herido.herida_mas_cercana(mano_derecha.global_position)
-	if not herida:
-		etiqueta_equipado.text = "Equipado: %s | sin heridas pendientes aqui" % item_equipado.nombre_item
+	if not herida_objetivo:
+		_mostrar_estado("Sin heridas pendientes aqui", COLOR_ESTADO_NEUTRO)
 		item_equipado.reiniciar()
 		return
 	if _hay_enemigos_cerca():
 		# RF/diseno "zona despejada": no se puede trabajar bajo fuego; primero
 		# defender (o alejarse), despues curar.
-		etiqueta_equipado.text = "ZONA HOSTIL: neutraliza a los enemigos cercanos"
+		_mostrar_estado("ZONA HOSTIL — neutraliza a los enemigos", COLOR_ESTADO_BLOQUEO)
 		item_equipado.reiniciar()
 		return
-	if herido.dolor_bloqueante():
+	if herido_cercano.dolor_bloqueante():
 		# Con el paciente retorciendose no se puede trabajar: el gesto no
 		# avanza hasta controlar el dolor (morfina/analgesicos).
-		etiqueta_equipado.text = (
-			"DOLOR ALTO: pulsa Q para inyectar morfina" if modo_escritorio
-			else "DOLOR ALTO: administra la morfina resaltada"
+		_mostrar_estado(
+			"DOLOR ALTO — [Q] morfina" if modo_escritorio else "DOLOR ALTO — usa la morfina resaltada",
+			COLOR_ESTADO_BLOQUEO,
 		)
 		item_equipado.reiniciar()
 		return
-	if item_equipado.tipo != herida.item_esperado():
-		etiqueta_equipado.text = "Equipado: %s | la %s pide %s" % [
-			item_equipado.nombre_item, herida.nombre(), herida.nombre_item_esperado(),
-		]
+	if item_equipado.tipo != herida_objetivo.item_esperado():
+		# El nombre y la severidad de la herida ya los muestra su propia
+		# etiqueta resaltada: aca solo hace falta que pide y con que tecla.
+		_mostrar_estado(
+			"Esta herida pide %s" % _descripcion_item_esperado(herida_objetivo), COLOR_ESTADO_BLOQUEO
+		)
 		item_equipado.reiniciar()
 		return
-	etiqueta_equipado.text = "Equipado: %s | %s %d%%" % [
-		item_equipado.nombre_item, herida.nombre(), int(item_equipado.progreso() * 100.0),
-	]
-	herida.mostrar_progreso_gesto(item_equipado.progreso())
-	if item_equipado.procesar_gesto(delta, mano_derecha, herida):
-		_completar_aplicacion(herido.aplicar_tratamiento_en(herida, item_equipado.tipo))
+	_mostrar_estado(
+		"%s %d%%" % [item_equipado.nombre_item, int(item_equipado.progreso() * 100.0)],
+		COLOR_ESTADO_LISTO,
+	)
+	herida_objetivo.mostrar_progreso_gesto(item_equipado.progreso())
+	if item_equipado.procesar_gesto(delta, mano_derecha, herida_objetivo):
+		_completar_aplicacion(
+			herido_cercano.aplicar_tratamiento_en(herida_objetivo, item_equipado.tipo)
+		)
+
+# Herida sobre la que se trabaja: bajo la mira en escritorio, la mas cercana
+# a la mano derecha en VR.
+func _herida_objetivo(herido: Herido, modo_escritorio: bool) -> Herida:
+	if not herido:
+		return null
+	if modo_escritorio and camara:
+		return herido.herida_bajo_mira(camara)
+	return herido.herida_mas_cercana(mano_derecha.global_position)
+
+# Solo una herida a la vez muestra su ficha completa (ver herida.gd).
+func _marcar_herida_activa(herida: Herida) -> void:
+	if herida == _herida_activa:
+		return
+	if is_instance_valid(_herida_activa):
+		_herida_activa.resaltar(false)
+	_herida_activa = herida
+	if herida:
+		herida.resaltar(true)
+
+# Sin item en mano, el estado guia el siguiente paso concreto en vez de
+# listar el kit entero.
+func _texto_sin_item(herida_objetivo: Herida, modo_escritorio: bool) -> String:
+	if herida_objetivo:
+		return "Esta herida pide %s" % _descripcion_item_esperado(herida_objetivo)
+	if modo_escritorio:
+		return "%s\n%s" % [PISTA_SIN_OBJETIVO, LEYENDA_ESCRITORIO]
+	return PISTA_SIN_OBJETIVO
+
+# "ALCOHOL [3]" en escritorio (la tecla que lo equipa), solo el nombre en VR.
+func _descripcion_item_esperado(herida: Herida) -> String:
+	var esperado: int = herida.item_esperado()
+	for indice in _items.size():
+		if _items[indice].tipo != esperado:
+			continue
+		if get_viewport().use_xr:
+			return _items[indice].nombre_item.to_upper()
+		return "%s [%d]" % [_items[indice].nombre_item.to_upper(), indice + 1]
+	return herida.nombre_item_esperado().to_upper()
+
+# La etiqueta de cada item lleva su numero de tecla SOLO en escritorio (en VR
+# se agarra con la mano, el numero seria ruido). No se puede resolver en
+# _ready(): Godot inicializa de abajo hacia arriba, asi que jugador.gd todavia
+# no activo use_xr cuando este nodo esta listo — se prepara en el primer frame
+# con el kit abierto.
+func _preparar_etiquetas_items() -> void:
+	if _etiquetas_preparadas:
+		return
+	_etiquetas_preparadas = true
+	var escritorio := not get_viewport().use_xr
+	for indice in _items.size():
+		var etiqueta: Label3D = _items[indice].get_node_or_null("Etiqueta")
+		if not etiqueta:
+			continue
+		var nombre: String = _items[indice].nombre_item.to_upper()
+		etiqueta.text = "%d %s" % [indice + 1, nombre] if escritorio else nombre
+
+func _mostrar_estado(texto: String, color: Color) -> void:
+	etiqueta_equipado.text = texto
+	etiqueta_equipado.modulate = color
+
+# Guia visual dentro del kit: se resalta en verde el item que pide la herida
+# apuntada y se apagan los demas; con un item ya en mano solo queda su
+# etiqueta, para que la mochila no compita con la herida por la atencion.
+func _actualizar_etiquetas_items(herida_objetivo: Herida) -> void:
+	_preparar_etiquetas_items()
+	var esperado: int = herida_objetivo.item_esperado() if herida_objetivo else -1
+	for item in _items:
+		var etiqueta: Label3D = item.get_node_or_null("Etiqueta")
+		if not etiqueta:
+			continue
+		if item_equipado:
+			etiqueta.visible = item == item_equipado
+			etiqueta.modulate = COLOR_ESTADO_LISTO
+			continue
+		etiqueta.visible = true
+		etiqueta.modulate = COLOR_ITEM_PEDIDO if item.tipo == esperado else COLOR_ITEM_INACTIVO
 
 # Modo escritorio: las teclas 1-5 equipan el item de ese indice en _items
 # (mismo orden que KitMedico.tscn: Vendas/Morfina/Alcohol/Suturas/

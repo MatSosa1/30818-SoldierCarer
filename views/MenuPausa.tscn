@@ -5,12 +5,12 @@
 [ext_resource type="Texture2D" uid="uid://blerhbykp1257" path="res://assets/2D/neon_background/final.png" id="4_neonbg"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_fondo"]
-size = Vector2(0.6, 0.35)
+size = Vector2(0.53, 0.34)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fondo"]
 transparency = 1
 shading_mode = 0
-albedo_color = Color(1, 1, 1, 0.88)
+albedo_color = Color(0.72, 0.8, 0.92, 0.98)
 albedo_texture = ExtResource("4_neonbg")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pt2hv"]
@@ -55,19 +55,15 @@ shadow_mesh = SubResource("ArrayMesh_lwehc")
 shading_mode = 0
 albedo_color = Color(0.137, 0.545, 0.137, 1)
 
-[sub_resource type="SphereMesh" id="SphereMesh_dok4y"]
-radius = 0.045
-height = 0.026
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_mji2e"]
-radius = 0.07
+[sub_resource type="BoxMesh" id="BoxMesh_destino"]
+size = Vector3(0.092, 0.026, 0.008)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vktdi"]
 shading_mode = 0
 albedo_color = Color(0.137, 0.545, 0.137, 1)
 
 [sub_resource type="QuadMesh" id="QuadMesh_mapa"]
-size = Vector2(0.22, 0.22)
+size = Vector2(0.19, 0.21)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mapa"]
 transparency = 1
@@ -82,7 +78,7 @@ height = 0.012
 shading_mode = 0
 
 [sub_resource type="BoxMesh" id="BoxMesh_icono"]
-size = Vector3(0.05, 0.05, 0.01)
+size = Vector3(0.208, 0.034, 0.008)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icono_reanudar"]
 shading_mode = 0
@@ -100,15 +96,38 @@ albedo_color = Color(0.6, 0.15, 0.15, 1)
 script = ExtResource("1")
 
 [node name="Fondo" type="MeshInstance3D" parent="." unique_id=1606909489]
-transform = Transform3D(1.0552496, 0, 0, 0, 1, 0, 0, 0, 1, -0.081593655, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.02)
 mesh = SubResource("QuadMesh_fondo")
 surface_material_override/0 = SubResource("StandardMaterial3D_fondo")
 
+[node name="EtiquetaTitulo" type="Label3D" parent="." unique_id=1606909490]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.128, 0.14, 0.004)
+pixel_size = 0.00056
+no_depth_test = true
+modulate = Color(0.4, 0.82, 1, 1)
+text = "PAUSA"
+font_size = 26
+outline_size = 6
+
 [node name="MapaTactico" type="Node3D" parent="." unique_id=810927103]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0, 0.001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.128, 0.008, 0.002)
+
+[node name="Fondo" type="MeshInstance3D" parent="MapaTactico" unique_id=972079079]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.012)
+mesh = SubResource("QuadMesh_mapa")
+surface_material_override/0 = SubResource("StandardMaterial3D_mapa")
+
+[node name="EtiquetaMapa" type="Label3D" parent="MapaTactico" unique_id=972079080]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.084, 0.004)
+pixel_size = 0.00048
+no_depth_test = true
+modulate = Color(0.4, 0.82, 1, 1)
+text = "MAPA TACTICO"
+font_size = 18
+outline_size = 5
 
 [node name="PanelMapa" type="Node3D" parent="MapaTactico" unique_id=421836420]
-transform = Transform3D(0.29999995, 0, 0, 0, 0.29882514, 0.026523687, 0, -0.026523687, 0.29882514, 0.025301538, -0.09902662, 0.13107295)
+transform = Transform3D(0.0027, 0, 0, 0, 0.0027, 0, 0, 0, 0.0004, 0.0693, -0.0278, -0.0099)
 
 [node name="map" parent="MapaTactico/PanelMapa" unique_id=1227643378 instance=ExtResource("3_8di8b")]
 transform = Transform3D(0.073240206, 0, 0, 0, -0.002633756, -0.065962985, 0, 0.025711106, -0.0067570214, -0.73458993, 0.0014457703, -0.44467163)
@@ -136,110 +155,122 @@ mesh = SubResource("ArrayMesh_3kw6b")
 transform = Transform3D(0.9999999, 0, 0, 0, 1.0143977, -1.4901161e-08, 0, 0, 2.0622997, 16.33326, 1.0395728, -1.8619199)
 mesh = SubResource("ArrayMesh_3kw6b")
 
-[node name="EtiquetaTitulo" type="Label3D" parent="MapaTactico/PanelMapa" unique_id=21281753]
-transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.01914674, 0.48327637, 0.05055237)
-pixel_size = 0.0006
-text = "SELECCIONA PUNTO DE DESPLIEGUE"
-font_size = 48
-outline_size = 8
-
-[node name="IconoE1" type="Node3D" parent="MapaTactico/PanelMapa" unique_id=1681283083]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.08, 0.01)
-
-[node name="Malla" type="MeshInstance3D" parent="MapaTactico/PanelMapa/IconoE1" unique_id=606232324]
-transform = Transform3D(1, 0, 0, 0, -0.009838194, -0.9999516, 0, 0.9999516, -0.009838194, 0.23207524, 0.26964092, -0.33856964)
-material_override = SubResource("StandardMaterial3D_e0kgu")
-mesh = SubResource("SphereMesh_dok4y")
-
-[node name="Etiqueta" type="Label3D" parent="MapaTactico/PanelMapa/IconoE1" unique_id=873355963]
-transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.25095218, 0.122605324, -0.17046356)
-pixel_size = 0.0006
-text = "E1 — CALLE"
-font_size = 51
-outline_size = 6
-
-[node name="Area3D" type="Area3D" parent="MapaTactico/PanelMapa/IconoE1" unique_id=812222066]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MapaTactico/PanelMapa/IconoE1/Area3D" unique_id=1349098380]
-transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.23078725, 0.26140022, -0.310997)
-shape = SubResource("SphereShape3D_mji2e")
-
-[node name="IconoE2" type="Node3D" parent="MapaTactico/PanelMapa" unique_id=2047404198]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.1, 0.01)
-
-[node name="Malla" type="MeshInstance3D" parent="MapaTactico/PanelMapa/IconoE2" unique_id=926666451]
-transform = Transform3D(1, 0, 0, 0, -0.011481389, -0.9999341, 0, 0.9999341, -0.011481389, 0.08696514, 0.49294186, -0.33148193)
-material_override = SubResource("StandardMaterial3D_vktdi")
-mesh = SubResource("SphereMesh_dok4y")
-
-[node name="Etiqueta" type="Label3D" parent="MapaTactico/PanelMapa/IconoE2" unique_id=2055521664]
-transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.09324038, 0.35057068, -0.1949234)
-pixel_size = 0.0006
-text = "E2 — EDIFICIO"
-font_size = 51
-outline_size = 6
-
-[node name="Area3D" type="Area3D" parent="MapaTactico/PanelMapa/IconoE2" unique_id=1179736432]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MapaTactico/PanelMapa/IconoE2/Area3D" unique_id=2058529502]
-transform = Transform3D(1, 0, 0, 0, 1, 2.9802322e-08, 0, -2.9802322e-08, 1, 0.08674717, 0.49631023, -0.32654572)
-shape = SubResource("SphereShape3D_mji2e")
-
-[node name="Fondo" type="MeshInstance3D" parent="MapaTactico" unique_id=972079079]
-transform = Transform3D(1.933805, 0, 0, 0, 1.2022012, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("QuadMesh_mapa")
-surface_material_override/0 = SubResource("StandardMaterial3D_mapa")
-
 [node name="IconoJugador" type="MeshInstance3D" parent="MapaTactico" unique_id=1080856423]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.003)
 mesh = SubResource("SphereMesh_jugador_mapa")
 surface_material_override/0 = SubResource("StandardMaterial3D_jugador_mapa")
 
+[node name="IconoE1" type="MeshInstance3D" parent="MapaTactico" unique_id=1681283083]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, -0.132, 0.004)
+mesh = SubResource("BoxMesh_destino")
+surface_material_override/0 = SubResource("StandardMaterial3D_e0kgu")
+
+[node name="Etiqueta" type="Label3D" parent="MapaTactico/IconoE1" unique_id=873355963]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
+no_depth_test = true
+text = "E1 · CALLE"
+font_size = 18
+outline_size = 5
+
+[node name="IconoE2" type="MeshInstance3D" parent="MapaTactico" unique_id=2047404198]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, -0.132, 0.004)
+mesh = SubResource("BoxMesh_destino")
+surface_material_override/0 = SubResource("StandardMaterial3D_vktdi")
+
+[node name="Etiqueta" type="Label3D" parent="MapaTactico/IconoE2" unique_id=2055521664]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
+no_depth_test = true
+text = "E2 · EDIFICIO"
+font_size = 18
+outline_size = 5
+
 [node name="IconoReanudar" type="MeshInstance3D" parent="." unique_id=1201410826]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.1, 0.001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.108, 0.001)
 mesh = SubResource("BoxMesh_icono")
 surface_material_override/0 = SubResource("StandardMaterial3D_icono_reanudar")
 
 [node name="Etiqueta" type="Label3D" parent="IconoReanudar" unique_id=1452410863]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, 0)
-pixel_size = 0.0008
-billboard = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
 no_depth_test = true
 text = "REANUDAR"
-font_size = 28
+font_size = 22
+outline_size = 5
 
 [node name="IconoOpciones" type="MeshInstance3D" parent="." unique_id=1295838232]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0, 0.001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.065, 0.001)
 mesh = SubResource("BoxMesh_icono")
 surface_material_override/0 = SubResource("StandardMaterial3D_icono")
 
 [node name="Etiqueta" type="Label3D" parent="IconoOpciones" unique_id=1741748883]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, 0)
-pixel_size = 0.0008
-billboard = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
 no_depth_test = true
-text = "OPCIONES"
-font_size = 28
+text = "FUNDIDO · Suave"
+font_size = 22
+outline_size = 5
 
-[node name="EtiquetaValor" type="Label3D" parent="IconoOpciones" unique_id=260860247]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.035, 0)
-pixel_size = 0.0006
-billboard = 1
+[node name="IconoVolumenMaster" type="MeshInstance3D" parent="." unique_id=630174501]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.022, 0.001)
+mesh = SubResource("BoxMesh_icono")
+surface_material_override/0 = SubResource("StandardMaterial3D_icono")
+
+[node name="Etiqueta" type="Label3D" parent="IconoVolumenMaster" unique_id=630174502]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
 no_depth_test = true
-text = "Teletransporte: DESVANECIDO_SUAVE"
-font_size = 24
+text = "GENERAL · 100%"
+font_size = 22
+outline_size = 5
+
+[node name="IconoVolumenMusica" type="MeshInstance3D" parent="." unique_id=630174504]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, -0.022, 0.001)
+mesh = SubResource("BoxMesh_icono")
+surface_material_override/0 = SubResource("StandardMaterial3D_icono")
+
+[node name="Etiqueta" type="Label3D" parent="IconoVolumenMusica" unique_id=630174505]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
+no_depth_test = true
+text = "MUSICA · 80%"
+font_size = 22
+outline_size = 5
+
+[node name="IconoVolumenSFX" type="MeshInstance3D" parent="." unique_id=630174507]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, -0.065, 0.001)
+mesh = SubResource("BoxMesh_icono")
+surface_material_override/0 = SubResource("StandardMaterial3D_icono")
+
+[node name="Etiqueta" type="Label3D" parent="IconoVolumenSFX" unique_id=630174508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
+no_depth_test = true
+text = "EFECTOS · 80%"
+font_size = 22
+outline_size = 5
 
 [node name="IconoSalir" type="MeshInstance3D" parent="." unique_id=1350696948]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, -0.1, 0.001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, -0.108, 0.001)
 mesh = SubResource("BoxMesh_icono")
 surface_material_override/0 = SubResource("StandardMaterial3D_icono_salir")
 
 [node name="Etiqueta" type="Label3D" parent="IconoSalir" unique_id=351598598]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, 0)
-pixel_size = 0.0008
-billboard = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.007)
+pixel_size = 0.00048
 no_depth_test = true
 text = "SALIR"
-font_size = 28
+font_size = 22
+outline_size = 5
+
+[node name="EtiquetaAviso" type="Label3D" parent="." unique_id=351598599]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.154, 0.006)
+pixel_size = 0.00048
+no_depth_test = true
+modulate = Color(1, 0.72, 0.2, 1)
+text = "aviso"
+font_size = 20
+outline_size = 5
 
 [editable path="MapaTactico/PanelMapa/map"]

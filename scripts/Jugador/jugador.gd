@@ -147,12 +147,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_ESCAPE:
+				# El propio menu libera/recaptura el mouse (menu_pausa.alternar):
+				# tambien se cierra por REANUDAR y por teletransporte, y por esas
+				# vias el cursor quedaba suelto en pleno juego.
 				if menu_pausa:
 					menu_pausa.alternar()
-					if menu_pausa.visible:
-						Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-					else:
-						Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			KEY_E:
 				if kit_medico:
 					kit_medico.alternar_manual()

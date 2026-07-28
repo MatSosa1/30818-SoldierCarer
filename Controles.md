@@ -32,7 +32,8 @@ El jugador está **fijo en posición** (RF-03): nunca camina, solo gira la cabez
 | Alivio rápido (dolor bloqueando el tratamiento) | La morfina del kit pulsa sola: acercarse y gatillo, sin leer las 5 etiquetas |
 | Guardar ítem equipado sin aplicar | Gatillo derecho (con un ítem de secuencia en mano, sin herida válida en rango) |
 | Abrir/cerrar menú de pausa | Botón de menú de la mano izquierda (`menu_button`) |
-| Seleccionar opción del menú de pausa | Acercar la mano derecha al ícono (Reanudar/Opciones/Salir) + gatillo |
+| Seleccionar opción del menú de pausa | Acercar la mano derecha al ícono (Reanudar/Fundido/3 volúmenes/Salir) + gatillo |
+| Saltar de escenario desde el menú de pausa | Acercar la mano derecha al botón E1/E2 del mini mapa + gatillo (cierra el menú y teletransporta) |
 | Seleccionar punto de despliegue (puesto de mando) | Acercar la mano derecha al ícono E1/E2 + gatillo |
 | Confirmar pantalla de resultados | Acercar la mano derecha a "VOLVER AL MENÚ" + gatillo |
 
@@ -57,9 +58,11 @@ Se activa solo si no hay runtime OpenXR disponible. El jugador sigue sin traslad
 | Aplicar morfina / analgésicos (equipados) | Clic izquierdo, con la mira sobre un herido cercano |
 | Alivio rápido (inyectar morfina sin equipar nada) | `Q`, con un herido cerca — guarda lo que tengas en mano si hace falta |
 | Guardar ítem equipado sin aplicar | Clic izquierdo (con un ítem de secuencia en mano, sin herida válida) |
-| Abrir/cerrar menú de pausa | `ESC` (también libera/recaptura el mouse) |
-| Ciclar opción resaltada del menú de pausa | Rueda del mouse / `Tab` (`Shift+Tab` para atrás) |
+| Abrir/cerrar menú de pausa | `ESC` (el menú libera/recaptura el mouse solo) |
+| Seleccionar opción del menú de pausa | **Apuntar con el mouse** al botón (se resalta) |
+| Ciclar opción resaltada del menú de pausa (respaldo) | Rueda del mouse / `Tab` (`Shift+Tab` para atrás) |
 | Confirmar opción resaltada del menú de pausa | Clic izquierdo |
+| Saltar de escenario desde el menú de pausa | Apuntar el botón E1/E2 del mini mapa + clic izquierdo |
 | Seleccionar punto de despliegue (puesto de mando) | Mirar el ícono E1/E2 (mira central) + clic izquierdo |
 | Confirmar pantalla de resultados | Clic izquierdo (con demora mínima de 0.5s desde que aparece la pantalla) |
 
@@ -71,4 +74,6 @@ Se activa solo si no hay runtime OpenXR disponible. El jugador sigue sin traslad
 - La pistola queda desenfundada de forma permanente en modo escritorio (el gesto de extraerla de la cadera no tiene equivalente sin manos).
 - **Con un ítem del kit equipado, la vista deja de rotar con el mouse** hasta que se guarda o se aplica: el mismo movimiento del mouse es el gesto de vendas, así que si además rotara la cámara el jugador terminaba girando sin control mientras vendaba. Por eso hay que **mirar la herida que se quiere tratar antes de presionar el número del ítem**, no después — una vez equipado, la herida objetivo queda fijada a donde estaba apuntando la mira en ese momento.
 - La herida objetivo se elige por la mira (la más centrada bajo el reticulo, con una tolerancia si ninguna está bien centrada), no por cercanía a un punto fijo: con 2+ heridas por herido (mínimo actual), esto es lo que permite elegir cuál tratar primero en vez de que el juego siempre eligiera la geométricamente más próxima a una mano fantasma.
+- **El menú de pausa se apunta con el mouse** (el puntero se libera solo al abrirlo): cada fila del panel es un botón y se resalta al pasarle el puntero por encima. La rueda y `Tab` siguen funcionando como respaldo y toman el control del resaltado hasta que se vuelve a mover el mouse. El mini mapa del menú incluye dos botones `E1`/`E2` que teletransportan al otro escenario sin tener que cerrar la pausa y abrir el mapa de muñeca (avisa en el propio panel si todavía no te desplegaste o si ya estás en ese escenario).
+- Con el kit abierto, la etiqueta del ítem que pide la herida apuntada se pone **verde** y el resto queda en gris: el número que aparece delante de cada nombre (`3 ALCOHOL`) es la tecla que lo equipa. La línea de estado del kit dice qué falta (`Esta herida pide ALCOHOL [3]`, `ZONA HOSTIL…`, `DOLOR ALTO — [Q] morfina`) en vez de repetir el menú completo.
 - `Q` es un atajo, no reemplaza al kit: sigue existiendo el flujo normal (`2` para equipar morfina y confirmar con clic) si preferís usarlo. `Q` funciona tenga el kit abierto o no.

@@ -235,19 +235,28 @@ _surfaces = [{
 script = ExtResource("1")
 
 [node name="EtiquetaEquipado" type="Label3D" parent="." unique_id=93809657]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-pixel_size = 0.0011
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.12)
+pixel_size = 0.00055
 billboard = 1
 no_depth_test = true
+font_size = 30
+outline_size = 8
+autowrap_mode = 3
+width = 560.0
 
 [node name="EtiquetaFeedback" type="Label3D" parent="." unique_id=599905049]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
-pixel_size = 0.0011
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.2)
+pixel_size = 0.00055
 billboard = 1
 no_depth_test = true
 text = "OK"
+font_size = 30
+outline_size = 8
+autowrap_mode = 3
+width = 560.0
 
 [node name="SonidoFeedback" type="AudioStreamPlayer3D" parent="." unique_id=1690589752]
+bus = "SFX"
 stream = ExtResource("7")
 
 [node name="ItemVendas" type="Node3D" parent="." unique_id=188840896]
@@ -256,12 +265,13 @@ script = ExtResource("2")
 nombre_item = "Vendas"
 
 [node name="Etiqueta" type="Label3D" parent="ItemVendas" unique_id=474444880]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-pixel_size = 0.001
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.042, 0)
+pixel_size = 0.0005
 billboard = 1
 no_depth_test = true
 text = "Vendas"
-font_size = 24
+font_size = 26
+outline_size = 5
 
 [node name="Icono" type="Node3D" parent="ItemVendas" unique_id=1593722606]
 transform = Transform3D(0.03, 0, 0, 0, 0.03, 0, 0, 0, 0.03, 0, 0, 0)
@@ -276,12 +286,13 @@ tipo = 1
 nombre_item = "Morfina"
 
 [node name="Etiqueta" type="Label3D" parent="ItemMorfina" unique_id=1981160072]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-pixel_size = 0.001
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.042, 0)
+pixel_size = 0.0005
 billboard = 1
 no_depth_test = true
 text = "Morfina"
-font_size = 24
+font_size = 26
+outline_size = 5
 
 [node name="Icono" type="Node3D" parent="ItemMorfina" unique_id=2085077378]
 transform = Transform3D(0.0105, 0, 0, 0, 0.0105, 0, 0, 0, 0.0105, 0, 0, 0)
@@ -310,12 +321,13 @@ tipo = 2
 nombre_item = "Alcohol"
 
 [node name="Etiqueta" type="Label3D" parent="ItemAlcohol" unique_id=1049164296]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-pixel_size = 0.001
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.042, 0)
+pixel_size = 0.0005
 billboard = 1
 no_depth_test = true
 text = "Alcohol"
-font_size = 24
+font_size = 26
+outline_size = 5
 
 [node name="Icono" type="Node3D" parent="ItemAlcohol" unique_id=900744746]
 transform = Transform3D(0.031, 0, 0, 0, 0.031, 0, 0, 0, 0.031, 0, 0, 0)
@@ -330,12 +342,13 @@ tipo = 3
 nombre_item = "Suturas"
 
 [node name="Etiqueta" type="Label3D" parent="ItemSuturas" unique_id=2081686060]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-pixel_size = 0.001
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.042, 0)
+pixel_size = 0.0005
 billboard = 1
 no_depth_test = true
 text = "Suturas"
-font_size = 24
+font_size = 26
+outline_size = 5
 
 [node name="Icono" type="Node3D" parent="ItemSuturas" unique_id=1736204754]
 transform = Transform3D(0.025, 0, 0, 0, 0.025, 0, 0, 0, 0.025, 0, 0, 0)
@@ -356,12 +369,13 @@ tipo = 4
 nombre_item = "Analgesicos"
 
 [node name="Etiqueta" type="Label3D" parent="ItemAnalgesicos" unique_id=1065838632]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-pixel_size = 0.001
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.042, 0)
+pixel_size = 0.0005
 billboard = 1
 no_depth_test = true
 text = "Analgesicos"
-font_size = 24
+font_size = 26
+outline_size = 5
 
 [node name="Icono" type="Node3D" parent="ItemAnalgesicos" unique_id=1902403597]
 transform = Transform3D(0.0077, 0, 0, 0, 0.0077, 0, 0, 0, 0.0077, 0, 0, 0)
