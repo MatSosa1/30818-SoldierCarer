@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cu3mp310eouoh"
+path="res://.godot/imported/GHOST FREQ-0  1H Tactical Stealth Music - Reaction Window.mp3-847b4aa55bd7577eacbf82976864e504.mp3str"
+
+[deps]
+
+source_file="res://audio/GHOST FREQ-0  1H Tactical Stealth Music - Reaction Window.mp3"
+dest_files=["res://.godot/imported/GHOST FREQ-0  1H Tactical Stealth Music - Reaction Window.mp3-847b4aa55bd7577eacbf82976864e504.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

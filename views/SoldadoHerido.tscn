@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/3D/entities/patient/MilitaryLeftArm1.png" id="1_g6m72"]
 [ext_resource type="Texture2D" path="res://assets/3D/entities/patient/MilitaryRightArm1.png" id="2_dsppq"]
 [ext_resource type="Texture2D" path="res://assets/3D/entities/patient/Chest1.png" id="3_e0f72"]
+[ext_resource type="AudioStream" uid="uid://d073xg7vq3gjx" path="res://audio/GemidoHerido.mp3" id="4_gemido"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xa2tx"]
 resource_name = "Skin"
@@ -280,5 +281,6 @@ mesh = SubResource("SphereMesh_foco")
 surface_material_override/0 = SubResource("StandardMaterial3D_foco")
 
 [node name="SonidoGemido" type="AudioStreamPlayer3D" parent="." unique_id=563291699]
+stream = ExtResource("4_gemido")
 
 [node name="SonidoRescate" type="AudioStreamPlayer3D" parent="." unique_id=1218501929]
