@@ -1,0 +1,233 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/Menus/pantalla_documento.gd" id="1_pantalla"]
+[ext_resource type="FontFile" uid="uid://l45ci8imolwd" path="res://fonts/Caveat-Regular.ttf" id="2_caveat"]
+[ext_resource type="Texture2D" uid="uid://bhhtohbvhw4y7" path="res://assets/Fondos/Pared_Con_Ventana.png" id="3_pared"]
+[ext_resource type="Texture2D" uid="uid://dsmh03ul7wa0m" path="res://assets/Fondos/PisoAgrietado.jpg" id="4_piso"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
+sky_top_color = Color(0.05, 0.05, 0.07, 1)
+sky_horizon_color = Color(0.1, 0.1, 0.12, 1)
+ground_horizon_color = Color(0.1, 0.1, 0.12, 1)
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("ProceduralSkyMaterial_1")
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 2
+sky = SubResource("Sky_1")
+ambient_light_source = 3
+ambient_light_color = Color(0.85, 0.84, 0.8, 1)
+ambient_light_energy = 0.9
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_piso"]
+size = Vector2(14, 14)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piso"]
+albedo_color = Color(0.55, 0.55, 0.55, 1)
+albedo_texture = ExtResource("4_piso")
+roughness = 0.9
+uv1_scale = Vector3(6, 6, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hoja"]
+size = Vector3(1.42, 1.25, 0.03)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hoja"]
+albedo_color = Color(0.961, 0.949, 0.922, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_volver"]
+size = Vector3(1.2, 0.3, 0.4)
+
+[node name="Controles" type="Node3D"]
+script = ExtResource("1_pantalla")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 2.6)
+keep_aspect = 0
+current = true
+fov = 60.0
+
+[node name="Piso" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_piso")
+surface_material_override/0 = SubResource("StandardMaterial3D_piso")
+
+[node name="Pared" type="Sprite3D" parent="."]
+transform = Transform3D(2.7, 0, 0, 0, 2.7, 0, 0, 0, 2.7, 0, 2, -2)
+pixel_size = 0.0026
+texture = ExtResource("3_pared")
+
+[node name="LuzSala" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 1.4)
+light_color = Color(1, 0.95, 0.86, 1)
+light_energy = 1.6
+omni_range = 8.0
+
+[node name="EtiquetaTitulo" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.32, 0.1)
+pixel_size = 0.0022
+modulate = Color(0.961, 0.949, 0.922, 1)
+outline_modulate = Color(0.05, 0.05, 0.05, 1)
+text = "CONTROLES"
+font = ExtResource("2_caveat")
+font_size = 90
+outline_size = 14
+
+
+[node name="HojaVR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.74, 1.56, 0)
+mesh = SubResource("BoxMesh_hoja")
+surface_material_override/0 = SubResource("StandardMaterial3D_hoja")
+
+[node name="TituloHoja" type="Label3D" parent="HojaVR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.46, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.294, 0.325, 0.125, 1)
+text = "VR (visor OpenXR)"
+font = ExtResource("2_caveat")
+font_size = 60
+
+[node name="ColumnaAccion" type="Label3D" parent="HojaVR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.66, 0.34, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.1, 0.1, 0.1, 1)
+text = "Mirar
+Disparar
+Desenfundar
+Recargar
+Abrir mapa
+Abrir kit
+Elegir item
+Vendas
+Alcohol
+Suturas
+Morfina
+Pausa"
+font_size = 40
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="ColumnaControl" type="Label3D" parent="HojaVR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27, 0.34, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.2, 0.2, 0.22, 1)
+text = "Mover la cabeza
+Gatillo derecho
+Mano derecha a la cadera
+Boton X/A izquierdo
+Mano izquierda al hombro
+Mano izquierda a la mochila
+Mano derecha + gatillo
+Girar la mano en la herida
+Mano boca abajo, 0.4 s
+Apretar el grip 3 veces
+Mano al herido + gatillo
+Boton de menu izquierdo"
+font_size = 40
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="NotaHoja" type="Label3D" parent="HojaVR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.66, -0.5, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.45, 0.3, 0.1, 1)
+text = "Se activa solo al detectar el visor.
+El medico no camina: usa teletransporte."
+font_size = 30
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="HojaEscritorio" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.74, 1.56, 0)
+mesh = SubResource("BoxMesh_hoja")
+surface_material_override/0 = SubResource("StandardMaterial3D_hoja")
+
+[node name="TituloHoja" type="Label3D" parent="HojaEscritorio"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.46, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.294, 0.325, 0.125, 1)
+text = "Escritorio (sin visor)"
+font = ExtResource("2_caveat")
+font_size = 60
+
+[node name="ColumnaAccion" type="Label3D" parent="HojaEscritorio"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.66, 0.34, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.1, 0.1, 0.1, 1)
+text = "Mirar
+Disparar
+Recargar
+Abrir mapa
+Abrir kit
+Elegir item
+Vendas
+Alcohol
+Suturas
+Morfina
+Morfina rapida
+Pausa"
+font_size = 40
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="ColumnaControl" type="Label3D" parent="HojaEscritorio"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27, 0.34, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.2, 0.2, 0.22, 1)
+text = "Mover el mouse
+Clic izquierdo
+R
+M
+E
+Teclas 1 a 5 del kit
+Mover el mouse
+Mantener clic derecho
+Clic derecho x3
+Clic izquierdo
+Q (con herido cerca)
+ESC"
+font_size = 40
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="NotaHoja" type="Label3D" parent="HojaEscritorio"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.66, -0.5, 0.02)
+pixel_size = 0.0012
+modulate = Color(0.45, 0.3, 0.1, 1)
+text = "Se activa solo si no hay visor. Con un
+item en la mano el mouse no gira la vista."
+font_size = 30
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="AreaVolver" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.88, 0.1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AreaVolver"]
+shape = SubResource("BoxShape3D_volver")
+
+[node name="Etiqueta" type="Label3D" parent="AreaVolver"]
+pixel_size = 0.0012
+modulate = Color(0.961, 0.949, 0.922, 1)
+outline_modulate = Color(0.05, 0.05, 0.05, 1)
+text = "VOLVER AL MENU (o ESC)"
+font = ExtResource("2_caveat")
+font_size = 78
+outline_size = 12
+
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Desvanecido" type="ColorRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

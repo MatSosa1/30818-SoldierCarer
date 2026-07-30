@@ -4,12 +4,15 @@ Referencia de controles e interacciones del juego, tanto en VR (headset OpenXR) 
 
 > El **menú principal** (`main_menu.tscn`) todavía es mouse-only en ambos modos: los botones 3D (Play/Opciones/Salir) se seleccionan con clic, no hay apuntado con el controlador VR todavía (ver `Planificacion_Sprints.md`).
 
+> Estos controles también están **dentro del juego**: la nota adhesiva **CONTROLES** del menú principal abre `views/Controles.tscn`, con la tabla de VR y la de escritorio en pantalla. Al cambiar algo de este archivo, actualizá también esa escena (y viceversa).
+
 ## 1. Menú principal
 
 | Acción | Control |
 |---|---|
-| Seleccionar Play / Opciones / Salir | Clic izquierdo sobre la sticky note (cursor visible) |
+| Seleccionar Jugar / Controles / Opciones / Créditos / Salir | Clic izquierdo sobre la sticky note (cursor visible) |
 | Volver desde Opciones | Clic izquierdo sobre "VOLVER" |
+| Volver desde Controles o Créditos | Clic izquierdo sobre "VOLVER AL MENU" o tecla `ESC` |
 
 ## 2. VR (headset OpenXR)
 
