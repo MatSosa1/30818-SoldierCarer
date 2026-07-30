@@ -286,6 +286,16 @@ MenuOpciones (overlay, misma escena)        GestorEscenarios activa
 - **No se tocaron** números de balanceo (duración de misión, salud, daño, cadencias) — cambiarlos sin datos de playtesting real sería inventar un balance, no corregir uno. Quedan exactamente como se definieron en S1-S10, todos ya parametrizables.
 - **Sin verificar en editor/headset real** — este es el sprint que, por definición, más necesita esa validación; lo hecho aquí es lo máximo defendible sin ella.
 
+## 9.6 Pantallas de controles y créditos (pulido de menú, S11)
+
+**Implementado en rama `chore/finalizing-project`** (pendiente de commit manual) — dos entradas nuevas en el menú principal (`RF-37`, y la categoría "CONTROLES" que `RF-38` solo listaba como rótulo):
+
+- **`views/Controles.tscn` y `views/Creditos.tscn`** — pantallas planas de solo lectura con la estética de documento de `UI_ART_Design.md §5.5`. Comparten `scripts/Menus/pantalla_documento.gd` (`class_name PantallaDocumento`): fundido de entrada/salida (RNF-03, mismo patrón que `estado_inicial.gd`), música de menú (`GestorAudio.EstadoMusica.MENU`, RF-46) y un único botón `AreaVolver` (Area3D + clic izquierdo, con hover por `Tween`) más `ui_cancel`/ESC como atajo. La escena de vuelta es un `@export_file`, así que la pantalla no sabe desde dónde se la abrió.
+- **Encuadre independiente de la ventana:** ambas cámaras usan `keep_aspect = KEEP_WIDTH` y el contenido se dispone dentro de un área segura 16:9. Con el valor por defecto (`KEEP_HEIGHT`) una ventana angosta recortaba media tabla de controles. El truco `SubViewportContainer` del menú principal **no** sirve para esto: con `stretch = true` el `SubViewport` se redimensiona con la ventana, no fija el aspecto.
+- **`scripts/MainMenu/nota_menu.gd` (`class_name NotaMenu`)** — base de las cinco notas adhesivas del menú, siguiendo el mismo patrón base + ganchos que `enemigo_base.gd`: concentra el hover, `escala_base`, el apagado de picking y el ocultado/restaurado en bloque; cada nota concreta solo implementa `_al_seleccionar()`. `btn_play.gd`, `btn_options.gd` y `btn_exit.gd` pasaron a extenderla (su lógica de animación no cambió) y `btn_pantalla.gd` es la nota genérica que abre una pantalla informativa (`@export_file var escena_destino`).
+- **Descubrimiento por grupo `"notas_menu"`** (declarado en `main_menu.tscn`) en vez de por nombre de nodo: `btn_play`/`btn_options` listaban a mano `btn_options`/`btn_exit`, así que cualquier nota nueva quedaba fuera del ocultado y del apagado de colisiones — exactamente la condición que producía el bug de "notas pegadas" documentado en `btn_play.gd`. Al agregar otra nota basta con instanciarla en el grupo.
+- **Contrato a preservar:** las notas siguen conectando `Area3D.input_event → _on_area_3d_input_event` desde la escena (el método ahora vive en `NotaMenu`), y siguen coordinándose entre hermanas sin rutas absolutas.
+
 ## 10. Rendimiento (guías para cumplir RNF-01/02)
 
 - Low-poly + `StandardMaterial3D` simples; evitar transparencias y luces dinámicas innecesarias.
